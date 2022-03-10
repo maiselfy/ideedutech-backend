@@ -78,7 +78,7 @@ model User {
   phone         String
   addressId     String
   address       Address        @relation(fields: [addressId], references: [id])
-  gender        
+  gender        Gender
   manager       Manager?
   admin         Admin?
   teacher       Teacher?
@@ -162,7 +162,7 @@ model School {
   name      String
   phone     String
   addressId String?
-  cnpj      String              @unique
+  cnpj      String?              @unique
   classes   Class[]
   waitist   WaitList[]
   teachers  TeachersOnSchool[]

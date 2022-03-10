@@ -11,7 +11,6 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { User } from '../entities/user.entity';
 
 export default class CreateUserDTO {
   @IsString()
