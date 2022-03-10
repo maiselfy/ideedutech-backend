@@ -1,23 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from '../user/user.service';
+import { UserService } from '../../user/service/user.service';
 
 import * as bcrypt from 'bcrypt';
-import { UserToken } from './models/UserToken';
-import { UserPayload } from './models/UserPayload';
+import { UnauthorizedError } from 'src/errors/UnauthorizedError';
+import { User } from '../../user/entities/user.entity';
+import { UserPayload } from '../models/UserPayload';
+import { UserToken } from '../models/UserToken';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private userService: UserService,
-  );
+  ) {}
 
-  login(email: string, password: string): Promise<UserToken> {
+  async login(email: string, password: string): Promise<UserToken> {
     const user: User = await this.validateUser(email, password);
-
-    if (!user) {
-    }
 
     const payload: UserPayload = {
       email: user.email,
@@ -25,25 +24,21 @@ export class AuthService {
     };
 
     return {
-      acessToken: this.jwtService.sign(payload),
+      accessToken: this.jwtService.sign(payload),
     };
   }
 
   private async validateUser(email: string, password: string) {
-    const user = this.userService.findOne({
-      where: {
-        email: email,
-      },
-    });
+    const user = await this.userService.findByEmail(email);
 
     if (!user) {
-      throw new UnauthorizedError('Email is not exists');
+      throw new UnauthorizedError('Não existe um usuário com esse email em nossa base de dados.');
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      throw new UnauthorizedError('Password is incorrect');
+      throw new UnauthorizedError('Senha incorreta, por favor, tente novamente.');
     }
 
     return {

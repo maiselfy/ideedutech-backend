@@ -13,6 +13,7 @@ export class LoginRequestDTO {
   email: string;
 
   @IsString()
+  @IsNotEmpty()
   @MinLength(6)
   @MaxLength(20)
   @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
