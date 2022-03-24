@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma';
 import CreateSchoolDTO from '../dtos/createSchool.dto';
 
@@ -17,9 +17,22 @@ export class SchoolService {
     };
   }
 
-  // findAll() {
-  //   return `This action returns all school`;
-  // }
+  async findAll() {
+    const schools = await this.prisma.school.findMany();
+
+    if (!schools) {
+      throw new HttpException(
+        'Não existem escolas registradas em nossa base de dados.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return {
+      data: schools,
+      status: HttpStatus.OK,
+      message: 'Escolas retornadas com sucesso.',
+    };
+  }
 
   // findOne(id: number) {
   //   return `This action returns a #${id} school`;

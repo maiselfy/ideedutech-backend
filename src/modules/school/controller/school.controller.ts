@@ -20,10 +20,10 @@ export class SchoolController {
     return this.schoolService.create(createSchoolDTO);
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.schoolService.findAll();
-  // }
+  @Get()
+  findAll() {
+    return this.schoolService.findAll();
+  }
 
   // @Get(':id')
   // findOne(@Param('id') id: string) {

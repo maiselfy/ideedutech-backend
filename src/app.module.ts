@@ -20,16 +20,10 @@ ConfigModule.forRoot();
     UserModule,
     AuthModule,
     AddressModule,
-    WaitlistModule,
-    SchoolModule,
-  ],
-  imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
-    UserModule,
-    AuthModule,
-    AddressModule,
     AdminModule,
     ManagerModule,
+    WaitlistModule,
+    SchoolModule,
   ],
   controllers: [AppController],
   providers: [
