@@ -9,6 +9,7 @@ export class User {
   phone: string;
   addressId: string;
   gender: string;
+  type: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
