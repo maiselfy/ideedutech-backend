@@ -25,6 +25,14 @@ enum Role {
   others   @map("Outros")
 }
 
+enum TypeUser {
+  admin    @map("Administrador")
+  manager  @map("Gestor")
+  teacher  @map("Professor")
+  student  @map("Estudante")
+  others   @map("Outros")
+}
+
 enum Day {
   monday     @map("Segunda-Feira")
   thursday   @map("Terça-Feira")
@@ -50,7 +58,7 @@ enum StageSubmission {
 
 model WaitList {
   id        String   @id @default(uuid())
-  value     String
+  value     String   @unique
   approved  Boolean
   schoolId  String
   school    School   @relation(fields: [schoolId], references: [id])
@@ -78,7 +86,8 @@ model User {
   phone         String
   addressId     String
   address       Address        @relation(fields: [addressId], references: [id])
-  gender        
+  gender        Gender
+  type          TypeUser
   manager       Manager?
   admin         Admin?
   teacher       Teacher?

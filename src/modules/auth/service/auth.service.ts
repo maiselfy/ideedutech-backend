@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../../user/service/user.service';
 
@@ -18,9 +18,17 @@ export class AuthService {
   async login(email: string, password: string): Promise<UserToken> {
     const user: User = await this.validateUser(email, password);
 
+    if (!user) {
+      throw new HttpException(
+        `Dados de email ou senha estão incorretos.`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     const payload: UserPayload = {
       email: user.email,
       sub: user.id,
+      type: user.type,
     };
 
     return {
@@ -32,13 +40,17 @@ export class AuthService {
     const user = await this.userService.findByEmail(email);
 
     if (!user) {
-      throw new UnauthorizedError('Não existe um usuário com esse email em nossa base de dados.');
+      throw new UnauthorizedError(
+        'Não existe um usuário com esse email em nossa base de dados.',
+      );
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      throw new UnauthorizedError('Senha incorreta, por favor, tente novamente.');
+      throw new UnauthorizedError(
+        'Senha incorreta, por favor, tente novamente.',
+      );
     }
 
     return {
