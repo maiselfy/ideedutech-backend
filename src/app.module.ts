@@ -10,15 +10,24 @@ import { JwtAuthGuard } from './modules/auth/jwtAuthGuard';
 import { SchoolModule } from './modules/school/school.module';
 import { WaitlistModule } from './modules/waitlist/waitlist.module';
 
-
-ConfigModule.forRoot()
+ConfigModule.forRoot();
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), UserModule, AuthModule, AddressModule, WaitlistModule, SchoolModule],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    UserModule,
+    AuthModule,
+    AddressModule,
+    WaitlistModule,
+    SchoolModule,
+  ],
   controllers: [AppController],
-  providers: [AppService, {
-    provide: APP_GUARD,
-    useClass: JwtAuthGuard
-  }],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+  ],
 })
 export class AppModule {}

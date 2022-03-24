@@ -46,6 +46,7 @@ export default class CreateUserDTO {
   gender: Gender;
 
   @IsString()
+  @IsOptional()
   type: TypeUser;
 
   @IsEmpty()

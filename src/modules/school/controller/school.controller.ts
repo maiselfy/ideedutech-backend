@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { Public } from 'src/modules/auth/decorators/public.decorator';
 import CreateSchoolDTO from '../dtos/createSchool.dto';
 import { SchoolService } from '../service/school.service';
@@ -7,7 +15,6 @@ import { SchoolService } from '../service/school.service';
 export class SchoolController {
   constructor(private readonly schoolService: SchoolService) {}
 
-  @Public()
   @Post()
   create(@Body() createSchoolDTO: CreateSchoolDTO) {
     return this.schoolService.create(createSchoolDTO);

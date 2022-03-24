@@ -1,13 +1,23 @@
+// NestJS
 import { ExecutionContext, Inject, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+
+// Password
 import { AuthGuard } from '@nestjs/passport';
+
+// RxJs
 import { of } from 'rxjs';
 import { map, mergeMap, takeWhile, tap } from 'rxjs/operators';
-import { UserService } from '../user/service/user.service';
-import { UserFromJWT } from './models/UserFromJWT';
-import { AuthRequest } from './models/AuthRequest';
-import { IS_PUBLIC_KEY } from './decorators/public.decorator';
 
+// Services
+import { UserService } from '../user/service/user.service';
+
+// Models
+import { UserFromJWT } from './models/UserFromJWT';
+
+// Decorators
+import { IS_PUBLIC_KEY } from './decorators/public.decorator';
+import { AuthRequest } from './models/AuthRequest';
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
   constructor(
@@ -40,11 +50,11 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       mergeMap((request) =>
         of(request).pipe(
           map((req) => {
-            if (!req.principal) {
+            if (!req.user) {
               throw Error('Usuário não encontrado na requisição.');
             }
 
-            return req.principal;
+            return req.user;
           }),
           mergeMap((userFromJwt: UserFromJWT) =>
             this.userService.findById(userFromJwt.id),
