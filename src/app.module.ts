@@ -9,6 +9,8 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './modules/auth/jwtAuthGuard';
 import { SchoolModule } from './modules/school/school.module';
 import { WaitlistModule } from './modules/waitlist/waitlist.module';
+import { AdminModule } from './modules/admin/admin.module';
+import { ManagerModule } from './modules/manager/manager.module';
 
 ConfigModule.forRoot();
 
@@ -20,6 +22,14 @@ ConfigModule.forRoot();
     AddressModule,
     WaitlistModule,
     SchoolModule,
+  ],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    UserModule,
+    AuthModule,
+    AddressModule,
+    AdminModule,
+    ManagerModule,
   ],
   controllers: [AppController],
   providers: [

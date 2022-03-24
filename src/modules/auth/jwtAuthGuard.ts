@@ -52,7 +52,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
           map((req) => {
             if (!req.user) {
               throw Error('Usuário não encontrado na requisição.');
-            }
+             }
 
             return req.user;
           }),
