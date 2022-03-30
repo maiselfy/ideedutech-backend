@@ -18,14 +18,13 @@ export function EnsureAuthenticatedMiddleware(
 ) {
   const authHeader = req.headers.authorization;
   if (!authHeader) {
-    throw new HttpException('JWT token is missing', HttpStatus.UNAUTHORIZED);
+    throw new HttpException('JWT token is missing', HttpStatus.BAD_REQUEST);
   }
   const [, token] = authHeader.split(' ');
   try {
     const decoded = verify(token, process.env.JWT_SECRET);
     const { id, name, email, type } = decoded as TokenPayload;
     req.user = { id, name, email, type };
-    console.log(req.user);
     return next();
   } catch {
     throw new HttpException('Invalid JWT Token', HttpStatus.UNAUTHORIZED);

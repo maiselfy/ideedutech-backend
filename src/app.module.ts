@@ -11,6 +11,8 @@ import { SchoolModule } from './modules/school/school.module';
 import { WaitlistModule } from './modules/waitlist/waitlist.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { ManagerModule } from './modules/manager/manager.module';
+import { TeacherModule } from './modules/teacher/teacher.module';
+import { RefreshTokenModule } from './modules/refresh-token/refreshToken.module';
 
 ConfigModule.forRoot();
 
@@ -24,6 +26,8 @@ ConfigModule.forRoot();
     ManagerModule,
     WaitlistModule,
     SchoolModule,
+    TeacherModule,
+    RefreshTokenModule,
   ],
   controllers: [AppController],
   providers: [

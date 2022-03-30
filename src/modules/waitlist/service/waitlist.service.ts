@@ -13,7 +13,7 @@ export class WaitlistService {
     return {
       data: createdWaitlist,
       status: HttpStatus.CREATED,
-      message: 'Lista de espera cadastrada com sucesso.',
+      message: 'Registro adicionado a lista de espera.',
     };
   }
   // findAll() {

@@ -7,12 +7,16 @@ import { UnauthorizedError } from 'src/errors/UnauthorizedError';
 import { User } from '../../user/entities/user.entity';
 import { UserPayload } from '../models/UserPayload';
 import { UserToken } from '../models/UserToken';
+import { GenerateRefreshToken } from '../providers/generateRefreshToken.provider';
+import { GenerateToken } from '../providers/generateToken.provider';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private userService: UserService,
+    private generateRefreshToken: GenerateRefreshToken,
+    private generateToken: GenerateToken,
   ) {}
 
   async login(email: string, password: string): Promise<UserToken> {
@@ -25,17 +29,15 @@ export class AuthService {
       );
     }
 
-    const payload: UserPayload = {
-      name: user.name,
-      email: user.email,
-      sub: user.id,
-      type: user.type,
-    };
+    const accessToken = await this.generateToken.generateToken(user.id);
 
-    console.log(payload);
+    const refreshToken = await this.generateRefreshToken.generateRefreshToken(
+      user.id,
+    );
 
     return {
-      accessToken: this.jwtService.sign(payload),
+      accessToken,
+      refreshToken,
     };
   }
 

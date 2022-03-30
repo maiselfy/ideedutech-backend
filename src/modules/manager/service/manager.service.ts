@@ -4,19 +4,19 @@ import { CreateManagerDTO } from '../dtos/createManager.dto';
 
 @Injectable()
 export class ManagerService {
-  constructor(private prisma: PrismaService){}
+  constructor(private prisma: PrismaService) {}
   async create(createManagerDTO: CreateManagerDTO) {
     const data = createManagerDTO;
 
-    const createdManager = await this.prisma.manager.create({ 
-      data, 
+    const createdManager = await this.prisma.manager.create({
+      data,
     });
 
     return {
       data: createdManager,
       status: HttpStatus.CREATED,
-      message: 'Gestor cadastrado com sucesso.'
-    };  
+      message: 'Gestor cadastrado com sucesso.',
+    };
   }
 
   // findAll() {
