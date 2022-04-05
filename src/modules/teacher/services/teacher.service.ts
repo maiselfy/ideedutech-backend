@@ -40,6 +40,7 @@ export class TeacherService {
   async findBySchool(schoolId: string) {
     const school = await this.prisma.school.findUnique({
       where: { id: schoolId },
+      include: { teachers: true },
     });
 
     if (!school) {
@@ -49,21 +50,8 @@ export class TeacherService {
       );
     }
 
-    const teachers = await this.prisma.teachersOnSchool.findMany({
-      where: {
-        schoolId,
-      },
-    });
-
-    if (!teachers) {
-      throw new HttpException(
-        'Não existem professores registrados nesta instituição.',
-        HttpStatus.NOT_FOUND,
-      );
-    }
-
     return {
-      data: teachers,
+      data: school.teachers,
       status: HttpStatus.OK,
       message: `Professores da instituição ${school.name} retornados com sucesso.`,
     };

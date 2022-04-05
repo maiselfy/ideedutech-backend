@@ -16,7 +16,8 @@ export class SchoolController {
   constructor(private readonly schoolService: SchoolService) {}
 
   @Post()
-  create(@Body() createSchoolDTO: CreateSchoolDTO) {
+  @Public()
+  create(@Body() createSchoolDTO) {
     return this.schoolService.create(createSchoolDTO);
   }
 

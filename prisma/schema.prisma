@@ -97,30 +97,30 @@ model User {
 }
 
 model Student {
-  id                String             @id @default(uuid())
+  id                String   @id @default(uuid())
   schoolId          String
-  school            School             @relation(fields: [schoolId], references: [id])
+  school            School   @relation(fields: [schoolId], references: [id])
   status            Boolean
   enrollment        String
-  class             Class              @relation(fields: [classId], references: [id])
+  class             Class    @relation(fields: [classId], references: [id])
   classId           String
   entryForm         String
   reasonForTransfer String?
-  parents           ParentsOnStudent[]
-  userId            String             @unique
-  user              User               @relation(fields: [userId], references: [id])
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
+  parents           Parent[]
+  userId            String   @unique
+  user              User     @relation(fields: [userId], references: [id])
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 }
 
 model Manager {
-  id        String             @id @default(uuid())
-  schools   ManagersOnSchool[]
+  id        String   @id @default(uuid())
+  schools   School[]
   status    Boolean
-  userId    String             @unique
-  user      User               @relation(fields: [userId], references: [id])
-  createdAt DateTime           @default(now())
-  updatedAt DateTime           @updatedAt
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Admin {
@@ -133,75 +133,75 @@ model Admin {
 }
 
 model Parent {
-  id        String             @id @default(uuid())
+  id        String    @id @default(uuid())
   name      String
   kinship   String
   studentId String
   contact   String
   addressId String
-  students  ParentsOnStudent[]
-  createdAt DateTime           @default(now())
-  updatedAt DateTime           @updatedAt
+  students  Student[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
-model ParentsOnStudent {
-  student    Student  @relation(fields: [studentId], references: [id])
-  studentId  String
-  parent     Parent   @relation(fields: [parentId], references: [id])
-  parentId   String
-  assignedAt DateTime @default(now())
-  assignedBy String
+// model ParentsOnStudent {
+//   student    Student  @relation(fields: [studentId], references: [id])
+//   studentId  String
+//   parent     Parent   @relation(fields: [parentId], references: [id])
+//   parentId   String
+//   assignedAt DateTime @default(now())
+//   assignedBy String
 
-  @@id([studentId, parentId])
-}
+//   @@id([studentId, parentId])
+// }
 
 model Teacher {
-  id          String             @id @default(uuid())
-  schools     TeachersOnSchool[]
+  id          String       @id @default(uuid())
+  schools     School[]
   status      Boolean
   disciplines Discipline[]
-  userId      String             @unique
-  user        User               @relation(fields: [userId], references: [id])
-  createdAt   DateTime           @default(now())
-  updatedAt   DateTime           @updatedAt
+  userId      String       @unique
+  user        User         @relation(fields: [userId], references: [id])
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 }
 
 model School {
-  id        String              @id @default(uuid())
+  id        String     @id @default(uuid())
   name      String
   phone     String
-  addressId String?
-  cnpj      String?              @unique
+  address   Address[]
+  cnpj      String?    @unique
   classes   Class[]
   waitist   WaitList[]
-  teachers  TeachersOnSchool[]
-  managers  ManagersOnSchool[]
+  teachers  Teacher[]
+  managers  Manager[]
   students  Student[]
-  createdAt DateTime           @default(now())
-  updatedAt DateTime           @updatedAt
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 }
 
-model ManagersOnSchool {
-  manager    Manager  @relation(fields: [managerId], references: [id])
-  managerId  String
-  school     School   @relation(fields: [schoolId], references: [id])
-  schoolId   String
-  assignedAt DateTime @default(now())
-  assignedBy String
+// model ManagersOnSchool {
+//   manager    Manager  @relation(fields: [managerId], references: [id])
+//   managerId  String
+//   school     School   @relation(fields: [schoolId], references: [id])
+//   schoolId   String
+//   assignedAt DateTime @default(now())
+//   assignedBy String
 
-  @@id([managerId, schoolId])
-}
+//   @@id([managerId, schoolId])
+// }
 
-model TeachersOnSchool {
-  teacher    Teacher  @relation(fields: [teacherId], references: [id])
-  teacherId  String
-  school     School   @relation(fields: [schoolId], references: [id])
-  schoolId   String
-  assignedAt DateTime @default(now())
-  assignedBy String
+// model TeachersOnSchool {
+//   teacher    Teacher  @relation(fields: [teacherId], references: [id])
+//   teacherId  String
+//   school     School   @relation(fields: [schoolId], references: [id])
+//   schoolId   String
+//   assignedAt DateTime @default(now())
+//   assignedBy String
 
-  @@id([teacherId, schoolId])
-}
+//   @@id([teacherId, schoolId])
+// }
 
 model Class {
   id          String       @id @default(uuid())
@@ -258,42 +258,43 @@ model Submission {
 }
 
 model Lesson {
-  id           String              @id @default(uuid())
+  id           String          @id @default(uuid())
   name         String
   description  String
   disciplineId String
-  discipline   Discipline          @relation(fields: [disciplineId], references: [id])
-  schedules    SchedulesOnLesson[]
-  createdAt    DateTime            @default(now())
-  updatedAt    DateTime            @updatedAt
+  discipline   Discipline      @relation(fields: [disciplineId], references: [id])
+  schedules    ClassSchedule[]
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
 }
 
 model ClassSchedule {
-  id           String              @id @default(uuid())
-  lessons      SchedulesOnLesson[]
+  id           String   @id @default(uuid())
+  lessons      Lesson[]
   day          Day
   disciplineId String
   initialHour  DateTime
   finishHour   DateTime
-  createdAt    DateTime            @default(now())
-  updatedAt    DateTime            @updatedAt
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
 }
 
-model SchedulesOnLesson {
-  lesson     Lesson        @relation(fields: [lessonId], references: [id])
-  lessonId   String
-  schedule   ClassSchedule @relation(fields: [scheduleId], references: [id])
-  scheduleId String
-  assignedAt DateTime      @default(now())
-  assignedBy String
+// model SchedulesOnLesson {
+//   lesson     Lesson        @relation(fields: [lessonId], references: [id])
+//   lessonId   String
+//   schedule   ClassSchedule @relation(fields: [scheduleId], references: [id])
+//   scheduleId String
+//   assignedAt DateTime      @default(now())
+//   assignedBy String
 
-  @@id([lessonId, scheduleId])
-}
+//   @@id([lessonId, scheduleId])
+// }
 
 model Address {
   id           String   @id @default(uuid())
   labelAddress String
-  address      String
+  street       String
   city         String
   number       String
   area         String
@@ -302,4 +303,6 @@ model Address {
   users        User[]
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+  school       School   @relation(fields: [schoolId], references: [id])
+  schoolId     String
 }

@@ -5,10 +5,13 @@ import CreateSchoolDTO from '../dtos/createSchool.dto';
 @Injectable()
 export class SchoolService {
   constructor(private prisma: PrismaService) {}
-  async create(createSchoolDTO: CreateSchoolDTO) {
+  async create(createSchoolDTO) {
     const data = createSchoolDTO;
+    console.log(data);
 
-    const createdSchool = await this.prisma.school.create({ data });
+    const createdSchool = await this.prisma.school.create({
+      data: { address: { create: [] }, ...data},
+    });
 
     return {
       data: createdSchool,
