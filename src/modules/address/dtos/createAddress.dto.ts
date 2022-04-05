@@ -19,7 +19,7 @@ export default class CreateAddressDTO {
   @IsString()
   @IsNotEmpty()
   street: string;
-  
+
   @IsString()
   @IsNotEmpty()
   city: string;

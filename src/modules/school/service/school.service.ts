@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Exclude } from 'class-transformer';
 import { PrismaService } from 'src/modules/prisma';
 import CreateSchoolDTO from '../dtos/createSchool.dto';
 
@@ -10,7 +11,15 @@ export class SchoolService {
     console.log(data);
 
     const createdSchool = await this.prisma.school.create({
-      data: { address: { create: [] }, ...data},
+      data: {
+        ...data,
+        address: {
+          create: data.address,
+        },
+      },
+      include: {
+        address: true,
+      },
     });
 
     return {
