@@ -1,5 +1,3 @@
-import { Prisma } from '@prisma/client';
-
 export class User {
   id?: string;
   name: string;
@@ -7,8 +5,8 @@ export class User {
   password?: string;
   birthDate: Date;
   phone: string;
-  addressId: string;
   gender: string;
+  type: string;
   createdAt?: Date;
   updatedAt?: Date;
 }

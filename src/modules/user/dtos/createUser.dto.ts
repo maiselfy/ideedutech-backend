@@ -1,9 +1,8 @@
-import { Address, Gender } from '@prisma/client';
+import { Address, Gender, TypeUser } from '@prisma/client';
 import {
   IsDate,
   IsEmail,
   IsEmpty,
-  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -11,7 +10,6 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { User } from '../entities/user.entity';
 
 export default class CreateUserDTO {
   @IsString()
@@ -26,7 +24,8 @@ export default class CreateUserDTO {
   @MinLength(6)
   @MaxLength(20)
   @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
-    message: 'Sua senha deve ter pelo menos 6 caracteres (no mínimo 1 letra maiúscula, letras minúsculas, números e caracteres especiais).',
+    message:
+      'Sua senha deve ter pelo menos 6 caracteres (no mínimo 1 letra maiúscula, letras minúsculas, números e caracteres especiais).',
   })
   password: string;
 
@@ -35,16 +34,20 @@ export default class CreateUserDTO {
   birthDate: Date;
 
   @IsString()
-  @IsOptional() 
+  @IsOptional()
   phone: string;
 
   @IsString()
-  @IsOptional() 
+  @IsOptional()
   addressId: string;
 
   @IsString()
-  @IsOptional() 
+  @IsOptional()
   gender: Gender;
+
+  @IsString()
+  @IsOptional()
+  type: TypeUser;
 
   @IsEmpty()
   createdAt: Date;

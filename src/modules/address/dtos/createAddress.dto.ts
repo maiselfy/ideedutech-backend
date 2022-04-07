@@ -18,8 +18,8 @@ export default class CreateAddressDTO {
 
   @IsString()
   @IsNotEmpty()
-  address: string;
-  
+  street: string;
+
   @IsString()
   @IsNotEmpty()
   city: string;

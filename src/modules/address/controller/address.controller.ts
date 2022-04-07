@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
+import { Public } from 'src/modules/auth/decorators/public.decorator';
 import CreateAddressDTO from '../dtos/createAddress.dto';
 import { AddressService } from '../service/address.service';
 
@@ -6,6 +15,7 @@ import { AddressService } from '../service/address.service';
 export class AddressController {
   constructor(private readonly addressService: AddressService) {}
 
+  @Public()
   @Post()
   create(@Body() createAddressDTO: CreateAddressDTO) {
     return this.addressService.create(createAddressDTO);

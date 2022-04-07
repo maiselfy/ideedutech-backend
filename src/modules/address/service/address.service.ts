@@ -4,16 +4,16 @@ import CreateAddressDTO from '../dtos/createAddress.dto';
 
 @Injectable()
 export class AddressService {
-  constructor(private prisma: PrismaService){}
-  async create(createAddressDTO: CreateAddressDTO) {
+  constructor(private prisma: PrismaService) {}
+  async create(createAddressDTO) {
     const data = createAddressDTO;
-    
-    const createdAddress = await this.prisma.address.create({ data });  
-  
+
+    const createdAddress = await this.prisma.address.create({ data });
+
     return {
       data: createdAddress,
       status: HttpStatus.CREATED,
-      message: 'Endereço cadastrado com sucesso.'
+      message: 'Endereço cadastrado com sucesso.',
     };
   }
 
