@@ -30,7 +30,20 @@ export class SchoolService {
 
   async findAll() {
     const schools = await this.prisma.school.findMany({
-      include: { managers: true, students: true, teachers: true },
+      include: {
+        address: {
+          select: {
+            city: true,
+            area: true,
+            createdAt: true,
+            number: true,
+            labelAddress: true,
+            uf: true,
+            street: true,
+          },
+        },
+        _count: { select: { managers: true, teachers: true, students: true } },
+      },
     });
 
     if (!schools) {

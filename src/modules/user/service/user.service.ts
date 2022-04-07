@@ -48,7 +48,7 @@ export class UserService {
       },
     });
 
-    console.log(createdUser);
+    console.log(createdUser.id);
 
     if (userExistsOnWaitlist.role === 'admin') {
       const createdAdmin = await this.prisma.admin.create({
@@ -75,7 +75,8 @@ export class UserService {
       const createdManager = await this.prisma.manager.create({
         data: {
           status: true,
-          userId: createdUser.id,
+          // userId: createdUser.id,
+          user: { connect: { id: createdUser.id } },
           schools: { connect: { id: userExistsOnWaitlist.schoolId } },
         },
         include: { schools: true },
@@ -96,7 +97,7 @@ export class UserService {
       const createdTeacher = await this.prisma.teacher.create({
         data: {
           status: true,
-          userId: createdUser.id,
+          user: { connect: { id: createdUser.id } },
           schools: { connect: { id: userExistsOnWaitlist.schoolId } },
         },
         include: { schools: true },
