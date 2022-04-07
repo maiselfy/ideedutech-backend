@@ -5,7 +5,7 @@ import CreateAddressDTO from '../dtos/createAddress.dto';
 @Injectable()
 export class AddressService {
   constructor(private prisma: PrismaService) {}
-  async create(createAddressDTO: CreateAddressDTO) {
+  async create(createAddressDTO) {
     const data = createAddressDTO;
 
     const createdAddress = await this.prisma.address.create({ data });
