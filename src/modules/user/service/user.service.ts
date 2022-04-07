@@ -10,13 +10,15 @@ export class UserService {
   constructor(private prisma: PrismaService) {}
   async create(createUserDto) {
     const { email } = createUserDto;
-    console.log(createUserDto);
+    console.log(createUserDto.user);
 
     const data = createUserDto;
 
     const userExistsOnWaitlist = await this.prisma.waitList.findUnique({
       where: { value: email },
     });
+
+    console.log(userExistsOnWaitlist);
 
     if (!userExistsOnWaitlist) {
       throw new HttpException(
@@ -25,8 +27,6 @@ export class UserService {
       );
     }
 
-    delete createUserDto.address;
-
     const hashSalt = Number(process.env.HASH_SALT);
     const newData = {
       ...createUserDto,
@@ -34,16 +34,17 @@ export class UserService {
       birthDate: new Date(createUserDto.birthDate),
       type: userExistsOnWaitlist.role,
     };
+    console.log(newData);
 
     const createdUser = await this.prisma.user.create({
       data: {
         ...newData,
         address: {
-          create: data.address,
+          create: createUserDto.address,
         },
-        include: {
-          address: true,
-        },
+      },
+      include: {
+        address: true,
       },
     });
 
@@ -54,7 +55,9 @@ export class UserService {
         data: {
           status: true,
           userId: createdUser.id,
+          schools: { connect: { id: userExistsOnWaitlist.schoolId } },
         },
+        include: { schools: true },
       });
 
       const response = {
@@ -73,7 +76,9 @@ export class UserService {
         data: {
           status: true,
           userId: createdUser.id,
+          schools: { connect: { id: userExistsOnWaitlist.schoolId } },
         },
+        include: { schools: true },
       });
 
       const response = {
@@ -92,7 +97,9 @@ export class UserService {
         data: {
           status: true,
           userId: createdUser.id,
+          schools: { connect: { id: userExistsOnWaitlist.schoolId } },
         },
+        include: { schools: true },
       });
 
       const response = {

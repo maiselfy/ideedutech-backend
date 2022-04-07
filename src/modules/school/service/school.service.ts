@@ -8,7 +8,6 @@ export class SchoolService {
   constructor(private prisma: PrismaService) {}
   async create(createSchoolDTO) {
     const data = createSchoolDTO;
-    console.log(data);
 
     const createdSchool = await this.prisma.school.create({
       data: {
@@ -30,7 +29,9 @@ export class SchoolService {
   }
 
   async findAll() {
-    const schools = await this.prisma.school.findMany();
+    const schools = await this.prisma.school.findMany({
+      include: { managers: true, students: true, teachers: true },
+    });
 
     if (!schools) {
       throw new HttpException(
