@@ -84,8 +84,7 @@ model User {
   birthDate     DateTime
   refreshTokens RefreshToken[]
   phone         String
-  addressId     String
-  address       Address        @relation(fields: [addressId], references: [id])
+  address       Address[]?
   gender        Gender
   type          TypeUser
   manager       Manager?
@@ -300,9 +299,10 @@ model Address {
   area         String
   uf           String
   zipCode      String
-  users        User[]
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   school       School   @relation(fields: [schoolId], references: [id])
   schoolId     String
+  user         User?     @relation(fields: [userId], references: [id])
+  userId       String?
 }

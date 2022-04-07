@@ -8,8 +8,11 @@ import * as bcrypt from 'bcrypt';
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService) {}
-  async create(createUserDto: CreateUserDTO) {
+  async create(createUserDto) {
     const { email } = createUserDto;
+    console.log(createUserDto);
+
+    const data = createUserDto;
 
     const userExistsOnWaitlist = await this.prisma.waitList.findUnique({
       where: { value: email },
@@ -22,15 +25,29 @@ export class UserService {
       );
     }
 
+    delete createUserDto.address;
+
     const hashSalt = Number(process.env.HASH_SALT);
-    const data: Prisma.UserUncheckedCreateInput = {
+    const newData = {
       ...createUserDto,
       password: await bcrypt.hash(createUserDto.password, hashSalt),
       birthDate: new Date(createUserDto.birthDate),
       type: userExistsOnWaitlist.role,
     };
 
-    const createdUser = await this.prisma.user.create({ data });
+    const createdUser = await this.prisma.user.create({
+      data: {
+        ...newData,
+        address: {
+          create: data.address,
+        },
+        include: {
+          address: true,
+        },
+      },
+    });
+
+    console.log(createdUser);
 
     if (userExistsOnWaitlist.role === 'admin') {
       const createdAdmin = await this.prisma.admin.create({
