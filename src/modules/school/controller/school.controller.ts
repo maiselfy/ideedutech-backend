@@ -22,6 +22,7 @@ export class SchoolController {
   }
 
   @Get()
+  @Public()
   findAll() {
     return this.schoolService.findAll();
   }

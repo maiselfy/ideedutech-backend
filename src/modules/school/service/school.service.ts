@@ -46,9 +46,14 @@ export class SchoolService {
       },
     });
 
-    if (!schools) {
+    console.log(schools);
+
+    if (schools) {
       throw new HttpException(
-        'Não existem escolas registradas em nossa base de dados.',
+        {
+          error: 'Não existem escolas registradas em nossa base de dados.',
+          code: 'Teste',
+        },
         HttpStatus.NOT_FOUND,
       );
     }
