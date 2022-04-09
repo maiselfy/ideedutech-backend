@@ -84,7 +84,7 @@ model User {
   birthDate     DateTime
   refreshTokens RefreshToken[]
   phone         String
-  address       Address[]?
+  address       Address[]
   gender        Gender
   type          TypeUser
   manager       Manager?
