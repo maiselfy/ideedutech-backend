@@ -12,8 +12,9 @@ RUN npm install
 
 COPY . .
 
-RUN npm run build
+RUN npx prisma generate
 
+RUN npm run build
 FROM node:14
 
 COPY --from=builder /app/node_modules ./node_modules
