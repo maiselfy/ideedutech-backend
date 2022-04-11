@@ -13,11 +13,9 @@ export default class CreateActivityDTO {
   @IsNotEmpty()
   disciplineId: string;
 
-  @IsString()
   @IsNotEmpty()
   dueDate: Date;
 
-  @IsString()
   @IsNotEmpty()
   isOpen: boolean;
 

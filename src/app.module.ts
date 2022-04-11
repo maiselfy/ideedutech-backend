@@ -13,7 +13,7 @@ import { AdminModule } from './modules/admin/admin.module';
 import { ManagerModule } from './modules/manager/manager.module';
 import { TeacherModule } from './modules/teacher/teacher.module';
 import { RefreshTokenModule } from './modules/refresh-token/refreshToken.module';
-import { ActivityModule } from './modules/activity/activity.module';
+import { HomeWorkModule } from './modules/home-work/homeWork.module';
 
 ConfigModule.forRoot();
 
@@ -27,7 +27,7 @@ ConfigModule.forRoot();
     ManagerModule,
     WaitlistModule,
     SchoolModule,
-    ActivityModule,
+    HomeWorkModule,
     TeacherModule,
     RefreshTokenModule,
   ],
