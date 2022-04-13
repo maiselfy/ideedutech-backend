@@ -1,6 +1,6 @@
 import { IsEmpty, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export default class CreateActivityDTO {
+export default class CreateHomeWorkDTO {
   @IsString()
   @IsNotEmpty()
   name: string;

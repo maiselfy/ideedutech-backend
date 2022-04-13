@@ -8,16 +8,15 @@ import {
   Delete,
 } from '@nestjs/common';
 import { Public } from 'src/modules/auth/decorators/public.decorator';
-
+import CreateHomeWorkDTO from '../dtos/createHomeWork.dto';
 import { HomeWorkService } from '../service/homeWorkService.service';
 
 @Controller('homeWork')
 export class HomeWorkController {
   constructor(private readonly homeWorkService: HomeWorkService) {}
 
-  /* @Post
-  @Public */
-  create(@Body() createActivityDTO) {
-    return this.homeWorkService.create(createActivityDTO);
+  /* @Post */
+  create(@Body() CreateHomeWorkDTO) {
+    return this.homeWorkService.create(CreateHomeWorkDTO);
   }
 }
