@@ -15,7 +15,8 @@ import { HomeWorkService } from '../service/homeWorkService.service';
 export class HomeWorkController {
   constructor(private readonly homeWorkService: HomeWorkService) {}
 
-  /* @Post */
+  @Post()
+  @Public()
   create(@Body() CreateHomeWorkDTO) {
     return this.homeWorkService.create(CreateHomeWorkDTO);
   }
