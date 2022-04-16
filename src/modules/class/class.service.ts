@@ -39,7 +39,7 @@ export class ClassService {
             },
           },
         },
-        ClassSchedule: {
+        classes: {
           select: { day: true, initialHour: true, finishHour: true },
         },
       },

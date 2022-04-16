@@ -224,7 +224,7 @@ model Class {
   students      Student[]
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
-  ClassSchedule ClassSchedule[]
+  classes ClassSchedule[]
 }
 
 model Discipline {
