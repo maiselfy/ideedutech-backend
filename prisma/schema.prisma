@@ -18,6 +18,13 @@ enum Gender {
   notInform  @map("Prefiro Não Informar")
 }
 
+// enum BimesterTitle {
+//   primeiro  @map("Primeiro Bimestre")
+//   segundo   @map("Segundo Bimestre")
+//   terceiro  @map("Terceiro Bimestre")
+//   quarto    @map("Quarto Bimestre")
+// }
+
 enum Role {
   admin    @map("Administrador")
   manager  @map("Gestor")
@@ -164,6 +171,7 @@ model Teacher {
   user        User         @relation(fields: [userId], references: [id])
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+  Class       Class[]
 }
 
 model School {
@@ -206,15 +214,17 @@ model School {
 // }
 
 model Class {
-  id          String       @id @default(uuid())
-  name        String
-  teacherId   String
-  schooldId   String
-  school      School       @relation(fields: [schooldId], references: [id])
-  disciplines Discipline[]
-  students    Student[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id            String          @id @default(uuid())
+  name          String
+  teacherId     String
+  teacher       Teacher         @relation(fields: [teacherId], references: [id])
+  schooldId     String
+  school        School          @relation(fields: [schooldId], references: [id])
+  disciplines   Discipline[]
+  students      Student[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  ClassSchedule ClassSchedule[]
 }
 
 model Discipline {
@@ -260,25 +270,24 @@ model Submission {
 }
 
 model Lesson {
-  id           String          @id @default(uuid())
+  id           String     @id @default(uuid())
   name         String
   description  String
   disciplineId String
-  discipline   Discipline      @relation(fields: [disciplineId], references: [id])
-  schedules    ClassSchedule[]
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
+  discipline   Discipline @relation(fields: [disciplineId], references: [id])
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 }
 
 model ClassSchedule {
-  id           String   @id @default(uuid())
-  lessons      Lesson[]
-  day          Day
-  disciplineId String
-  initialHour  DateTime
-  finishHour   DateTime
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id          String   @id @default(uuid())
+  day         Day
+  classId     String
+  class       Class    @relation(fields: [classId], references: [id])
+  initialHour DateTime
+  finishHour  DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
 }
 

@@ -13,6 +13,8 @@ import { AdminModule } from './modules/admin/admin.module';
 import { ManagerModule } from './modules/manager/manager.module';
 import { TeacherModule } from './modules/teacher/teacher.module';
 import { RefreshTokenModule } from './modules/refresh-token/refreshToken.module';
+import { ClassModule } from './modules/class/class.module';
+import { ClassScheduleModule } from './modules/class-schedule/class-schedule.module';
 
 ConfigModule.forRoot();
 
@@ -28,6 +30,8 @@ ConfigModule.forRoot();
     SchoolModule,
     TeacherModule,
     RefreshTokenModule,
+    ClassModule,
+    ClassScheduleModule,
   ],
   controllers: [AppController],
   providers: [
