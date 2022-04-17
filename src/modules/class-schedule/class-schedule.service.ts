@@ -10,10 +10,10 @@ import { UpdateClassScheduleDto } from './dto/update-class-schedule.dto';
 export class ClassScheduleService {
   constructor(private prisma: PrismaService) {}
   async create(createClassScheduleDto: CreateClassScheduleDto) {
-    await this.prisma.classSchedule.create({
+    await this.prisma.disciplineSchedules.create({
       data: {
         day: 'monday',
-        classId: '4667fc77-17f9-455f-9d3e-036931c1eb6d',
+        disciplineId: '4667fc77-17f9-455f-9d3e-036931c1eb6d',
         initialHour: new Date('2022-05-01:08:30'),
         finishHour: new Date('2022-05-31:12:30'),
       },
@@ -32,7 +32,8 @@ export class ClassScheduleService {
     const dateDay = parse(day, 'yyyy-MM-dd', new Date());
     const weekDay = format(dateDay, 'EEEE', { locale: ptBR });
 
-    const response = await this.prisma.classSchedule.findMany({
+    const response = await this.prisma.disciplineSchedules.findMany({
+      include: { discipline: true },
       where: {
         day: Day[weekDay.toLowerCase()],
         initialHour: {

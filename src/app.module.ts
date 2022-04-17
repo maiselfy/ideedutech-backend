@@ -15,6 +15,8 @@ import { TeacherModule } from './modules/teacher/teacher.module';
 import { RefreshTokenModule } from './modules/refresh-token/refreshToken.module';
 import { ClassModule } from './modules/class/class.module';
 import { ClassScheduleModule } from './modules/class-schedule/class-schedule.module';
+import { DisciplineScheduleModule } from './modules/discipline-schedule/discipline-schedule.module';
+import { DisciplineModule } from './modules/discipline/discipline.module';
 
 ConfigModule.forRoot();
 
@@ -32,6 +34,8 @@ ConfigModule.forRoot();
     RefreshTokenModule,
     ClassModule,
     ClassScheduleModule,
+    DisciplineScheduleModule,
+    DisciplineModule,
   ],
   controllers: [AppController],
   providers: [

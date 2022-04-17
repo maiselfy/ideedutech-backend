@@ -25,11 +25,6 @@ export class ClassController {
     return this.classService.findAll();
   }
 
-  @Get(':teacherId')
-  findTeacherClasses(@Param('teacherId') teacherId: string) {
-    return this.classService.findTeacherClasses(teacherId);
-  }
-
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.classService.findOne(+id);
