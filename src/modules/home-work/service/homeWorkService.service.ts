@@ -1,13 +1,14 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma';
-import CreateHomeWorkDTO from '../dtos/createHomeWork.dto';
+import { HomeWork, Prisma } from '@prisma/client';
 
 @Injectable()
 export class HomeWorkService {
   constructor(private prisma: PrismaService) {}
-  async create(CreateHomeWorkDTO) {
-    const data = CreateHomeWorkDTO;
-    console.log('Data: ', data);
+
+  async create(createHomeWorkDTO) {
+    const data = createHomeWorkDTO;
+    console.log('Data CREATE: ', data);
 
     const createdHomeWork = await this.prisma.homeWork.create({
       data: {
@@ -18,7 +19,7 @@ export class HomeWorkService {
     return {
       data: createdHomeWork,
       status: HttpStatus.CREATED,
-      mensagem: 'Home Work cadastrada com sucesso',
+      message: 'Home Work Created.',
     };
   }
 }
