@@ -114,6 +114,27 @@ export class UserService {
         status: HttpStatus.CREATED,
         message: 'Professor cadastrado com sucesso.',
       };
+    } else if (userExistsOnWaitlist.role === 'student') {
+      const createdTeacher = await this.prisma.teacher.create({
+        data: {
+          status: true,
+          user: { connect: { id: createdUser.id } },
+          schools: { connect: { id: userExistsOnWaitlist.schoolId } },
+        },
+        include: { schools: true },
+      });
+
+      const response = {
+        ...createdUser,
+        ...createdTeacher,
+        password: undefined,
+      };
+
+      return {
+        data: response,
+        status: HttpStatus.CREATED,
+        message: 'Estudante cadastrado com sucesso.',
+      };
     } else {
       throw new HttpException(
         `Permissões insuficientes, não foi possível prosseguir com o cadastro tipo de usuário.`,
