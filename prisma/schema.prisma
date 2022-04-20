@@ -127,6 +127,7 @@ model Admin {
   status    Boolean
   userId    String   @unique
   user      User     @relation(fields: [userId], references: [id])
+  schools   School[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -142,17 +143,6 @@ model Parent {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 }
-
-// model ParentsOnStudent {
-//   student    Student  @relation(fields: [studentId], references: [id])
-//   studentId  String
-//   parent     Parent   @relation(fields: [parentId], references: [id])
-//   parentId   String
-//   assignedAt DateTime @default(now())
-//   assignedBy String
-
-//   @@id([studentId, parentId])
-// }
 
 model Teacher {
   id          String       @id @default(uuid())
@@ -178,34 +168,13 @@ model School {
   students  Student[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
+  Admin     Admin?     @relation(fields: [adminId], references: [id])
+  adminId   String?
 }
-
-// model ManagersOnSchool {
-//   manager    Manager  @relation(fields: [managerId], references: [id])
-//   managerId  String
-//   school     School   @relation(fields: [schoolId], references: [id])
-//   schoolId   String
-//   assignedAt DateTime @default(now())
-//   assignedBy String
-
-//   @@id([managerId, schoolId])
-// }
-
-// model TeachersOnSchool {
-//   teacher    Teacher  @relation(fields: [teacherId], references: [id])
-//   teacherId  String
-//   school     School   @relation(fields: [schoolId], references: [id])
-//   schoolId   String
-//   assignedAt DateTime @default(now())
-//   assignedBy String
-
-//   @@id([teacherId, schoolId])
-// }
 
 model Class {
   id          String       @id @default(uuid())
   name        String
-  teacherId   String
   schooldId   String
   school      School       @relation(fields: [schooldId], references: [id])
   disciplines Discipline[]
@@ -215,17 +184,16 @@ model Class {
 }
 
 model Discipline {
-  id        String     @id @default(uuid())
+  id        String                @id @default(uuid())
   name      String
-  teacher   Teacher    @relation(fields: [teacherId], references: [id])
+  teacher   Teacher               @relation(fields: [teacherId], references: [id])
   teacherId String
-  class     Class      @relation(fields: [classId], references: [id])
-  classId   String
-  topic     String
+  classes     Class[]
   lessons   Lesson[]
   homeWorks HomeWork[]
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  createdAt DateTime              @default(now())
+  updatedAt DateTime              @updatedAt
+  schedules DisciplineSchedules[]
 }
 
 model HomeWork {
@@ -257,38 +225,26 @@ model Submission {
 }
 
 model Lesson {
-  id           String          @id @default(uuid())
+  id           String     @id @default(uuid())
   name         String
   description  String
   disciplineId String
-  discipline   Discipline      @relation(fields: [disciplineId], references: [id])
-  schedules    ClassSchedule[]
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
+  discipline   Discipline @relation(fields: [disciplineId], references: [id])
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 }
 
-model ClassSchedule {
-  id           String   @id @default(uuid())
-  lessons      Lesson[]
+model DisciplineSchedules {
+  id           String     @id @default(uuid())
   day          Day
   disciplineId String
+  discipline   Discipline @relation(fields: [disciplineId], references: [id])
   initialHour  DateTime
   finishHour   DateTime
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 
 }
-
-// model SchedulesOnLesson {
-//   lesson     Lesson        @relation(fields: [lessonId], references: [id])
-//   lessonId   String
-//   schedule   ClassSchedule @relation(fields: [scheduleId], references: [id])
-//   scheduleId String
-//   assignedAt DateTime      @default(now())
-//   assignedBy String
-
-//   @@id([lessonId, scheduleId])
-// }
 
 model Address {
   id           String   @id @default(uuid())
@@ -301,8 +257,8 @@ model Address {
   zipCode      String
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-  school       School   @relation(fields: [schoolId], references: [id])
-  schoolId     String
-  user         User?     @relation(fields: [userId], references: [id])
+  school       School?  @relation(fields: [schoolId], references: [id])
+  schoolId     String?
+  user         User?    @relation(fields: [userId], references: [id])
   userId       String?
 }
