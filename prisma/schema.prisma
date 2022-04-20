@@ -177,7 +177,7 @@ model Class {
   name        String
   schooldId   String
   school      School       @relation(fields: [schooldId], references: [id])
-  disciplines Discipline[]
+  disciplines Discipline?
   students    Student[]
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
@@ -188,7 +188,8 @@ model Discipline {
   name      String
   teacher   Teacher               @relation(fields: [teacherId], references: [id])
   teacherId String
-  classes     Class[]
+  class     Class @relation(fields: [classId], references: [id])
+  classId   String
   lessons   Lesson[]
   homeWorks HomeWork[]
   createdAt DateTime              @default(now())
