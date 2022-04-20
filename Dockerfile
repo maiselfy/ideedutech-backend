@@ -1,4 +1,4 @@
-FROM node:14 AS builder
+FROM node:14.18.1 AS builder
 
 # Create app directory
 WORKDIR /app
@@ -12,10 +12,9 @@ RUN npm install
 
 COPY . .
 
-RUN npx prisma generate
-
 RUN npm run build
-FROM node:14
+
+FROM node:14.18.1
 
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package*.json ./
