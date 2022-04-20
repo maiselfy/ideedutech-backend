@@ -16,7 +16,7 @@ export default class CreateSubmissionDTO {
   duaDate: Date;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   attachement: string;
 
   @IsString()

@@ -16,7 +16,7 @@ export class DisciplineController {
   constructor(private readonly disciplineService: DisciplineService) {}
 
   @Post()
-  create(@Body() createDisciplineDTO: CreateDisciplineDTO) {
+  create(@Body() createDisciplineDTO) {
     return this.disciplineService.create(createDisciplineDTO);
   }
 

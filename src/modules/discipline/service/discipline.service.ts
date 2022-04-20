@@ -6,12 +6,12 @@ import { UpdateDisciplineDto } from '../dtos/updateDiscipline.dto';
 @Injectable()
 export class DisciplineService {
   constructor(private prisma: PrismaService) {}
-  async create({ name, teacherId, classes, schedules }: CreateDisciplineDTO) {
+  async create({ name, teacherId, classId, schedules }: CreateDisciplineDTO) {
     const createdDiscipline = await this.prisma.discipline.create({
       data: {
         name,
         teacher: { connect: { id: teacherId } },
-        classes: { connect: classes },
+        class: { connect: { id: classId } },
         schedules: { createMany: { data: schedules } },
       },
     });

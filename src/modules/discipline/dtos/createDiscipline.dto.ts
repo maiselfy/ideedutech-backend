@@ -17,9 +17,8 @@ export class CreateDisciplineDTO {
   @IsString()
   teacherId?: string;
 
-  @IsNotEmpty()
-  @IsArray()
-  classes?: { id: string }[];
+  @IsString()
+  classId?: string;
 
   @IsArray()
   @IsOptional()

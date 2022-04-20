@@ -5,7 +5,21 @@ import { PrismaService } from 'src/modules/prisma';
 export class SubmissionService {
   constructor(private prisma: PrismaService) {}
 
-  async create() {}
+  async create(createSubmissionDTO) {
+    const data = createSubmissionDTO;
+
+    const createdSubmission = await this.prisma.submission.create({
+      data: {
+        ...data,
+      },
+    });
+
+    return {
+      data: createdSubmission,
+      status: HttpStatus.CREATED,
+      message: 'Submission Created',
+    };
+  }
 
   async findAll() {}
 }
