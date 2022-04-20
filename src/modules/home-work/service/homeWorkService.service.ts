@@ -21,4 +21,8 @@ export class HomeWorkService {
       message: 'Home Work Created.',
     };
   }
+
+  async findAll() {
+    return this.prisma.homeWork.findMany();
+  }
 }

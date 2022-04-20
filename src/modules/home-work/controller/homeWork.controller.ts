@@ -19,4 +19,9 @@ export class HomeWorkController {
   create(@Body() createHomeWorkDTO) {
     return this.homeWorkService.create(createHomeWorkDTO);
   }
+
+  @Get()
+  findAll() {
+    return this.homeWorkService.findAll();
+  }
 }
