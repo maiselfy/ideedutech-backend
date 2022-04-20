@@ -16,8 +16,7 @@ export class HomeWorkController {
   constructor(private readonly homeWorkService: HomeWorkService) {}
 
   @Post()
-  @Public()
-  create(@Body() CreateHomeWorkDTO) {
-    return this.homeWorkService.create(CreateHomeWorkDTO);
+  create(@Body() createHomeWorkDTO) {
+    return this.homeWorkService.create(createHomeWorkDTO);
   }
 }

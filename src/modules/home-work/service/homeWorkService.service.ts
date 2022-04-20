@@ -8,7 +8,6 @@ export class HomeWorkService {
 
   async create(createHomeWorkDTO) {
     const data = createHomeWorkDTO;
-    console.log('Data CREATE: ', data);
 
     const createdHomeWork = await this.prisma.homeWork.create({
       data: {

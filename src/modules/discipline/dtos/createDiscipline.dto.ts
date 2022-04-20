@@ -12,6 +12,7 @@ export class CreateDisciplineDTO {
   @IsNotEmpty()
   @IsString()
   name: string;
+
   @IsNotEmpty()
   @IsString()
   teacherId?: string;

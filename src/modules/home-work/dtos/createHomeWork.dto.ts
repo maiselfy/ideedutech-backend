@@ -11,7 +11,7 @@ export default class CreateHomeWorkDTO {
 
   @IsString()
   @IsNotEmpty()
-  disciplineId: string;
+  disciplineId?: string;
 
   @IsNotEmpty()
   dueDate: Date;
