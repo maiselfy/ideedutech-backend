@@ -7,4 +7,4 @@ import { Module } from '@nestjs/common';
   controllers: [StudentController],
   providers: [StudentService, PrismaService],
 })
-export class StudenteModule {}
+export class StudentModule {}
