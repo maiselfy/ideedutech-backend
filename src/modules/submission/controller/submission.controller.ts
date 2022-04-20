@@ -20,5 +20,7 @@ export class SubmissionController {
   }
 
   @Get()
-  findAll() {}
+  findAll() {
+    return this.submissionService.findAll();
+  }
 }

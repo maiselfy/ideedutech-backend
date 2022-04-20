@@ -21,5 +21,7 @@ export class SubmissionService {
     };
   }
 
-  async findAll() {}
+  async findAll() {
+    return this.prisma.submission.findMany();
+  }
 }
