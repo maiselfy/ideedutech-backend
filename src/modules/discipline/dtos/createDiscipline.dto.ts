@@ -8,7 +8,7 @@ import {
   IsString,
 } from 'class-validator';
 
-export class CreateDisciplineDto {
+export class CreateDisciplineDTO {
   @IsNotEmpty()
   @IsString()
   name: string;

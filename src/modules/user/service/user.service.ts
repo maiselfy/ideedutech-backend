@@ -48,7 +48,7 @@ export class UserService {
       },
     });
 
-    console.log(createdUser.id);
+    console.log('createdUser.id: ', createdUser.id);
 
     if (userExistsOnWaitlist.role === 'admin') {
       const createdAdmin = await this.prisma.admin.create({

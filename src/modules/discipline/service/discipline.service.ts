@@ -1,13 +1,13 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma';
-import { CreateDisciplineDto } from './dto/create-discipline.dto';
-import { UpdateDisciplineDto } from './dto/update-discipline.dto';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { PrismaService } from '../../prisma';
+import { CreateDisciplineDTO } from '../dtos/createDiscipline.dto';
+import { UpdateDisciplineDto } from '../dtos/updateDiscipline.dto';
 
 @Injectable()
 export class DisciplineService {
   constructor(private prisma: PrismaService) {}
-  async create({ name, classes, teacherId, schedules }: CreateDisciplineDto) {
-    const response = await this.prisma.discipline.create({
+  async create({ name, teacherId, classes, schedules }: CreateDisciplineDTO) {
+    const createdDiscipline = await this.prisma.discipline.create({
       data: {
         name,
         teacher: { connect: { id: teacherId } },
@@ -15,7 +15,12 @@ export class DisciplineService {
         schedules: { createMany: { data: schedules } },
       },
     });
-    return response;
+
+    return {
+      data: createdDiscipline,
+      status: HttpStatus.CREATED,
+      message: 'Disciplina cadastrada com sucesso.',
+    };
   }
 
   async findAll() {

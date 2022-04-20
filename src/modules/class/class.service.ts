@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { ClassScheduleService } from '../class-schedule/class-schedule.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateClassDto } from './dto/create-class.dto';
 import { UpdateClassDto } from './dto/update-class.dto';

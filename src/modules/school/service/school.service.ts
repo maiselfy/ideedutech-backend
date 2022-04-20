@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Exclude } from 'class-transformer';
 import { PrismaService } from 'src/modules/prisma';
+import { Exclude } from 'class-transformer';
 import CreateSchoolDTO from '../dtos/createSchool.dto';
 
 @Injectable()
@@ -45,8 +45,6 @@ export class SchoolService {
         _count: { select: { managers: true, teachers: true, students: true } },
       },
     });
-
-    console.log(schools);
 
     if (schools) {
       throw new HttpException(

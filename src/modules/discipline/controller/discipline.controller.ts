@@ -7,17 +7,17 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { DisciplineService } from './discipline.service';
-import { CreateDisciplineDto } from './dto/create-discipline.dto';
-import { UpdateDisciplineDto } from './dto/update-discipline.dto';
+import { DisciplineService } from '../service/discipline.service';
+import { CreateDisciplineDTO } from '../dtos/createDiscipline.dto';
+import { UpdateDisciplineDto } from '../dtos/updateDiscipline.dto';
 
 @Controller('discipline')
 export class DisciplineController {
   constructor(private readonly disciplineService: DisciplineService) {}
 
   @Post()
-  create(@Body() createDisciplineDto: CreateDisciplineDto) {
-    return this.disciplineService.create(createDisciplineDto);
+  create(@Body() createDisciplineDTO: CreateDisciplineDTO) {
+    return this.disciplineService.create(createDisciplineDTO);
   }
 
   @Get()
