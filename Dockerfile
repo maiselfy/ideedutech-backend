@@ -1,24 +1,22 @@
-FROM node:14.18.1 AS builder
+FROM node:lts
 
-# Create app directory
-WORKDIR /app
+# this step is just for run containers on Mac M1 Silicon chip
+# if this is not your case, don't run the follow commands belloe
+# RUN apk add --update --no-cache make gcc libsass g++
+# RUN apk add --update --no-cache python3 && ln -sf python3 /usr/bin/python
+# RUN apk add --update --no-cache alpine-sdk openssl-dev
+# RUN python3 -m ensurepip
+# RUN pip3 install --no-cache --upgrade pip setuptools
+RUN apt-get -qy update && apt-get -qy install openssl
 
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-COPY package*.json ./
-COPY prisma ./prisma/
+EXPOSE 3333
 
-# Install app dependencies
+WORKDIR /api
+ENV PATH /app/node_modules/.bin:$PATH
+
+COPY . /api
+
 RUN npm install
-
-COPY . .
-
 RUN npm run build
-
-FROM node:14.18.1
-
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/dist ./dist
-
-EXPOSE 3000
-CMD [ "npm", "run", "start:prod" ]
+RUN npx prisma generate
+CMD ["npm", "run","start:prod"]

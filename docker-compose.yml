@@ -1,38 +1,13 @@
-version: '3.7'
+version: "3.9"
+
 services:
-    ideedutech-backend:
-        container_name: ideedutech-backend
-        build:
-          context: .
-          dockerfile: Dockerfile
-        ports:
-          - 3000:3000
-        links: 
-          - postgres
-        networks: 
-          - ideedutech-backend
-        depends_on:
-          - postgres
-        env_file:
-          - .env
- 
-    postgres:
-      image: postgres:13
-      container_name: postgres
-      restart: always
-      ports:
-        - 5432:5432
-      env_file:
-        - .env
-      volumes:
-        - postgres:/var/lib/postgresql/data
-      networks:
-        - ideedutech-backend 
-
-volumes:
-  postgres:
-    name: nest-db
-
-networks:
-  ideedutech-backend:
-    driver: bridge
+  db:
+    container_name: "minharola"
+    image: postgres
+    environment:
+      POSTGRES_USER: "admin"
+      POSTGRES_PASSWORD: "admin"
+      POSTGRES_DB: "ideedutec"
+    ports: 
+      - "5432:5432"
+  
