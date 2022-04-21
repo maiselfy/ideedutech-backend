@@ -1,11 +1,16 @@
-import { IsEmpty, IsNotEmpty } from 'class-validator';
+import { Period } from '@prisma/client';
+import { IsEmpty, IsNotEmpty, IsString } from 'class-validator';
 
 export default class CreatePlanEducationDTO {
   @IsNotEmpty()
-  status: boolean;
+  @IsString()
+  schoolYear: string;
 
   @IsNotEmpty()
-  userId: string;
+  @IsString()
+  discipline: string;
+
+  periods: Period[];
 
   @IsEmpty()
   createdAt: Date;

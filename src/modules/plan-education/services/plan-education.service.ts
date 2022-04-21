@@ -1,19 +1,74 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { PrismaService } from 'src/modules/prisma';
 import CreatePlanEducationDTO from '../dtos/createPlan-education.dto';
 
 @Injectable()
 export class PlanEducationService {
-  create(createPlanEducationDTO: CreatePlanEducationDTO) {
-    return 'This action adds a new planEducation';
+  constructor(private prisma: PrismaService) {}
+  async create(createPlanEducationDTO: CreatePlanEducationDTO) {
+    const data = createPlanEducationDTO;
+    console.log(data);
+
+    const createdPlanEducation = await this.prisma.planEducation.create({
+      data: data,
+    });
+
+    return {
+      data: createdPlanEducation,
+      status: HttpStatus.CREATED,
+      message: 'Plano de ensino cadastrado com sucesso.',
+    };
   }
 
-  // findAll() {
-  //   return `This action returns all planEducation`;
-  // }
+  async findAll() {
+    return {
+      data: await this.prisma.planEducation.findMany(),
+      status: HttpStatus.OK,
+      message: 'Planos de ensino retornados com sucesso.',
+    };
+  }
 
-  // findOne(id: number) {
-  //   return `This action returns a #${id} planEducation`;
-  // }
+  async findOneById(id: string) {
+    const planEducation = await this.prisma.planEducation.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!planEducation) {
+      throw new HttpException(
+        'Esse plano de ensino não está registrado em nossa base de dados. Tente novamente',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return {
+      data: planEducation,
+      status: HttpStatus.OK,
+      message: 'Plano de ensino retornado com sucesso.',
+    };
+  }
+
+  async findOneByDiscipline(disciplineId: string) {
+    const planEducation = await this.prisma.planEducation.findFirst({
+      where: {
+        disciplineId,
+      },
+    });
+
+    if (!planEducation) {
+      throw new HttpException(
+        'Esse plano de ensino não está registrado em nossa base de dados. Tente novamente',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return {
+      data: planEducation,
+      status: HttpStatus.OK,
+      message: 'Plano de ensino retornado com sucesso.',
+    };
+  }
 
   // update(id: number, updatePlanEducationDto: UpdatePlanEducationDto) {
   //   return `This action updates a #${id} planEducation`;

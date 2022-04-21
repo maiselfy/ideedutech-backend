@@ -19,15 +19,20 @@ export class PlanEducationController {
     return this.planEducationService.create(createPlanEducationDTO);
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.planEducationService.findAll();
-  // }
+  @Get()
+  findAll() {
+    return this.planEducationService.findAll();
+  }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.planEducationService.findOne(+id);
-  // }
+  @Get(':id')
+  findOneById(@Param('id') id: string) {
+    return this.planEducationService.findOneById(id);
+  }
+
+  @Get('discipline/:disciplineId')
+  findOneByDiscipline(@Param('disciplineId') disciplineId: string) {
+    return this.planEducationService.findOneByDiscipline(disciplineId);
+  }
 
   // @Patch(':id')
   // update(
