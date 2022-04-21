@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Exclude } from 'class-transformer';
 import { PrismaService } from 'src/modules/prisma';
+import { Exclude } from 'class-transformer';
 import CreateSchoolDTO from '../dtos/createSchool.dto';
 
 @Injectable()
@@ -8,7 +8,6 @@ export class SchoolService {
   constructor(private prisma: PrismaService) {}
   async create(createSchoolDTO) {
     const data = createSchoolDTO;
-    console.log(data);
 
     const createdSchool = await this.prisma.school.create({
       data: {
@@ -30,11 +29,29 @@ export class SchoolService {
   }
 
   async findAll() {
-    const schools = await this.prisma.school.findMany();
+    const schools = await this.prisma.school.findMany({
+      include: {
+        address: {
+          select: {
+            city: true,
+            area: true,
+            createdAt: true,
+            number: true,
+            labelAddress: true,
+            uf: true,
+            street: true,
+          },
+        },
+        _count: { select: { managers: true, teachers: true, students: true } },
+      },
+    });
 
-    if (!schools) {
+    if (schools) {
       throw new HttpException(
-        'Não existem escolas registradas em nossa base de dados.',
+        {
+          error: 'Não existem escolas registradas em nossa base de dados.',
+          code: 'Teste',
+        },
         HttpStatus.NOT_FOUND,
       );
     }
