@@ -8,7 +8,7 @@ export default class CreatePlanEducationDTO {
 
   @IsNotEmpty()
   @IsString()
-  discipline: string;
+  disciplineId: string;
 
   periods: Period[];
 

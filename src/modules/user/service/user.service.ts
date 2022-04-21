@@ -55,9 +55,7 @@ export class UserService {
         data: {
           status: true,
           userId: createdUser.id,
-          schools: { connect: { id: userExistsOnWaitlist.schoolId } },
         },
-        include: { schools: true },
       });
 
       const response = {

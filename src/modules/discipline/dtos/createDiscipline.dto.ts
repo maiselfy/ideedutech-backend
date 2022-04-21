@@ -13,12 +13,15 @@ export class CreateDisciplineDTO {
   @IsString()
   name: string;
 
-  @IsNotEmpty()
   @IsString()
   teacherId?: string;
 
   @IsString()
   classId?: string;
+
+  @IsNotEmpty()
+  @IsString()
+  topic: string;
 
   @IsArray()
   @IsOptional()

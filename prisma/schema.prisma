@@ -106,7 +106,6 @@ model Student {
   classId           String
   entryForm         String
   reasonForTransfer String?
-  parents           Parent[]
   userId            String   @unique
   user              User     @relation(fields: [userId], references: [id])
   createdAt         DateTime @default(now())
@@ -128,32 +127,8 @@ model Admin {
   status    Boolean
   userId    String   @unique
   user      User     @relation(fields: [userId], references: [id])
-  schools   School[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-}
-
-model Parent {
-  id        String    @id @default(uuid())
-  name      String
-  kinship   String
-  studentId String
-  contact   String
-  addressId String
-  students  Student[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-}
-
-model ParentsOnStudent {
-  student    Student  @relation(fields: [studentId], references: [id])
-  studentId  String
-  parent     Parent   @relation(fields: [parentId], references: [id])
-  parentId   String
-  assignedAt DateTime @default(now())
-  assignedBy String
-
-  @@id([studentId, parentId])
 }
 
 model Teacher {
@@ -168,30 +143,20 @@ model Teacher {
 }
 
 model School {
-  id        String     @id @default(uuid())
+  id        String         @id @default(uuid())
   name      String
   phone     String
+  inep      String?
+  email     String        
   address   Address[]
-  cnpj      String?    @unique
+  cnpj      String?       @unique
   classes   Class[]
   waitist   WaitList[]
   teachers  Teacher[]
   managers  Manager[]
   students  Student[]
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-}
-
-model Class {
-  id            String          @id @default(uuid())
-  name          String
-  teacherId     String
-  schooldId     String
-  school        School          @relation(fields: [schooldId], references: [id])
-  disciplines   Discipline[]
-  students      Student[]
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
 }
 
 model Discipline {
@@ -205,10 +170,9 @@ model Discipline {
   lessons   Lesson[]
   homeWorks HomeWork[]
   planEducation PlanEducation[]
+  schedules DisciplineSchedules[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
-  Admin     Admin?     @relation(fields: [adminId], references: [id])
-  adminId   String?
 }
 
 model Class {
@@ -220,20 +184,6 @@ model Class {
   students    Student[]
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
-}
-
-model Discipline {
-  id        String                @id @default(uuid())
-  name      String
-  teacher   Teacher               @relation(fields: [teacherId], references: [id])
-  teacherId String
-  class     Class                 @relation(fields: [classId], references: [id])
-  classId   String
-  lessons   Lesson[]
-  homeWorks HomeWork[]
-  createdAt DateTime              @default(now())
-  updatedAt DateTime              @updatedAt
-  schedules DisciplineSchedules[]
 }
 
 model HomeWork {
@@ -291,29 +241,6 @@ model Content {
   subContent String
   Period     Period @relation(fields: [periodId], references: [id])
   periodId   String
-}
-
-model Lesson {
-  id           String          @id @default(uuid())
-  name         String
-  description  String
-  disciplineId String
-  discipline   Discipline      @relation(fields: [disciplineId], references: [id])
-  schedules    ClassSchedule[]
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
-}
-
-model ClassSchedule {
-  id           String   @id @default(uuid())
-  lessons      Lesson[]
-  day          Day
-  disciplineId String
-  initialHour  DateTime
-  finishHour   DateTime
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
 }
 
 model Lesson {

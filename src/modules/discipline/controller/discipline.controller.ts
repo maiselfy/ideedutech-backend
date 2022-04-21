@@ -30,18 +30,18 @@ export class DisciplineController {
     return this.disciplineService.findTeacherDisciplines(id);
   }
 
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateDisciplineDto: UpdateDisciplineDto,
-  ) {
-    return this.disciplineService.update(+id, updateDisciplineDto);
-  }
+  // @Patch(':id')
+  // update(
+  //   @Param('id') id: string,
+  //   @Body() updateDisciplineDto: UpdateDisciplineDto,
+  // ) {
+  //   return this.disciplineService.update(+id, updateDisciplineDto);
+  // }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.disciplineService.remove(+id);
-  }
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.disciplineService.remove(+id);
+  // }
 
   @Get(':teacherId')
   findTeacherDisciplines(@Param('teacherId') teacherId: string) {
