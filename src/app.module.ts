@@ -15,10 +15,12 @@ import { AdminModule } from './modules/admin/admin.module';
 import { ManagerModule } from './modules/manager/manager.module';
 import { TeacherModule } from './modules/teacher/teacher.module';
 import { RefreshTokenModule } from './modules/refresh-token/refreshToken.module';
+import { PlanEducationModule } from './modules/plan-education/plan-education.module';
 import { HomeWorkModule } from './modules/home-work/homeWork.module';
 import { ClassModule } from './modules/class/class.module';
 import { DisciplineScheduleModule } from './modules/discipline-schedule/discipline-schedule.module';
 import { DisciplineModule } from './modules/discipline/discipline.module';
+
 
 ConfigModule.forRoot();
 
@@ -37,6 +39,7 @@ ConfigModule.forRoot();
     SubmissionModule,
     TeacherModule,
     RefreshTokenModule,
+    PlanEducationModule,
     ClassModule,
     DisciplineScheduleModule,
     DisciplineModule,

@@ -145,6 +145,17 @@ model Parent {
   updatedAt DateTime  @updatedAt
 }
 
+model ParentsOnStudent {
+  student    Student  @relation(fields: [studentId], references: [id])
+  studentId  String
+  parent     Parent   @relation(fields: [parentId], references: [id])
+  parentId   String
+  assignedAt DateTime @default(now())
+  assignedBy String
+
+  @@id([studentId, parentId])
+}
+
 model Teacher {
   id          String       @id @default(uuid())
   schools     School[]
@@ -167,6 +178,33 @@ model School {
   teachers  Teacher[]
   managers  Manager[]
   students  Student[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model Class {
+  id            String          @id @default(uuid())
+  name          String
+  teacherId     String
+  schooldId     String
+  school        School          @relation(fields: [schooldId], references: [id])
+  disciplines   Discipline[]
+  students      Student[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+}
+
+model Discipline {
+  id        String     @id @default(uuid())
+  name      String
+  teacher   Teacher    @relation(fields: [teacherId], references: [id])
+  teacherId String
+  class     Class      @relation(fields: [classId], references: [id])
+  classId   String
+  topic     String
+  lessons   Lesson[]
+  homeWorks HomeWork[]
+  planEducation PlanEducation[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   Admin     Admin?     @relation(fields: [adminId], references: [id])
@@ -224,6 +262,58 @@ model Submission {
   stage       StageSubmission?
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
+}
+
+model PlanEducation {
+  id           String   @id @default(uuid())
+  schoolYear   String
+  disciplineId String
+  discipline   Discipline      @relation(fields: [disciplineId], references: [id])
+  periods      Period[]
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+}
+
+model Period {
+  id              String         @id @default(uuid())
+  contents        Content[]
+  PlanEducation   PlanEducation @relation(fields: [planEducationId], references: [id])
+  planEducationId String
+  startOfPeriod   DateTime
+  endOfPeriod     DateTime
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+model Content {
+  id         String  @id @default(uuid())
+  name       String
+  subContent String
+  Period     Period @relation(fields: [periodId], references: [id])
+  periodId   String
+}
+
+model Lesson {
+  id           String          @id @default(uuid())
+  name         String
+  description  String
+  disciplineId String
+  discipline   Discipline      @relation(fields: [disciplineId], references: [id])
+  schedules    ClassSchedule[]
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+}
+
+model ClassSchedule {
+  id           String   @id @default(uuid())
+  lessons      Lesson[]
+  day          Day
+  disciplineId String
+  initialHour  DateTime
+  finishHour   DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
 }
 
 model Lesson {
