@@ -1,3 +1,5 @@
+import { SubmissionModule } from './modules/submission/submission.module';
+import { StudentModule } from './modules/student/student.module';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -13,6 +15,10 @@ import { AdminModule } from './modules/admin/admin.module';
 import { ManagerModule } from './modules/manager/manager.module';
 import { TeacherModule } from './modules/teacher/teacher.module';
 import { RefreshTokenModule } from './modules/refresh-token/refreshToken.module';
+import { HomeWorkModule } from './modules/home-work/homeWork.module';
+import { ClassModule } from './modules/class/class.module';
+import { DisciplineScheduleModule } from './modules/discipline-schedule/discipline-schedule.module';
+import { DisciplineModule } from './modules/discipline/discipline.module';
 
 ConfigModule.forRoot();
 
@@ -26,8 +32,14 @@ ConfigModule.forRoot();
     ManagerModule,
     WaitlistModule,
     SchoolModule,
+    HomeWorkModule,
+    StudentModule,
+    SubmissionModule,
     TeacherModule,
     RefreshTokenModule,
+    ClassModule,
+    DisciplineScheduleModule,
+    DisciplineModule,
   ],
   controllers: [AppController],
   providers: [
