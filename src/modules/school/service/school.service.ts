@@ -46,7 +46,7 @@ export class SchoolService {
       },
     });
 
-    if (schools) {
+    if (!schools) {
       throw new HttpException(
         {
           error: 'Não existem escolas registradas em nossa base de dados.',

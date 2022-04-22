@@ -18,7 +18,7 @@ export class UserService {
       where: { value: email },
     });
 
-    console.log(userExistsOnWaitlist);
+    console.log(1, userExistsOnWaitlist);
 
     if (!userExistsOnWaitlist) {
       throw new HttpException(
@@ -34,7 +34,7 @@ export class UserService {
       birthDate: new Date(createUserDto.birthDate),
       type: userExistsOnWaitlist.role,
     };
-    console.log(newData);
+    console.log(2, newData);
 
     const createdUser = await this.prisma.user.create({
       data: {

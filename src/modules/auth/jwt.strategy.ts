@@ -4,6 +4,9 @@ import { Injectable } from '@nestjs/common';
 import { UserPayload } from './models/UserPayload';
 import { UserFromJWT } from './models/UserFromJWT';
 
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
