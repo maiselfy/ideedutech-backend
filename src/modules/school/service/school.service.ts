@@ -63,9 +63,49 @@ export class SchoolService {
     };
   }
 
-  // findOne(id: number) {
-  //   return `This action returns a #${id} school`;
-  // }
+  async findSchoolsByManagerId(id: string) {
+    const schools = await this.prisma.school.findMany({
+      where: { managers: { some: { userId: { equals: id } } } },
+    });
+
+    if (!schools) {
+      throw new HttpException(
+        {
+          error: 'Não existem escolas registradas em nossa base de dados.',
+          code: 'Teste',
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return {
+      data: schools,
+      status: HttpStatus.OK,
+      message: 'Escolas retornadas com sucesso.',
+    };
+  }
+
+  async findSchoolById(id: string, userId: string) {
+    const schools = await this.prisma.school.findMany({
+      where: { id: id, managers: { some: { userId: { equals: userId } } } },
+    });
+
+    if (!schools) {
+      throw new HttpException(
+        {
+          error: 'Não existem escolas registradas em nossa base de dados.',
+          code: 'Teste',
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return {
+      data: schools,
+      status: HttpStatus.OK,
+      message: 'Escolas retornadas com sucesso.',
+    };
+  }
 
   // update(id: number, updateSchoolDto: UpdateSchoolDto) {
   //   return `This action updates a #${id} school`;
