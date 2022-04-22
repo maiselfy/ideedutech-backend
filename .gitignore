@@ -37,4 +37,3 @@ lerna-debug.log*
 # Archives of project
 
 .docker 
-.env
