@@ -17,6 +17,7 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "js/ts.implicitProjectConfig.experimentalDecorators": true
   }
 }
