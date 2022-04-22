@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
+import ListEntitiesForSchoolDTO from '../student/dtos/listEntitiesForSchool.dto';
 import { ClassService } from './class.service';
 import { CreateClassDto } from './dto/create-class.dto';
 import { UpdateClassDto } from './dto/update-class.dto';
@@ -20,23 +21,30 @@ export class ClassController {
     return this.classService.create(createClassDto);
   }
 
-  @Get()
-  findAll() {
-    return this.classService.findAll();
+  @Get('/list')
+  findClassesBySchool(
+    @Body() { schoolId, managerId }: ListEntitiesForSchoolDTO,
+  ) {
+    //return this.classService.findBySchool({ schoolId, managerId });
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.classService.findOne(+id);
-  }
+  // @Get()
+  // findAll() {
+  //   return this.classService.findAll();
+  // }
 
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updateClassDto: UpdateClassDto) {
-    return this.classService.update(id, updateClassDto);
-  }
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.classService.findOne(+id);
+  // }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.classService.remove(+id);
-  }
+  // @Put(':id')
+  // update(@Param('id') id: string, @Body() updateClassDto: UpdateClassDto) {
+  //   return this.classService.update(id, updateClassDto);
+  // }
+
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.classService.remove(+id);
+  // }
 }

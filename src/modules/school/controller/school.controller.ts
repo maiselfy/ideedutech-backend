@@ -23,10 +23,10 @@ export class SchoolController {
   }
 
   @Get()
-  @Public()
-  findAll() {
-    return this.schoolService.findAll();
+  findAll(managerId: string) {
+    return this.schoolService.findAll(managerId);
   }
+
   @Get('/:id')
   findSchoolById(@User() user, @Param('id') id: string) {
     return this.schoolService.findSchoolById(id, user.id);
