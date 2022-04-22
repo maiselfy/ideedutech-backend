@@ -25,6 +25,37 @@ export class ClassService {
     return `This action returns a #${id} class`;
   }
 
+  async findBySchool(schoolId: string, managerId: string) {
+    const currentManager = await this.prisma.manager.findOne({
+      id: managerId,
+      schoolId: schoolId,
+    });
+
+    if (!currentManager) {
+      throw new HttpException(
+        'Acesso negado. O gestor não está cadastrado a esta escola.',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+    const classes = await this.prisma.class.findMany({
+      where: { schoolId },
+    });
+
+    if (!classes) {
+      throw new HttpException(
+        'Não existem turmas cadastradas para essa escola',
+        HttpStatus.BAD_GATEWAY,
+      );
+    }
+
+    return {
+      data: classes,
+      status: HttpStatus.OK,
+      message: 'Turmas retornados com sucesso.',
+    };
+  }
+
   async update(id: string, updateClassDto: UpdateClassDto) {
     // const response = await this.prisma.class.update({
     //   where: { id },

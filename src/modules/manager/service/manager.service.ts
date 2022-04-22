@@ -19,6 +19,37 @@ export class ManagerService {
     };
   }
 
+  async findBySchool(schoolId: string, managerId: string) {
+    const currentManager = await this.prisma.manager.findOne({
+      id: managerId,
+      schoolId: schoolId,
+    });
+
+    if (!currentManager) {
+      throw new HttpException(
+        'Acesso negado. O gestor não está cadastrado a esta escola.',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+    const managers = await this.prisma.manager.findMany({
+      where: { schoolId },
+    });
+
+    if (!managers) {
+      throw new HttpException(
+        'Não existem gestores cadastrados para essa escola',
+        HttpStatus.BAD_GATEWAY,
+      );
+    }
+
+    return {
+      data: managers,
+      status: HttpStatus.OK,
+      message: 'Gestores retornados com sucesso.',
+    };
+  }
+
   // findAll() {
   //   return `This action returns all manager`;
   // }
