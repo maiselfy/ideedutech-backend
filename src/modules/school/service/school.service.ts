@@ -42,31 +42,56 @@ export class SchoolService {
       );
     }
 
-    const schools = await this.prisma.school.findMany({
-      where: {
-        managers: {
-          some: {
-            userId: {
-              equals: managerId,
+    const schools = await this.prisma.manager.findFirst({
+      select: {
+        schools: {
+          include: {
+            address: {
+              select: {
+                city: true,
+                area: true,
+                createdAt: true,
+                number: true,
+                labelAddress: true,
+                uf: true,
+                street: true,
+              },
+            },
+            _count: {
+              select: { managers: true, teachers: true, students: true },
             },
           },
         },
       },
-      include: {
-        address: {
-          select: {
-            city: true,
-            area: true,
-            createdAt: true,
-            number: true,
-            labelAddress: true,
-            uf: true,
-            street: true,
-          },
-        },
-        _count: { select: { managers: true, teachers: true, students: true } },
-      },
+      where: { userId: managerId },
     });
+    console.log(schools);
+
+    // const schools = await this.prisma.school.findMany({
+    //   where: {
+    //     managers: {
+    //       some: {
+    //         userId: {
+    //           equals: managerId,
+    //         },
+    //       },
+    //     },
+    //   },
+    //   include: {
+    //     address: {
+    //       select: {
+    //         city: true,
+    //         area: true,
+    //         createdAt: true,
+    //         number: true,
+    //         labelAddress: true,
+    //         uf: true,
+    //         street: true,
+    //       },
+    //     },
+    //     _count: { select: { managers: true, teachers: true, students: true } },
+    //   },
+    // });
 
     if (!schools) {
       throw new HttpException(

@@ -23,8 +23,8 @@ export class SchoolController {
   }
 
   @Get()
-  findAll(managerId: string) {
-    return this.schoolService.findAll(managerId);
+  findAll(@User() user) {
+    return this.schoolService.findAll(user.id);
   }
 
   @Get('/:id')
