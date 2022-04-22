@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { Public } from 'src/modules/auth/decorators/public.decorator';
 import ListEntitiesForSchoolDTO from 'src/modules/student/dtos/listEntitiesForSchool.dto';
+import { User } from 'src/modules/user/decorators/user.decorator';
 import { CreateManagerDTO } from '../dtos/createManager.dto';
 import { ManagerService } from '../service/manager.service';
 
@@ -22,10 +23,9 @@ export class ManagerController {
     return this.managerService.create(createManagerDto);
   }
 
-  @Get('/list')
-  findManagersBySchool(
-    @Body() { schoolId, managerId }: ListEntitiesForSchoolDTO,
-  ) {
+  @Get('/managers/:schoolId')
+  findManagersBySchool(@User() user, @Param('schoolId') schoolId: string) {
+    const managerId = user.id;
     return this.managerService.findBySchool({ schoolId, managerId });
   }
 

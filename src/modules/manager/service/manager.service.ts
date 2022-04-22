@@ -23,7 +23,7 @@ export class ManagerService {
   async findBySchool({ schoolId, managerId }: ListEntitiesForSchoolDTO) {
     const currentManager = await this.prisma.manager.findFirst({
       where: {
-        id: managerId,
+        userId: managerId,
         schools: {
           some: {
             id: {
