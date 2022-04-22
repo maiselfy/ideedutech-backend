@@ -8,6 +8,7 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
+import ListEntitiesForSchoolDTO from '../dtos/listEntitiesForSchool.dto';
 
 @Controller('student')
 export class StudentController {
@@ -18,4 +19,11 @@ export class StudentController {
 
   @Get()
   findAll() {}
+
+  @Get('/list')
+  findStudentsBySchool(
+    @Body() { schoolId, managerId }: ListEntitiesForSchoolDTO,
+  ) {
+    return this.studentService.findBySchool(schoolId, managerId);
+  }
 }

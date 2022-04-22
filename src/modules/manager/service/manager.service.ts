@@ -1,5 +1,6 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma';
+import ListEntitiesForSchoolDTO from 'src/modules/student/dtos/listEntitiesForSchool.dto';
 import { CreateManagerDTO } from '../dtos/createManager.dto';
 
 @Injectable()
@@ -19,7 +20,7 @@ export class ManagerService {
     };
   }
 
-  async findBySchool(schoolId: string, managerId: string) {
+  async findBySchool({ schoolId, managerId }: ListEntitiesForSchoolDTO) {
     const currentManager = await this.prisma.manager.findOne({
       id: managerId,
       schoolId: schoolId,

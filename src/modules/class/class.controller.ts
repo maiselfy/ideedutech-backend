@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
+import ListEntitiesForSchoolDTO from '../student/dtos/listEntitiesForSchool.dto';
 import { ClassService } from './class.service';
 import { CreateClassDto } from './dto/create-class.dto';
 import { UpdateClassDto } from './dto/update-class.dto';
@@ -18,6 +19,13 @@ export class ClassController {
   @Post()
   create(@Body() createClassDto: CreateClassDto) {
     return this.classService.create(createClassDto);
+  }
+
+  @Get('/list')
+  findClassesBySchool(
+    @Body() { schoolId, managerId }: ListEntitiesForSchoolDTO,
+  ) {
+    return this.classService.findBySchool({ schoolId, managerId });
   }
 
   @Get()

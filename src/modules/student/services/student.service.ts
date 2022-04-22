@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma';
+import ListEntitiesForSchoolDTO from '../dtos/listEntitiesForSchool.dto';
 
 @Injectable()
 export class StudentService {
@@ -9,7 +10,7 @@ export class StudentService {
 
   async findAll() {}
 
-  async findBySchool(schoolId: string, managerId: string) {
+  async findBySchool({ schoolId, managerId }: ListEntitiesForSchoolDTO) {
     const currentManager = await this.prisma.manager.findOne({
       id: managerId,
       schoolId: schoolId,

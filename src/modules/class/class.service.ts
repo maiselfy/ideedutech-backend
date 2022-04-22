@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import ListEntitiesForSchoolDTO from '../student/dtos/listEntitiesForSchool.dto';
 import { CreateClassDto } from './dto/create-class.dto';
 import { UpdateClassDto } from './dto/update-class.dto';
 
@@ -25,10 +26,12 @@ export class ClassService {
     return `This action returns a #${id} class`;
   }
 
-  async findBySchool(schoolId: string, managerId: string) {
-    const currentManager = await this.prisma.manager.findOne({
-      id: managerId,
-      schoolId: schoolId,
+  async findBySchool({ schoolId, managerId }: ListEntitiesForSchoolDTO) {
+    const currentManager = await this.prisma.class.findFirst({
+      where: {
+        managerId,
+        schoolId,
+      },
     });
 
     if (!currentManager) {

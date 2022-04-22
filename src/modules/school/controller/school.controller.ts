@@ -27,6 +27,7 @@ export class SchoolController {
   findAll() {
     return this.schoolService.findAll();
   }
+
   @Get('/:id')
   findSchoolById(@User() user, @Param('id') id: string) {
     return this.schoolService.findSchoolById(id, user.id);
