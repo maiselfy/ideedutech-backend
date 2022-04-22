@@ -25,26 +25,26 @@ export class ClassController {
   findClassesBySchool(
     @Body() { schoolId, managerId }: ListEntitiesForSchoolDTO,
   ) {
-    return this.classService.findBySchool({ schoolId, managerId });
+    //return this.classService.findBySchool({ schoolId, managerId });
   }
 
-  @Get()
-  findAll() {
-    return this.classService.findAll();
-  }
+  // @Get()
+  // findAll() {
+  //   return this.classService.findAll();
+  // }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.classService.findOne(+id);
-  }
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.classService.findOne(+id);
+  // }
 
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updateClassDto: UpdateClassDto) {
-    return this.classService.update(id, updateClassDto);
-  }
+  // @Put(':id')
+  // update(@Param('id') id: string, @Body() updateClassDto: UpdateClassDto) {
+  //   return this.classService.update(id, updateClassDto);
+  // }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.classService.remove(+id);
-  }
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.classService.remove(+id);
+  // }
 }

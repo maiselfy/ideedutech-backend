@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma';
 import ListEntitiesForSchoolDTO from 'src/modules/student/dtos/listEntitiesForSchool.dto';
 import { CreateManagerDTO } from '../dtos/createManager.dto';
@@ -21,9 +21,17 @@ export class ManagerService {
   }
 
   async findBySchool({ schoolId, managerId }: ListEntitiesForSchoolDTO) {
-    const currentManager = await this.prisma.manager.findOne({
-      id: managerId,
-      schoolId: schoolId,
+    const currentManager = await this.prisma.manager.findFirst({
+      where: {
+        id: managerId,
+        schools: {
+          some: {
+            id: {
+              equals: schoolId,
+            },
+          },
+        },
+      },
     });
 
     if (!currentManager) {
@@ -34,7 +42,15 @@ export class ManagerService {
     }
 
     const managers = await this.prisma.manager.findMany({
-      where: { schoolId },
+      where: {
+        schools: {
+          every: {
+            id: {
+              equals: schoolId,
+            },
+          },
+        },
+      },
     });
 
     if (!managers) {

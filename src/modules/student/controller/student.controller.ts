@@ -24,6 +24,6 @@ export class StudentController {
   findStudentsBySchool(
     @Body() { schoolId, managerId }: ListEntitiesForSchoolDTO,
   ) {
-    return this.studentService.findBySchool(schoolId, managerId);
+    return this.studentService.findBySchool({ schoolId, managerId });
   }
 }

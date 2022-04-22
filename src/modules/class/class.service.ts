@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import ListEntitiesForSchoolDTO from '../student/dtos/listEntitiesForSchool.dto';
 import { CreateClassDto } from './dto/create-class.dto';
@@ -14,23 +14,18 @@ export class ClassService {
         schooldId: createClassDto.schoolId,
       },
     });
-
     return response;
   }
-
   findAll() {
     return this.prisma.class.findMany();
   }
-
   findOne(id: number) {
     return `This action returns a #${id} class`;
   }
-
   async findBySchool({ schoolId, managerId }: ListEntitiesForSchoolDTO) {
-    const currentManager = await this.prisma.class.findFirst({
+    const currentManager = await this.prisma.manager.findUnique({
       where: {
-        managerId,
-        schoolId,
+        userId: managerId,
       },
     });
 
@@ -42,7 +37,7 @@ export class ClassService {
     }
 
     const classes = await this.prisma.class.findMany({
-      where: { schoolId },
+      where: { schooldId: schoolId },
     });
 
     if (!classes) {

@@ -11,9 +11,10 @@ export class StudentService {
   async findAll() {}
 
   async findBySchool({ schoolId, managerId }: ListEntitiesForSchoolDTO) {
-    const currentManager = await this.prisma.manager.findOne({
-      id: managerId,
-      schoolId: schoolId,
+    const currentManager = await this.prisma.manager.findUnique({
+      where: {
+        userId: managerId,
+      },
     });
 
     if (!currentManager) {

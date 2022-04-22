@@ -28,8 +28,30 @@ export class SchoolService {
     };
   }
 
-  async findAll() {
+  async findAll(managerId: string) {
+    const currentManager = await this.prisma.manager.findUnique({
+      where: {
+        userId: managerId,
+      },
+    });
+
+    if (!currentManager) {
+      throw new HttpException(
+        'Acesso negado. O gestor não está cadastrado a esta escola.',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
     const schools = await this.prisma.school.findMany({
+      where: {
+        managers: {
+          some: {
+            userId: {
+              equals: managerId,
+            },
+          },
+        },
+      },
       include: {
         address: {
           select: {
