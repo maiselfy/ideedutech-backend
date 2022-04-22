@@ -19,7 +19,34 @@ export class TeacherService {
   //     message: 'Professor cadastrado com sucesso.',
   //   };
   // }
+  async findAllTeachersOnSchool(schoolId: string, userId: string) {
+    try {
+      const findSchool = await this.prisma.school.findFirst({
+        where: { managers: { every: { id: { equals: userId } } } },
+      });
 
+      if (!findSchool) {
+        throw new HttpException('School not found', HttpStatus.BAD_GATEWAY);
+      }
+
+      const response = await this.prisma.teacher.findMany({
+        select: { user: true },
+        where: { schools: { every: { id: schoolId } } },
+      });
+
+      return {
+        data: response,
+        status: HttpStatus.OK,
+        message: 'Professores da Escola Listadas com Sucesso',
+      };
+    } catch (error) {
+      if (error) return error;
+      return new HttpException(
+        'Fail to list teachers from this school',
+        HttpStatus.BAD_GATEWAY,
+      );
+    }
+  }
   async findAll() {
     const teachers = await this.prisma.teacher.findMany();
 

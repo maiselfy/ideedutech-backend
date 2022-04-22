@@ -63,6 +63,23 @@ export class SchoolService {
     };
   }
 
+  async findSchoolById(id: string, userId: string) {
+    const response = await this.prisma.school.findFirst({
+      where: { id, managers: { some: { userId } } },
+    });
+    if (!response) {
+      throw new HttpException(
+        'School not found in yours schools',
+        HttpStatus.BAD_GATEWAY,
+      );
+    }
+    return {
+      data: response,
+      status: HttpStatus.OK,
+      message: 'Escola retornada com sucesso.',
+    };
+  }
+
   // findOne(id: number) {
   //   return `This action returns a #${id} school`;
   // }

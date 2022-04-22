@@ -8,6 +8,7 @@ import {
   Delete,
 } from '@nestjs/common';
 import { Public } from 'src/modules/auth/decorators/public.decorator';
+import { User } from 'src/modules/user/decorators/user.decorator';
 import CreateSchoolDTO from '../dtos/createSchool.dto';
 import { SchoolService } from '../service/school.service';
 
@@ -25,6 +26,10 @@ export class SchoolController {
   @Public()
   findAll() {
     return this.schoolService.findAll();
+  }
+  @Get('/:id')
+  findSchoolById(@User() user, @Param('id') id: string) {
+    return this.schoolService.findSchoolById(id, user.id);
   }
 
   // @Get(':id')

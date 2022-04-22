@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
+import { User } from 'src/modules/user/decorators/user.decorator';
 import { CreateTeacherDTO } from '../dtos/createTeacher.dto';
 import { TeacherService } from '../services/teacher.service';
 
@@ -19,9 +20,9 @@ export class TeacherController {
   //   return this.teacherService.create(createTeacherDTO);
   // }
 
-  @Get()
-  findAll() {
-    return this.teacherService.findAll();
+  @Get('/school/:schoolId')
+  findAllTeachersOnSchool(@User() user, @Param('schoolId') schoolId: string) {
+    return this.teacherService.findAllTeachersOnSchool(schoolId, user.id);
   }
 
   // @Get(':id')
