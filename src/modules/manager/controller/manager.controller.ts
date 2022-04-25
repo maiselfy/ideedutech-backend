@@ -32,7 +32,7 @@ export class ManagerController {
     @Query() paginationDTO: PaginationDTO,
   ) {
     const managerId = user.id;
-    return this.managerService.findBySchool(
+    return this.managerService.findManagersBySchool(
       { schoolId, managerId },
       paginationDTO,
     );

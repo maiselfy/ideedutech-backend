@@ -22,67 +22,62 @@ export class ManagerService {
     };
   }
 
-  async findBySchool(
+  async findManagersBySchool(
     { schoolId, managerId }: ListEntitiesForSchoolDTO,
     paginationDTO: PaginationDTO,
   ) {
-    const paginable = paginationDTO.paginable === 'true' ? true : false;
+    const [page, qtd, skippedItems] = pagination(paginationDTO);
 
-    if (paginable) {
-      const [page, qtd, skippedItems] = pagination(paginationDTO);
-
-      const currentManager = await this.prisma.manager.findMany({
-        where: {
-          userId: managerId,
-          schools: {
-            some: {
-              id: {
-                equals: schoolId,
-              },
+    const currentManager = await this.prisma.manager.findMany({
+      where: {
+        userId: managerId,
+        schools: {
+          some: {
+            id: {
+              equals: schoolId,
             },
           },
         },
-      });
+      },
+    });
 
-      if (!currentManager) {
-        throw new HttpException(
-          'Acesso negado. O gestor não está cadastrado a esta escola.',
-          HttpStatus.UNAUTHORIZED,
-        );
-      }
-
-      const managers = await this.prisma.manager.findMany({
-        select: { user: true },
-        where: {
-          schools: {
-            every: {
-              id: {
-                equals: schoolId,
-              },
-            },
-          },
-        },
-        skip: paginationDTO.paginable ? skippedItems : undefined,
-        take: paginationDTO.paginable ? qtd : undefined,
-      });
-
-      if (!managers) {
-        throw new HttpException(
-          'Não existem gestores cadastrados para essa escola',
-          HttpStatus.BAD_GATEWAY,
-        );
-      }
-
-      return {
-        ...paginationDTO,
-        data: managers,
-        status: HttpStatus.OK,
-        message: 'Gestores retornados com sucesso.',
-        totalCount: managers.length,
-        page: paginationDTO.page ? page : undefined,
-        limit: paginationDTO.qtd ? paginationDTO.qtd : undefined,
-      };
+    if (!currentManager) {
+      throw new HttpException(
+        'Acesso negado. O gestor não está cadastrado a esta escola.',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
+
+    const managers = await this.prisma.manager.findMany({
+      select: { user: true },
+      where: {
+        schools: {
+          every: {
+            id: {
+              equals: schoolId,
+            },
+          },
+        },
+      },
+      skip: paginationDTO.paginable ? skippedItems : undefined,
+      take: paginationDTO.paginable ? qtd : undefined,
+    });
+
+    if (!managers) {
+      throw new HttpException(
+        'Não existem gestores cadastrados para essa escola',
+        HttpStatus.BAD_GATEWAY,
+      );
+    }
+
+    return {
+      data: managers,
+      totalCount: managers.length,
+      page: paginationDTO.page ? page : 1,
+      limit: paginationDTO.qtd ? paginationDTO.qtd : managers.length,
+      status: HttpStatus.OK,
+      message: 'Gestores retornados com sucesso.',
+    };
   }
 
   // findAll() {
