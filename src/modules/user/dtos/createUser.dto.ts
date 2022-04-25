@@ -39,7 +39,7 @@ export default class CreateUserDTO {
 
   @IsString()
   @IsOptional()
-  addressId: string;
+  address: Address;
 
   @IsString()
   @IsOptional()
