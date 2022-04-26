@@ -6,11 +6,13 @@ import {
   Put,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
-import ListEntitiesForSchoolDTO from '../student/dtos/listEntitiesForSchool.dto';
-import { ClassService } from './class.service';
-import { CreateClassDto } from './dto/create-class.dto';
-import { UpdateClassDto } from './dto/update-class.dto';
+import { PaginationDTO } from 'src/models/PaginationDTO';
+import { User } from 'src/modules/user/decorators/user.decorator';
+import ListEntitiesForSchoolDTO from '../../student/dtos/listEntitiesForSchool.dto';
+import { CreateClassDto } from '../dtos/create-class.dto';
+import { ClassService } from '../services/class.service';
 
 @Controller('class')
 export class ClassController {
@@ -21,11 +23,17 @@ export class ClassController {
     return this.classService.create(createClassDto);
   }
 
-  @Get('/list')
+  @Get('/classes/:schoolId')
   findClassesBySchool(
-    @Body() { schoolId, managerId }: ListEntitiesForSchoolDTO,
+    @User() user,
+    @Param('schoolId') schoolId: string,
+    @Query() paginationDTO: PaginationDTO,
   ) {
-    //return this.classService.findBySchool({ schoolId, managerId });
+    const managerId = user.id;
+    return this.classService.findClassesBySchool(
+      { schoolId, managerId },
+      paginationDTO,
+    );
   }
 
   // @Get()

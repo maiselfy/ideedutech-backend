@@ -1,10 +1,17 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { PaginationDTO } from 'src/models/PaginationDTO';
+import { ManagerService } from 'src/modules/manager/service/manager.service';
 import { PrismaService } from 'src/modules/prisma';
+import ListEntitiesForSchoolDTO from 'src/modules/student/dtos/listEntitiesForSchool.dto';
+import pagination from 'src/utils/pagination';
 import { CreateTeacherDTO } from '../dtos/createTeacher.dto';
 
 @Injectable()
 export class TeacherService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private managerService: ManagerService,
+  ) {}
 
   // async create(createTeacherDTO: CreateTeacherDTO) {
   //   const data = createTeacherDTO;
@@ -47,6 +54,7 @@ export class TeacherService {
       );
     }
   }
+
   async findAll() {
     const teachers = await this.prisma.teacher.findMany();
 
@@ -64,23 +72,44 @@ export class TeacherService {
     };
   }
 
-  async findBySchool(schoolId: string) {
-    const school = await this.prisma.school.findUnique({
-      where: { id: schoolId },
-      include: { teachers: true },
+  async findTeachersBySchool(
+    { schoolId, managerId }: ListEntitiesForSchoolDTO,
+    paginationDTO: PaginationDTO,
+  ) {
+    const currentManager = await this.managerService.findCurrentManager({
+      schoolId,
+      managerId,
     });
 
-    if (!school) {
+    const [page, qtd, skippedItems] = pagination(paginationDTO);
+
+    const teachers = await this.prisma.teacher.findMany({
+      select: { user: true },
+      where: {
+        schools: {
+          some: {
+            id: schoolId,
+          },
+        },
+      },
+      skip: skippedItems ? skippedItems : undefined,
+      take: qtd ? qtd : undefined,
+    });
+
+    if (!teachers) {
       throw new HttpException(
-        'Não existe uma instituição com essas credenciais.',
-        HttpStatus.NOT_FOUND,
+        'Não existem professores cadastrados para esta escola.',
+        HttpStatus.BAD_GATEWAY,
       );
     }
 
     return {
-      data: school.teachers,
+      data: teachers,
+      totalCount: teachers.length,
+      page: paginationDTO.page ? page : 1,
+      limit: 5,
       status: HttpStatus.OK,
-      message: `Professores da instituição ${school.name} retornados com sucesso.`,
+      message: 'Professores retornados com sucesso.',
     };
   }
 

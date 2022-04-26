@@ -1,11 +1,16 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { PaginationDTO } from 'src/models/PaginationDTO';
+import { ManagerService } from 'src/modules/manager/service/manager.service';
+import pagination from 'src/utils/pagination';
 import { PrismaService } from '../../prisma';
 import { CreateDisciplineDTO } from '../dtos/createDiscipline.dto';
-import { UpdateDisciplineDto } from '../dtos/updateDiscipline.dto';
 
 @Injectable()
 export class DisciplineService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private managerService: ManagerService,
+  ) {}
   async create({
     name,
     topic,
@@ -32,6 +37,59 @@ export class DisciplineService {
 
   async findAll() {
     return this.prisma.discipline.findMany();
+  }
+
+  async findDisciplinesOfClassBySchool(
+    { managerId, classId },
+    paginationDTO: PaginationDTO,
+  ) {
+    const [page, qtd, skippedItems] = pagination(paginationDTO);
+
+    const classSchool = await this.prisma.class.findUnique({
+      where: {
+        id: classId,
+      },
+    });
+
+    const currentManager = await this.managerService.findCurrentManager({
+      schoolId: classSchool.schooldId,
+      managerId,
+    });
+
+    if (!classSchool) {
+      throw new HttpException('Esta turma não existe.', HttpStatus.NOT_FOUND);
+    }
+
+    const disciplines = await this.prisma.discipline.findMany({
+      where: {
+        class: {
+          id: classId,
+          school: {
+            id: classSchool.schooldId,
+          },
+        },
+      },
+      skip: skippedItems ? skippedItems : undefined,
+      take: qtd ? qtd : undefined,
+    });
+
+    console.log(disciplines);
+
+    if (!disciplines) {
+      throw new HttpException(
+        'Não existem disciplinas cadastradas para esta turma.',
+        HttpStatus.BAD_GATEWAY,
+      );
+    }
+
+    return {
+      data: disciplines,
+      totalCount: disciplines.length,
+      page: paginationDTO.page ? page : 1,
+      limit: 5,
+      status: HttpStatus.OK,
+      message: 'Disciplinas retornadas com sucesso.',
+    };
   }
 
   // findOne(id: number) {

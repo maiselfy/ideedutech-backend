@@ -2,10 +2,14 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma';
 import { Exclude } from 'class-transformer';
 import CreateSchoolDTO from '../dtos/createSchool.dto';
+import { ManagerService } from 'src/modules/manager/service/manager.service';
 
 @Injectable()
 export class SchoolService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private managerService: ManagerService,
+  ) {}
   async create(createSchoolDTO) {
     const data = createSchoolDTO;
 

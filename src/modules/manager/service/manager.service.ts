@@ -28,6 +28,41 @@ export class ManagerService {
   ) {
     const [page, qtd, skippedItems] = pagination(paginationDTO);
 
+    const currentManager = this.findCurrentManager({ schoolId, managerId });
+
+    const managers = await this.prisma.manager.findMany({
+      select: { user: true },
+      where: {
+        schools: {
+          every: {
+            id: {
+              equals: schoolId,
+            },
+          },
+        },
+      },
+      skip: skippedItems ? skippedItems : undefined,
+      take: qtd ? qtd : undefined,
+    });
+
+    if (!managers) {
+      throw new HttpException(
+        'Não existem gestores cadastrados para esta escola.',
+        HttpStatus.BAD_GATEWAY,
+      );
+    }
+
+    return {
+      data: managers,
+      totalCount: managers.length,
+      page: paginationDTO.page ? page : 1,
+      limit: 5,
+      status: HttpStatus.OK,
+      message: 'Gestores retornados com sucesso.',
+    };
+  }
+
+  async findCurrentManager({ schoolId, managerId }: ListEntitiesForSchoolDTO) {
     const currentManager = await this.prisma.manager.findMany({
       where: {
         userId: managerId,
@@ -48,35 +83,8 @@ export class ManagerService {
       );
     }
 
-    const managers = await this.prisma.manager.findMany({
-      select: { user: true },
-      where: {
-        schools: {
-          every: {
-            id: {
-              equals: schoolId,
-            },
-          },
-        },
-      },
-      skip: paginationDTO.paginable ? skippedItems : undefined,
-      take: paginationDTO.paginable ? qtd : undefined,
-    });
-
-    if (!managers) {
-      throw new HttpException(
-        'Não existem gestores cadastrados para essa escola',
-        HttpStatus.BAD_GATEWAY,
-      );
-    }
-
     return {
-      data: managers,
-      totalCount: managers.length,
-      page: paginationDTO.page ? page : 1,
-      limit: paginationDTO.qtd ? paginationDTO.qtd : managers.length,
-      status: HttpStatus.OK,
-      message: 'Gestores retornados com sucesso.',
+      data: currentManager,
     };
   }
 

@@ -6,10 +6,13 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { DisciplineService } from '../service/discipline.service';
 import { CreateDisciplineDTO } from '../dtos/createDiscipline.dto';
 import { UpdateDisciplineDto } from '../dtos/updateDiscipline.dto';
+import { PaginationDTO } from 'src/models/PaginationDTO';
+import { User } from 'src/modules/user/decorators/user.decorator';
 
 @Controller('discipline')
 export class DisciplineController {
@@ -46,5 +49,21 @@ export class DisciplineController {
   @Get(':teacherId')
   findTeacherDisciplines(@Param('teacherId') teacherId: string) {
     return this.disciplineService.findTeacherDisciplines(teacherId);
+  }
+
+  @Get('/disciplines/:classId')
+  findDisciplinesOfClassBySchool(
+    @User() user,
+    @Param('classId') classId: string,
+    @Query() paginationDTO: PaginationDTO,
+  ) {
+    const managerId = user.id;
+    return this.disciplineService.findDisciplinesOfClassBySchool(
+      {
+        managerId,
+        classId,
+      },
+      paginationDTO,
+    );
   }
 }
