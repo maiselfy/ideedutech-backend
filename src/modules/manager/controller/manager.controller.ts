@@ -6,7 +6,9 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
+import { PaginationDTO } from 'src/models/PaginationDTO';
 import { Public } from 'src/modules/auth/decorators/public.decorator';
 import ListEntitiesForSchoolDTO from 'src/modules/student/dtos/listEntitiesForSchool.dto';
 import { User } from 'src/modules/user/decorators/user.decorator';
@@ -24,9 +26,16 @@ export class ManagerController {
   }
 
   @Get('/managers/:schoolId')
-  findManagersBySchool(@User() user, @Param('schoolId') schoolId: string) {
+  findManagersBySchool(
+    @User() user,
+    @Param('schoolId') schoolId: string,
+    @Query() paginationDTO: PaginationDTO,
+  ) {
     const managerId = user.id;
-    return this.managerService.findBySchool({ schoolId, managerId });
+    return this.managerService.findManagersBySchool(
+      { schoolId, managerId },
+      paginationDTO,
+    );
   }
 
   // @Get()
