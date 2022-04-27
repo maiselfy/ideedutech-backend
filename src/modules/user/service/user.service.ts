@@ -5,20 +5,17 @@ import { User } from '../entities/user.entity';
 import { PrismaService } from '../../prisma/prisma.service';
 
 import * as bcrypt from 'bcrypt';
+import { StudentService } from 'src/modules/student/services/student.service';
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private studentService: StudentService,
+  ) {}
   async create(createUserDto) {
-    const { email } = createUserDto;
-    console.log(createUserDto.user);
-
-    const data = createUserDto;
-
     const userExistsOnWaitlist = await this.prisma.waitList.findUnique({
-      where: { value: email },
+      where: { value: createUserDto.email },
     });
-
-    console.log(1, userExistsOnWaitlist);
 
     if (!userExistsOnWaitlist) {
       throw new HttpException(
@@ -27,6 +24,8 @@ export class UserService {
       );
     }
 
+    console.log('createUserDto: ', createUserDto);
+
     const hashSalt = Number(process.env.HASH_SALT);
     const newData = {
       ...createUserDto,
@@ -34,7 +33,9 @@ export class UserService {
       birthDate: new Date(createUserDto.birthDate),
       type: userExistsOnWaitlist.role,
     };
-    console.log(2, newData);
+
+    console.log(newData);
+    console.log(createUserDto.address);
 
     const createdUser = await this.prisma.user.create({
       data: {
@@ -47,8 +48,6 @@ export class UserService {
         address: true,
       },
     });
-
-    console.log('createdUser.id: ', createdUser.id);
 
     if (userExistsOnWaitlist.role === 'admin') {
       const createdAdmin = await this.prisma.admin.create({
@@ -113,29 +112,9 @@ export class UserService {
         message: 'Professor cadastrado com sucesso.',
       };
     } else if (userExistsOnWaitlist.role === 'student') {
-      const createdTeacher = await this.prisma.teacher.create({
-        data: {
-          status: true,
-          user: { connect: { id: createdUser.id } },
-          schools: { connect: { id: userExistsOnWaitlist.schoolId } },
-        },
-        include: { schools: true },
-      });
-
-      const response = {
-        ...createdUser,
-        ...createdTeacher,
-        password: undefined,
-      };
-
-      return {
-        data: response,
-        status: HttpStatus.CREATED,
-        message: 'Estudante cadastrado com sucesso.',
-      };
     } else {
       throw new HttpException(
-        `Permissões insuficientes, não foi possível prosseguir com o cadastro tipo de usuário.`,
+        `Permissões insuficientes, não foi possível prosseguir com o cadastro desse tipo de usuário.`,
         HttpStatus.NOT_FOUND,
       );
     }
