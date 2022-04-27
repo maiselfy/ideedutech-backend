@@ -10,7 +10,6 @@ export default class CreateContentDTO {
   subContent: string;
 
   @IsString()
-  @IsNotEmpty()
   periodId: string;
 
   @IsEmpty()

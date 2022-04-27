@@ -8,8 +8,6 @@ export class ContentService {
   async create(createContentDTO: CreateContentDTO) {
     const data = createContentDTO;
 
-    console.log('DATA CONTENT: ', data);
-
     const createdContent = await this.prisma.content.create({
       data: {
         ...data,
