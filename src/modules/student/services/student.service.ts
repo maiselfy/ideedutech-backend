@@ -149,14 +149,18 @@ export class StudentService {
       managerId,
     });
 
+    console.log(paginationDTO.page);
+
     const [page, qtd, skippedItems] = pagination(paginationDTO);
 
     const students = await this.prisma.student.findMany({
-      select: { user: true, class: true },
       where: {
         school: {
           id: schoolId,
         },
+      },
+      include: {
+        class: true,
       },
       skip: skippedItems ? skippedItems : undefined,
       take: qtd ? qtd : undefined,
