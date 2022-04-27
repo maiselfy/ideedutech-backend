@@ -6,16 +6,24 @@ import CreatePlanEducationDTO from '../dtos/createPlan-education.dto';
 export class PlanEducationService {
   constructor(private prisma: PrismaService) {}
   async create(createPlanEducationDTO: CreatePlanEducationDTO) {
-    // const data = createPlanEducationDTO;
-    // console.log(data);
-    // const createdPlanEducation = await this.prisma.planEducation.create({
-    //   data: data,
-    // });
-    // return {
-    //   data: createdPlanEducation,
-    //   status: HttpStatus.CREATED,
-    //   message: 'Plano de ensino cadastrado com sucesso.',
-    // };
+    const data = createPlanEducationDTO;
+    console.log('DATA PLAN EDUCATION: ', data);
+    const createdPlanEducation = await this.prisma.planEducation.create({
+      data: {
+        ...data,
+        periods: {
+          create: data.periods,
+        },
+      },
+      include: {
+        periods: true,
+      },
+    });
+    return {
+      data: createdPlanEducation,
+      status: HttpStatus.CREATED,
+      message: 'Plano de ensino cadastrado com sucesso.',
+    };
   }
 
   async findAll() {
@@ -65,6 +73,30 @@ export class PlanEducationService {
       data: planEducation,
       status: HttpStatus.OK,
       message: 'Plano de ensino retornado com sucesso.',
+    };
+  }
+
+  async findAllPeriodsByDisciplineId(disciplineId: string) {
+    const planEducation = await this.prisma.planEducation.findFirst({
+      where: {
+        disciplineId,
+      },
+      include: { periods: true },
+    });
+
+    if (!planEducation) {
+      throw new HttpException(
+        'Esse plano de ensino não está registrado em nossa base de dados, logo não existe períodos associados a está disciplina',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    console.log('PLANO DE ENSINO: ', planEducation);
+
+    return {
+      data: planEducation,
+      status: HttpStatus.OK,
+      message: 'Períodos retornado com sucesso.',
     };
   }
 

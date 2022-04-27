@@ -226,6 +226,7 @@ model PlanEducation {
 
 model Period {
   id              String         @id @default(uuid())
+  name            String
   contents        Content[]
   PlanEducation   PlanEducation @relation(fields: [planEducationId], references: [id])
   planEducationId String
