@@ -6,16 +6,16 @@ import CreatePlanEducationDTO from '../dtos/createPlan-education.dto';
 export class PlanEducationService {
   constructor(private prisma: PrismaService) {}
   async create(createPlanEducationDTO: CreatePlanEducationDTO) {
-    // const data = createPlanEducationDTO;
-    // console.log(data);
-    // const createdPlanEducation = await this.prisma.planEducation.create({
-    //   data: data,
-    // });
-    // return {
-    //   data: createdPlanEducation,
-    //   status: HttpStatus.CREATED,
-    //   message: 'Plano de ensino cadastrado com sucesso.',
-    // };
+    const data = createPlanEducationDTO;
+    console.log('DATA PLAN EDUCATION: ', data);
+    const createdPlanEducation = await this.prisma.planEducation.create({
+      data: data,
+    });
+    return {
+      data: createdPlanEducation,
+      status: HttpStatus.CREATED,
+      message: 'Plano de ensino cadastrado com sucesso.',
+    };
   }
 
   async findAll() {

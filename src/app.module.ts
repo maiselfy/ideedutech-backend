@@ -1,3 +1,4 @@
+import { ContentModule } from './modules/content/content.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
@@ -42,6 +43,7 @@ ConfigModule.forRoot();
     ClassModule,
     DisciplineScheduleModule,
     DisciplineModule,
+    ContentModule,
   ],
   controllers: [AppController],
   providers: [
