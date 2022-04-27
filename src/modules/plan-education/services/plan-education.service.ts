@@ -76,6 +76,30 @@ export class PlanEducationService {
     };
   }
 
+  async findAllPeriodsByDisciplineId(disciplineId: string) {
+    const planEducation = await this.prisma.planEducation.findFirst({
+      where: {
+        disciplineId,
+      },
+      include: { periods: true },
+    });
+
+    if (!planEducation) {
+      throw new HttpException(
+        'Esse plano de ensino não está registrado em nossa base de dados, logo não existe períodos associados a está disciplina',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    console.log('PLANO DE ENSINO: ', planEducation);
+
+    return {
+      data: planEducation,
+      status: HttpStatus.OK,
+      message: 'Períodos retornado com sucesso.',
+    };
+  }
+
   // update(id: number, updatePlanEducationDto: UpdatePlanEducationDto) {
   //   return `This action updates a #${id} planEducation`;
   // }

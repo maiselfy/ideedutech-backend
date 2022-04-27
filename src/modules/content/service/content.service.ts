@@ -22,4 +22,29 @@ export class ContentService {
   }
 
   async findAll() {}
+
+  async findAllContentsPeriodByDisciplineId(
+    disciplineId: string,
+    periodId: string,
+  ) {
+    const planEducation = await this.prisma.planEducation.findFirst({
+      where: {
+        disciplineId,
+      },
+      select: {
+        periods: {
+          where: {
+            id: periodId,
+          },
+          include: { contents: true },
+        },
+      },
+    });
+
+    return {
+      data: planEducation,
+      status: HttpStatus.OK,
+      message: 'Conteúdo retornado com sucesso.',
+    };
+  }
 }

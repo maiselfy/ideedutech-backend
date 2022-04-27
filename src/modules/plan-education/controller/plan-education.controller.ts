@@ -34,6 +34,11 @@ export class PlanEducationController {
     return this.planEducationService.findOneByDiscipline(disciplineId);
   }
 
+  @Get('periods/:disciplineId')
+  findAllPeriodsByDisciplineId(@Param('disciplineId') disciplineId: string) {
+    return this.planEducationService.findAllPeriodsByDisciplineId(disciplineId);
+  }
+
   // @Patch(':id')
   // update(
   //   @Param('id') id: string,
