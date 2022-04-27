@@ -9,7 +9,15 @@ export class PlanEducationService {
     const data = createPlanEducationDTO;
     console.log('DATA PLAN EDUCATION: ', data);
     const createdPlanEducation = await this.prisma.planEducation.create({
-      data: data,
+      data: {
+        ...data,
+        periods: {
+          create: data.periods,
+        },
+      },
+      include: {
+        periods: true,
+      },
     });
     return {
       data: createdPlanEducation,

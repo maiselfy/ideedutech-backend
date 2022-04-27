@@ -1,5 +1,6 @@
 import { Period } from '@prisma/client';
-import { IsEmpty, IsNotEmpty, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsArray, IsEmpty, IsNotEmpty, IsString } from 'class-validator';
 
 export default class CreatePlanEducationDTO {
   @IsNotEmpty()
@@ -10,6 +11,8 @@ export default class CreatePlanEducationDTO {
   @IsString()
   disciplineId: string;
 
+  @IsArray()
+  @Type(() => PeriodData)
   periods: Period[];
 
   @IsEmpty()
@@ -17,4 +20,18 @@ export default class CreatePlanEducationDTO {
 
   @IsEmpty()
   updatedAt: Date;
+}
+
+class PeriodData {
+  @IsNotEmpty()
+  @IsString()
+  name: string;
+
+  @IsNotEmpty()
+  @IsString()
+  startOfPeriod: string;
+
+  @IsNotEmpty()
+  @IsString()
+  endOfPeriod: string;
 }
