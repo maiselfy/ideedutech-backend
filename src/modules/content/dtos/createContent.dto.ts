@@ -12,6 +12,9 @@ export default class CreateContentDTO {
   @IsString()
   periodId: string;
 
+  @IsString()
+  disciplineId: string;
+
   @IsEmpty()
   createdAt: Date;
 

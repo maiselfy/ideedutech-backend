@@ -27,22 +27,22 @@ export class ContentService {
     disciplineId: string,
     periodId: string,
   ) {
-    const planEducation = await this.prisma.planEducation.findFirst({
-      where: {
-        disciplineId,
-      },
-      select: {
-        periods: {
-          where: {
-            id: periodId,
-          },
-          include: { contents: true },
-        },
-      },
-    });
+    // const planEducation = await this.prisma.planEducation.findFirst({
+    //   where: {
+    //     disciplineId,
+    //   },
+    //   select: {
+    //     periods: {
+    //       where: {
+    //         id: periodId,
+    //       },
+    //       include: { contents: true },
+    //     },
+    //   },
+    // });
 
     return {
-      data: planEducation,
+      // data: planEducation,
       status: HttpStatus.OK,
       message: 'Conteúdo retornado com sucesso.',
     };
