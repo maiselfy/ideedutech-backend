@@ -1,14 +1,5 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
-import { Public } from 'src/modules/auth/decorators/public.decorator';
-import CreateHomeWorkDTO from '../dtos/createHomeWork.dto';
+import { Controller, Get, Post, Body } from '@nestjs/common';
+
 import { HomeWorkService } from '../service/homeWorkService.service';
 
 @Controller('homeWork')
