@@ -1,10 +1,17 @@
+import { Role } from '@prisma/client';
 import { HttpStatus, Injectable, HttpException } from '@nestjs/common';
+import { PaginationDTO } from 'src/models/PaginationDTO';
+import { ManagerService } from 'src/modules/manager/service/manager.service';
 import { PrismaService } from 'src/modules/prisma';
+import pagination from 'src/utils/pagination';
 import CreateWaitlistDTO from '../dtos/createWaitlist.dto';
 
 @Injectable()
 export class WaitlistService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private managerService: ManagerService,
+  ) {}
   async create(createWaitlistDTO: CreateWaitlistDTO) {
     const data = createWaitlistDTO;
 
@@ -16,6 +23,7 @@ export class WaitlistService {
       message: 'Registro adicionado a lista de espera.',
     };
   }
+
   async findAll() {
     const allWaitlist = await this.prisma.waitList.findMany();
 
@@ -27,6 +35,7 @@ export class WaitlistService {
         createdAt: user.createdAt,
       };
     });
+
     return {
       data: waitlistFilterResult,
       status: HttpStatus.OK,
@@ -47,6 +56,49 @@ export class WaitlistService {
 
     return {
       message: `User ${deleteUserWaitlist.value} removed from waitlist`,
+    };
+  }
+
+  async findByRole(
+    managerId: string,
+    role: Role,
+    schoolId,
+    paginationDTO: PaginationDTO,
+  ) {
+    const currentManager = await this.managerService.findCurrentManager({
+      schoolId,
+      managerId,
+    });
+
+    const [page, qtd, skippedItems] = pagination(paginationDTO);
+
+    const waitlistFilterResult = await this.prisma.waitList.findMany({
+      where: {
+        schoolId,
+        role,
+      },
+      skip: skippedItems ? skippedItems : undefined,
+      take: qtd ? qtd : undefined,
+    });
+
+    if (!waitlistFilterResult) {
+      return {
+        data: [],
+        status: HttpStatus.NOT_FOUND,
+        message: 'Não há usuários cadastrados nesta lista de espera da escola.',
+      };
+    }
+
+    const totalPages = Math.round(waitlistFilterResult.length / qtd);
+
+    return {
+      data: waitlistFilterResult,
+      totalCount: waitlistFilterResult.length,
+      page: page,
+      limit: qtd,
+      status: HttpStatus.OK,
+      totalPages: totalPages > 0 ? totalPages : 1,
+      message: 'Lista de espera retornada com sucesso',
     };
   }
 
