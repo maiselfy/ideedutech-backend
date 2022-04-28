@@ -179,6 +179,7 @@ export class StudentService {
       page: paginationDTO.page ? page : 1,
       limit: 5,
       status: HttpStatus.OK,
+      totalPages: students.length / 5,
       message: 'Estudantes retornados com sucesso.',
     };
   }
