@@ -13,13 +13,14 @@ import { SchoolModule } from './modules/school/school.module';
 import { HomeWorkModule } from './modules/home-work/homeWork.module';
 import { TeacherModule } from './modules/teacher/teacher.module';
 import { RefreshTokenModule } from './modules/refresh-token/refreshToken.module';
-import { PlanEducationModule } from './modules/plan-education/plan-education.module';
 import { ClassModule } from './modules/class/class.module';
 import { DisciplineScheduleModule } from './modules/discipline-schedule/discipline-schedule.module';
 import { DisciplineModule } from './modules/discipline/discipline.module';
 import { SubmissionModule } from './modules/submission/submission.module';
 import { StudentModule } from './modules/student/student.module';
 import { AppService } from './app.service';
+import { PeriodModule } from './modules/period/period.module';
+import { ContentModule } from './modules/content/content.module';
 
 ConfigModule.forRoot();
 
@@ -38,10 +39,11 @@ ConfigModule.forRoot();
     SubmissionModule,
     TeacherModule,
     RefreshTokenModule,
-    PlanEducationModule,
     ClassModule,
     DisciplineScheduleModule,
     DisciplineModule,
+    ContentModule,
+    PeriodModule,
   ],
   controllers: [AppController],
   providers: [

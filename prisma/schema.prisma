@@ -143,36 +143,37 @@ model Teacher {
 }
 
 model School {
-  id        String         @id @default(uuid())
+  id        String     @id @default(uuid())
   name      String
   phone     String
   inep      String?
-  email     String        
+  email     String
   address   Address[]
-  cnpj      String?       @unique
+  cnpj      String?    @unique
   classes   Class[]
   waitist   WaitList[]
   teachers  Teacher[]
   managers  Manager[]
   students  Student[]
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  Period    Period[]
 }
 
 model Discipline {
-  id        String     @id @default(uuid())
+  id        String                @id @default(uuid())
   name      String
-  teacher   Teacher    @relation(fields: [teacherId], references: [id])
+  teacher   Teacher               @relation(fields: [teacherId], references: [id])
   teacherId String
-  class     Class      @relation(fields: [classId], references: [id])
+  class     Class                 @relation(fields: [classId], references: [id])
   classId   String
   topic     String
   lessons   Lesson[]
   homeWorks HomeWork[]
-  planEducation PlanEducation[]
   schedules DisciplineSchedules[]
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  createdAt DateTime              @default(now())
+  updatedAt DateTime              @updatedAt
+  Content   Content[]
 }
 
 model Class {
@@ -214,33 +215,26 @@ model Submission {
   updatedAt   DateTime         @updatedAt
 }
 
-model PlanEducation {
-  id           String   @id @default(uuid())
-  schoolYear   String
-  disciplineId String
-  discipline   Discipline      @relation(fields: [disciplineId], references: [id])
-  periods      Period[]
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
-}
-
 model Period {
-  id              String         @id @default(uuid())
-  contents        Content[]
-  PlanEducation   PlanEducation @relation(fields: [planEducationId], references: [id])
-  planEducationId String
-  startOfPeriod   DateTime
-  endOfPeriod     DateTime
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  id            String    @id @default(uuid())
+  name          String
+  contents      Content[]
+  schoolId      String
+  school        School    @relation(fields: [schoolId], references: [id])
+  startOfPeriod DateTime
+  endOfPeriod   DateTime
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }
 
 model Content {
-  id         String  @id @default(uuid())
-  name       String
-  subContent String
-  Period     Period @relation(fields: [periodId], references: [id])
-  periodId   String
+  id           String     @id @default(uuid())
+  disciplineId String
+  discipline   Discipline @relation(fields: [disciplineId], references: [id])
+  name         String
+  subContent   String
+  Period       Period     @relation(fields: [periodId], references: [id])
+  periodId     String
 }
 
 model Lesson {
