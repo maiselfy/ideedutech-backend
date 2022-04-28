@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { PeriodService } from './period.service';
-import { PeriodController } from './period.controller';
 import { PrismaService } from '../prisma';
+import { PeriodController } from './period.controller';
+import { PeriodService } from './period.service';
 
 @Module({
   controllers: [PeriodController],
-  providers: [PeriodService,PrismaService]
+  providers: [PeriodService, PrismaService],
 })
 export class PeriodModule {}

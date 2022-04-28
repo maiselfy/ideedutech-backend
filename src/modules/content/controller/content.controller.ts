@@ -1,6 +1,7 @@
 import { ContentService } from './../service/content.service';
 import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import CreateContentDTO from '../dtos/createContent.dto';
+import { Public } from 'src/modules/auth/decorators/public.decorator';
 
 @Controller('content')
 export class ContentController {
@@ -11,7 +12,8 @@ export class ContentController {
     return this.contentService.create(createContentDTO);
   }
 
-  @Get('period/:disciplineId/:periodId')
+  @Public()
+  @Get('/:periodId/:disciplineId')
   findAllContentsPeriodByDisciplineId(
     @Param('disciplineId') disciplineId: string,
     @Param('periodId') periodId: string,

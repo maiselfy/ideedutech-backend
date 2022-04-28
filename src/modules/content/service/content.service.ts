@@ -27,24 +27,34 @@ export class ContentService {
     disciplineId: string,
     periodId: string,
   ) {
-    // const planEducation = await this.prisma.planEducation.findFirst({
-    //   where: {
-    //     disciplineId,
-    //   },
-    //   select: {
-    //     periods: {
-    //       where: {
-    //         id: periodId,
-    //       },
-    //       include: { contents: true },
-    //     },
-    //   },
-    // });
+    const period = await this.prisma.period.findUnique({
+      where: {
+        id: periodId,
+      },
+      select: {
+        contents: {
+          where: {
+            disciplineId: disciplineId,
+          },
+          include: {
+            Period: true,
+          },
+        },
+      },
+    });
+
+    if (!period) {
+      return {
+        data: [],
+        status: HttpStatus.NOT_FOUND,
+        message: 'Não existem conteúdos criados para esta disciplina.',
+      };
+    }
 
     return {
-      // data: planEducation,
+      data: period,
       status: HttpStatus.OK,
-      message: 'Conteúdo retornado com sucesso.',
+      message: 'Conteúdos para a disciplina retornado com sucesso.',
     };
   }
 }

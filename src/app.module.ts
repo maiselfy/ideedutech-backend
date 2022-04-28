@@ -1,4 +1,3 @@
-import { ContentModule } from './modules/content/content.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
@@ -21,6 +20,7 @@ import { SubmissionModule } from './modules/submission/submission.module';
 import { StudentModule } from './modules/student/student.module';
 import { AppService } from './app.service';
 import { PeriodModule } from './modules/period/period.module';
+import { ContentModule } from './modules/content/content.module';
 
 ConfigModule.forRoot();
 
