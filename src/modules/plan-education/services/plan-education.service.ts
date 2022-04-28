@@ -85,13 +85,12 @@ export class PlanEducationService {
     });
 
     if (!planEducation) {
-      throw new HttpException(
-        'Esse plano de ensino não está registrado em nossa base de dados, logo não existe períodos associados a está disciplina',
-        HttpStatus.NOT_FOUND,
-      );
+      return {
+        data: [],
+        status: HttpStatus.OK,
+        message: 'Nenhum período cadastrado.',
+      };
     }
-
-    console.log('PLANO DE ENSINO: ', planEducation);
 
     return {
       data: planEducation,

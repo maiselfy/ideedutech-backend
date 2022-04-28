@@ -23,23 +23,25 @@ export class ContentService {
 
   async findAll() {}
 
-  async findAllContentsPeriodByDisciplineId(
-    disciplineId: string,
-    periodId: string,
-  ) {
+  async findAllContentsPeriodByDisciplineId(disciplineId: string) {
     const planEducation = await this.prisma.planEducation.findFirst({
       where: {
         disciplineId,
       },
       select: {
         periods: {
-          where: {
-            id: periodId,
-          },
           include: { contents: true },
         },
       },
     });
+
+    if (!planEducation) {
+      return {
+        data: [],
+        status: HttpStatus.OK,
+        message: 'Nenhum conteúdo encotrado.',
+      };
+    }
 
     return {
       data: planEducation,

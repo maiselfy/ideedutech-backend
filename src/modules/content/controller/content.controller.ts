@@ -11,14 +11,12 @@ export class ContentController {
     return this.contentService.create(createContentDTO);
   }
 
-  @Get('period/:disciplineId/:periodId')
+  @Get('period/:disciplineId')
   findAllContentsPeriodByDisciplineId(
     @Param('disciplineId') disciplineId: string,
-    @Param('periodId') periodId: string,
   ) {
     return this.contentService.findAllContentsPeriodByDisciplineId(
       disciplineId,
-      periodId,
     );
   }
 }
