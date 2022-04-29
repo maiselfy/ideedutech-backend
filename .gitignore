@@ -39,3 +39,5 @@ lerna-debug.log*
 .docker 
 tsconfig.build.tsbuildinfo
 .tsbuildinfo
+
+.env
