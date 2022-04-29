@@ -97,7 +97,7 @@ model User {
   admin         Admin?
   teacher       Teacher?
   student       Student?
-  avatar        string?
+  avatar        String?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 }
