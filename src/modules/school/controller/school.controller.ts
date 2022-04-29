@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Put,
 } from '@nestjs/common';
 import { Public } from 'src/modules/auth/decorators/public.decorator';
 import { User } from 'src/modules/user/decorators/user.decorator';
@@ -30,6 +31,12 @@ export class SchoolController {
   @Get('/:id')
   findSchoolById(@User() user, @Param('id') id: string) {
     return this.schoolService.findSchoolById(id, user.id);
+  }
+
+  @Put(':id')
+  @Public()
+  update(@Param('id') id: string, @Body() updateInfoSchool) {
+    return this.schoolService.update(id, updateInfoSchool);
   }
 
   // @Get(':id')
