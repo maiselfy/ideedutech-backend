@@ -103,11 +103,29 @@ export class TeacherService {
       );
     }
 
+    const formattedTeachers = teachers.reduce((acc, manager) => {
+      acc.push({
+        id: manager.user.id,
+        name: manager.user.name,
+        email: manager.user.email,
+        birthDate: manager.user.birthDate,
+        phone: manager.user.phone,
+        gender: manager.user.gender,
+        type: manager.user.type,
+        //avatar: manager.user.avatar ? manager.user.avatar : '',
+      });
+      return acc;
+    }, []);
+
+    const totalCount = formattedTeachers.length;
+    const totalPages = Math.round(totalCount / qtd);
+
     return {
-      data: teachers,
-      totalCount: teachers.length,
+      data: formattedTeachers,
+      totalCount: formattedTeachers.length,
       page: paginationDTO.page ? page : 1,
       limit: 5,
+      totalPages: totalPages > 0 ? totalPages : 1,
       status: HttpStatus.OK,
       message: 'Professores retornados com sucesso.',
     };

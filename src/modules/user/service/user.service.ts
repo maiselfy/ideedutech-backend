@@ -24,8 +24,6 @@ export class UserService {
       );
     }
 
-    console.log('createUserDto: ', createUserDto);
-
     const hashSalt = Number(process.env.HASH_SALT);
     const newData = {
       ...createUserDto,
@@ -33,9 +31,6 @@ export class UserService {
       birthDate: new Date(createUserDto.birthDate),
       type: userExistsOnWaitlist.role,
     };
-
-    console.log(newData);
-    console.log(createUserDto.address);
 
     const createdUser = await this.prisma.user.create({
       data: {
@@ -101,7 +96,6 @@ export class UserService {
       });
 
       const response = {
-        ...createdUser,
         ...createdTeacher,
         password: undefined,
       };

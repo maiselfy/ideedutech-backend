@@ -173,11 +173,15 @@ export class StudentService {
       );
     }
 
+    const totalCount = students.length;
+    const totalPages = Math.round(totalCount / qtd);
+
     return {
       data: students,
-      totalCount: students.length,
-      page: paginationDTO.page ? page : 1,
-      limit: 5,
+      totalCount: totalCount,
+      page: page,
+      limit: qtd,
+      totalPages: totalPages > 0 ? totalPages : 1,
       status: HttpStatus.OK,
       message: 'Estudantes retornados com sucesso.',
     };
