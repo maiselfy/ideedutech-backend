@@ -52,11 +52,29 @@ export class ManagerService {
       );
     }
 
+    const formattedManagers = managers.reduce((acc, manager) => {
+      acc.push({
+        id: manager.user.id,
+        name: manager.user.name,
+        email: manager.user.email,
+        birthDate: manager.user.birthDate,
+        phone: manager.user.phone,
+        gender: manager.user.gender,
+        type: manager.user.type,
+        //avatar: manager.user.avatar ? manager.user.avatar : '',
+      });
+      return acc;
+    }, []);
+
+    const totalCount = formattedManagers.length;
+    const totalPages = Math.round(totalCount / qtd);
+
     return {
-      data: managers,
-      totalCount: managers.length,
-      page: paginationDTO.page ? page : 1,
-      limit: 5,
+      data: formattedManagers,
+      totalCount,
+      page: page,
+      limit: qtd,
+      totalPages: totalPages > 0 ? totalPages : 1,
       status: HttpStatus.OK,
       message: 'Gestores retornados com sucesso.',
     };

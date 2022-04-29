@@ -57,11 +57,15 @@ export class ClassService {
       );
     }
 
+    const totalCount = classes.length;
+    const totalPages = Math.round(totalCount / qtd);
+
     return {
       data: classes,
-      totalCount: classes.length,
-      page: paginationDTO.page ? page : 1,
-      limit: 5,
+      totalCount,
+      page,
+      limit: qtd,
+      totalPages: totalPages > 0 ? totalPages : 1,
       status: HttpStatus.OK,
       message: 'Turmas retornadas com sucesso.',
     };
