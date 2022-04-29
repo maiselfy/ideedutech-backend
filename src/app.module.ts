@@ -1,3 +1,4 @@
+import { RegisterClassModule } from './modules/register-class/registerClass.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
@@ -44,6 +45,7 @@ ConfigModule.forRoot();
     DisciplineModule,
     ContentModule,
     PeriodModule,
+    RegisterClassModule,
   ],
   controllers: [AppController],
   providers: [
