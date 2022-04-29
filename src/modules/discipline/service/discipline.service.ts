@@ -73,8 +73,6 @@ export class DisciplineService {
       take: qtd ? qtd : undefined,
     });
 
-    console.log(disciplines);
-
     if (!disciplines) {
       throw new HttpException(
         'Não existem disciplinas cadastradas para esta turma.',
@@ -82,11 +80,15 @@ export class DisciplineService {
       );
     }
 
+    const totalCount = disciplines.length;
+    const totalPages = Math.round(totalCount / qtd);
+
     return {
       data: disciplines,
-      totalCount: disciplines.length,
+      totalCount,
       page: paginationDTO.page ? page : 1,
-      limit: 5,
+      limit: qtd,
+      totalPages: totalPages > 0 ? totalPages : 1,
       status: HttpStatus.OK,
       message: 'Disciplinas retornadas com sucesso.',
     };
