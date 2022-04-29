@@ -159,6 +159,7 @@ export class StudentService {
       },
       include: {
         class: true,
+        user: true,
       },
       skip: skippedItems ? skippedItems : undefined,
       take: qtd ? qtd : undefined,
