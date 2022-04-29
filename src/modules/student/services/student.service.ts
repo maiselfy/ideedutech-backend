@@ -149,8 +149,6 @@ export class StudentService {
       managerId,
     });
 
-    console.log(paginationDTO.page);
-
     const [page, qtd, skippedItems] = pagination(paginationDTO);
 
     const students = await this.prisma.student.findMany({
@@ -183,7 +181,6 @@ export class StudentService {
       limit: qtd,
       totalPages: totalPages > 0 ? totalPages : 1,
       status: HttpStatus.OK,
-      totalPages: students.length / 5,
       message: 'Estudantes retornados com sucesso.',
     };
   }
