@@ -61,7 +61,7 @@ export class ManagerService {
         phone: manager.user.phone,
         gender: manager.user.gender,
         type: manager.user.type,
-        //avatar: manager.user.avatar ? manager.user.avatar : '',
+        avatar: manager.user.avatar ? manager.user.avatar : '',
       });
       return acc;
     }, []);
