@@ -34,6 +34,11 @@ enum TypeUser {
   others   @map("Outros")
 }
 
+enum TypeRegisterClass {
+  planEducation    @map("Plano de Ensino")
+  loose            @map("Avulso")
+}
+
 enum Day {
   monday     @map("Segunda-Feira")
   thursday   @map("Terça-Feira")
@@ -171,20 +176,21 @@ model Discipline {
   lessons   Lesson[]
   homeWorks HomeWork[]
   schedules DisciplineSchedules[]
+  registerClass RegisterClass[]
   createdAt DateTime              @default(now())
   updatedAt DateTime              @updatedAt
   Content   Content[]
 }
 
 model Class {
-  id          String       @id @default(uuid())
-  name        String
-  schooldId   String
-  school      School       @relation(fields: [schooldId], references: [id])
-  disciplines Discipline[]
-  students    Student[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id            String       @id @default(uuid())
+  name          String
+  schooldId     String
+  school        School       @relation(fields: [schooldId], references: [id])
+  disciplines   Discipline[]
+  students      Student[]
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
 }
 
 model HomeWork {
@@ -219,6 +225,7 @@ model Period {
   id            String    @id @default(uuid())
   name          String
   contents      Content[]
+  registerClass RegisterClass[]
   schoolId      String
   school        School    @relation(fields: [schoolId], references: [id])
   startOfPeriod DateTime
@@ -233,8 +240,26 @@ model Content {
   discipline   Discipline @relation(fields: [disciplineId], references: [id])
   name         String
   subContent   String
-  Period       Period     @relation(fields: [periodId], references: [id])
+  registerClass RegisterClass[]
+  Period       Period     @relation(fields: [periodId], references: [id]) 
   periodId     String
+}
+
+model RegisterClass {
+  id                String     @id @default(uuid())
+  classDate         DateTime    
+  type              TypeRegisterClass
+  content           String?
+  subContent        String?
+  Period            Period? @relation(fields: [periodId], references: [id])
+  periodId          String?
+  observation       String
+  Discipline        Discipline? @relation(fields: [disciplineId], references: [id])
+  disciplineId      String?
+  Content           Content? @relation(fields: [contentId], references: [id])
+  contentId         String?
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
 }
 
 model Lesson {
