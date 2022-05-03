@@ -13,14 +13,18 @@ import { CreateDisciplineDTO } from '../dtos/createDiscipline.dto';
 import { UpdateDisciplineDto } from '../dtos/updateDiscipline.dto';
 import { PaginationDTO } from 'src/models/PaginationDTO';
 import { User } from 'src/modules/user/decorators/user.decorator';
+import { Public } from 'src/modules/auth/decorators/public.decorator';
 
 @Controller('discipline')
 export class DisciplineController {
   constructor(private readonly disciplineService: DisciplineService) {}
 
+  @Public()
   @Post()
   create(@Body() createDisciplineDTO) {
-    return this.disciplineService.create(createDisciplineDTO);
+    return this.disciplineService.cre;
+
+    ate(createDisciplineDTO);
   }
 
   @Get()

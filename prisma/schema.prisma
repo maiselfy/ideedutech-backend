@@ -35,8 +35,8 @@ enum TypeUser {
 }
 
 enum TypeRegisterClass {
-  planEducation    @map("Plano de Ensino")
-  loose            @map("Avulso")
+  planEducation  @map("Plano de Ensino")
+  loose          @map("Avulso")
 }
 
 enum Day {
@@ -116,6 +116,7 @@ model Student {
   user              User     @relation(fields: [userId], references: [id])
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+  Test              Test[]
 }
 
 model Manager {
@@ -167,31 +168,32 @@ model School {
 }
 
 model Discipline {
-  id        String                @id @default(uuid())
-  name      String
-  teacher   Teacher               @relation(fields: [teacherId], references: [id])
-  teacherId String
-  class     Class                 @relation(fields: [classId], references: [id])
-  classId   String
-  topic     String
-  lessons   Lesson[]
-  homeWorks HomeWork[]
-  schedules DisciplineSchedules[]
+  id            String                @id @default(uuid())
+  name          String
+  teacher       Teacher               @relation(fields: [teacherId], references: [id])
+  teacherId     String
+  class         Class                 @relation(fields: [classId], references: [id])
+  classId       String
+  topic         String
+  lessons       Lesson[]
+  homeWorks     HomeWork[]
+  schedules     DisciplineSchedules[]
   registerClass RegisterClass[]
-  createdAt DateTime              @default(now())
-  updatedAt DateTime              @updatedAt
-  Content   Content[]
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+  Content       Content[]
+  Test          Test[]
 }
 
 model Class {
-  id            String       @id @default(uuid())
-  name          String
-  schooldId     String
-  school        School       @relation(fields: [schooldId], references: [id])
-  disciplines   Discipline[]
-  students      Student[]
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
+  id          String       @id @default(uuid())
+  name        String
+  schooldId   String
+  school      School       @relation(fields: [schooldId], references: [id])
+  disciplines Discipline[]
+  students    Student[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 }
 
 model HomeWork {
@@ -222,45 +224,59 @@ model Submission {
   updatedAt   DateTime         @updatedAt
 }
 
+model Test {
+  id           String     @id @default(uuid())
+  name         String
+  description  String?
+  discipline   Discipline @relation(fields: [disciplineId], references: [id])
+  disciplineId String
+  student      Student    @relation(fields: [studentId], references: [id])
+  studentId    String
+  rate         Float
+  weight       Float?     @default(1)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
 model Period {
-  id            String    @id @default(uuid())
+  id            String          @id @default(uuid())
   name          String
   contents      Content[]
   registerClass RegisterClass[]
   schoolId      String
-  school        School    @relation(fields: [schoolId], references: [id])
+  school        School          @relation(fields: [schoolId], references: [id])
   startOfPeriod DateTime
   endOfPeriod   DateTime
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
 }
 
 model Content {
-  id           String     @id @default(uuid())
-  disciplineId String
-  discipline   Discipline @relation(fields: [disciplineId], references: [id])
-  name         String
-  subContent   String
+  id            String          @id @default(uuid())
+  disciplineId  String
+  discipline    Discipline      @relation(fields: [disciplineId], references: [id])
+  name          String
+  subContent    String
   registerClass RegisterClass[]
-  Period       Period     @relation(fields: [periodId], references: [id]) 
-  periodId     String
+  Period        Period          @relation(fields: [periodId], references: [id])
+  periodId      String
 }
 
 model RegisterClass {
-  id                String     @id @default(uuid())
-  classDate         DateTime    
-  type              TypeRegisterClass
-  content           String?
-  subContent        String?
-  Period            Period? @relation(fields: [periodId], references: [id])
-  periodId          String?
-  observation       String
-  Discipline        Discipline? @relation(fields: [disciplineId], references: [id])
-  disciplineId      String?
-  Content           Content? @relation(fields: [contentId], references: [id])
-  contentId         String?
-  createdAt         DateTime   @default(now())
-  updatedAt         DateTime   @updatedAt
+  id           String            @id @default(uuid())
+  classDate    DateTime
+  type         TypeRegisterClass
+  content      String?
+  subContent   String?
+  Period       Period?           @relation(fields: [periodId], references: [id])
+  periodId     String?
+  observation  String
+  Discipline   Discipline?       @relation(fields: [disciplineId], references: [id])
+  disciplineId String?
+  Content      Content?          @relation(fields: [contentId], references: [id])
+  contentId    String?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
 }
 
 model Lesson {

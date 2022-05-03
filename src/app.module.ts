@@ -22,6 +22,7 @@ import { StudentModule } from './modules/student/student.module';
 import { AppService } from './app.service';
 import { PeriodModule } from './modules/period/period.module';
 import { ContentModule } from './modules/content/content.module';
+import { TestModule } from './modules/test/test.module';
 
 ConfigModule.forRoot();
 
@@ -46,6 +47,7 @@ ConfigModule.forRoot();
     ContentModule,
     PeriodModule,
     RegisterClassModule,
+    TestModule,
   ],
   controllers: [AppController],
   providers: [
