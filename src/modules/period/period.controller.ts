@@ -1,3 +1,4 @@
+import { ApiTags } from '@nestjs/swagger';
 import {
   Controller,
   Get,
@@ -11,6 +12,7 @@ import { PeriodService } from './period.service';
 import { CreatePeriodDTO } from './dto/create-period.dto';
 import { UpdatePeriodDto } from './dto/update-period.dto';
 
+@ApiTags('Period')
 @Controller('period')
 export class PeriodController {
   constructor(private readonly periodService: PeriodService) {}

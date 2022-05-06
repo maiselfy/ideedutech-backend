@@ -1,8 +1,10 @@
+import { ApiTags } from '@nestjs/swagger';
 import { ContentService } from './../service/content.service';
 import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import CreateContentDTO from '../dtos/createContent.dto';
 import { Public } from 'src/modules/auth/decorators/public.decorator';
 
+@ApiTags('Content')
 @Controller('content')
 export class ContentController {
   constructor(private readonly contentService: ContentService) {}

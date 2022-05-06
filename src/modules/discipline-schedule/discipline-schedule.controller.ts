@@ -11,7 +11,9 @@ import {
 import { DisciplineScheduleService } from './discipline-schedule.service';
 import { CreateDisciplineScheduleDto } from './dto/create-discipline-schedule.dto';
 import { UpdateDisciplineScheduleDto } from './dto/update-discipline-schedule.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Discipline Schedule')
 @Controller('discipline-schedule')
 export class DisciplineScheduleController {
   constructor(

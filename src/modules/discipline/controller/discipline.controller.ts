@@ -1,25 +1,17 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  Query,
-} from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
 import { DisciplineService } from '../service/discipline.service';
 import { CreateDisciplineDTO } from '../dtos/createDiscipline.dto';
-import { UpdateDisciplineDto } from '../dtos/updateDiscipline.dto';
 import { PaginationDTO } from 'src/models/PaginationDTO';
 import { User } from 'src/modules/user/decorators/user.decorator';
 
+@ApiTags('Discipline')
 @Controller('discipline')
 export class DisciplineController {
   constructor(private readonly disciplineService: DisciplineService) {}
 
   @Post()
-  create(@Body() createDisciplineDTO) {
+  create(@Body() createDisciplineDTO: CreateDisciplineDTO) {
     return this.disciplineService.create(createDisciplineDTO);
   }
 

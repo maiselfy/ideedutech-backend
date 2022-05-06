@@ -1,25 +1,17 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Put,
-  Param,
-  Delete,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
+import { CreateClassDTO } from '../dtos/create-class.dto';
 import { PaginationDTO } from 'src/models/PaginationDTO';
-import { User } from 'src/modules/user/decorators/user.decorator';
-import ListEntitiesForSchoolDTO from '../../student/dtos/listEntitiesForSchool.dto';
-import { CreateClassDto } from '../dtos/create-class.dto';
+import { ApiTags } from '@nestjs/swagger';
 import { ClassService } from '../services/class.service';
+import { User } from 'src/modules/user/decorators/user.decorator';
 
+@ApiTags('Class')
 @Controller('class')
 export class ClassController {
   constructor(private readonly classService: ClassService) {}
 
   @Post()
-  create(@Body() createClassDto: CreateClassDto) {
+  create(@Body() createClassDto: CreateClassDTO) {
     return this.classService.create(createClassDto);
   }
 

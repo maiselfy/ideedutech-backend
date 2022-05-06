@@ -1,3 +1,4 @@
+import { ApiTags } from '@nestjs/swagger';
 import {
   Controller,
   Get,
@@ -10,9 +11,9 @@ import {
 } from '@nestjs/common';
 import { PaginationDTO } from 'src/models/PaginationDTO';
 import { User } from 'src/modules/user/decorators/user.decorator';
-import { CreateTeacherDTO } from '../dtos/createTeacher.dto';
 import { TeacherService } from '../services/teacher.service';
 
+@ApiTags('Teacher')
 @Controller('teacher')
 export class TeacherController {
   constructor(private readonly teacherService: TeacherService) {}
