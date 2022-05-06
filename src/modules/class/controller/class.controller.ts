@@ -8,12 +8,14 @@ import {
   Delete,
   Query,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { PaginationDTO } from 'src/models/PaginationDTO';
 import { User } from 'src/modules/user/decorators/user.decorator';
 import ListEntitiesForSchoolDTO from '../../student/dtos/listEntitiesForSchool.dto';
 import { CreateClassDto } from '../dtos/create-class.dto';
 import { ClassService } from '../services/class.service';
 
+@ApiTags('class')
 @Controller('class')
 export class ClassController {
   constructor(private readonly classService: ClassService) {}

@@ -16,4 +16,8 @@ export class CreateClassDto {
   @IsString()
   @IsNotEmpty()
   schoolId: string;
+
+  @IsArray()
+  @IsOptional()
+  students: { id: string }[];
 }
