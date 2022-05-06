@@ -46,6 +46,13 @@ export class ClassService {
           id: schoolId,
         },
       },
+      include: {
+        _count: {
+          select: {
+            students: true,
+          },
+        },
+      },
       skip: skippedItems ? skippedItems : undefined,
       take: qtd ? qtd : undefined,
     });
