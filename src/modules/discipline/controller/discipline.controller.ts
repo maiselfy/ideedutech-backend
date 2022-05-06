@@ -22,9 +22,7 @@ export class DisciplineController {
   @Public()
   @Post()
   create(@Body() createDisciplineDTO) {
-    return this.disciplineService.cre;
-
-    ate(createDisciplineDTO);
+    return this.disciplineService.create(createDisciplineDTO);
   }
 
   @Get()

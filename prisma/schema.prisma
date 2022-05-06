@@ -206,6 +206,7 @@ model HomeWork {
   isOpen       Boolean
   attachement  String?
   type         TypeHomeWork
+  weight       Float?       @default(1)
   submissions  Submission[]
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
@@ -277,6 +278,14 @@ model RegisterClass {
   contentId    String?
   createdAt    DateTime          @default(now())
   updatedAt    DateTime          @updatedAt
+}
+
+model ClassDayCheck {
+  id              String @id @default(uuid())
+  registerClassId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Lesson {

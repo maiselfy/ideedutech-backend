@@ -22,8 +22,11 @@ export class TestController {
   }
 
   @Get('mean/discipline/:disciplineId/student/:studentId')
-  getMeanOfStudentForDiscipline({ studentId, disciplineId }) {
-    return this.testService.calculateMeanOfStudentForDiscipline();
+  getMeanOfStudentForDiscipline(studentId: string, disciplineId: string) {
+    return this.testService.calculateMeanOfStudentForDiscipline(
+      studentId,
+      disciplineId,
+    );
   }
 
   // @Get(':id')

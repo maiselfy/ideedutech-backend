@@ -67,6 +67,26 @@ export class TestService {
     studentId: string,
     disciplineId: string,
   ) {
+    const homeWorksWithRate = await this.prisma.submission.findMany({
+      where: {
+        studentId,
+        homeWork: {
+          disciplineId: disciplineId,
+        },
+      },
+      include: {
+        homeWork: true,
+      },
+    });
+
+    let sum: number;
+    let weight: number;
+
+    homeWorksWithRate.forEach((submission) => {
+      sum += submission.rating;
+      weight += submission.homeWork.weight;
+    });
+
     const ratesOfStudent = await this.prisma.test.findMany({
       where: {
         studentId,
@@ -79,7 +99,14 @@ export class TestService {
       },
     });
 
-    console.log(ratesOfStudent);
+    ratesOfStudent.forEach((rate) => {
+      sum += rate.rate * rate.weight;
+      weight += rate.weight;
+    });
+
+    const mean = sum / weight;
+
+    return mean.toFixed(2);
   }
 
   // findAll() {
