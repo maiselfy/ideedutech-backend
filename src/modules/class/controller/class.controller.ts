@@ -1,0 +1,58 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Put,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
+import { PaginationDTO } from 'src/models/PaginationDTO';
+import { User } from 'src/modules/user/decorators/user.decorator';
+import ListEntitiesForSchoolDTO from '../../student/dtos/listEntitiesForSchool.dto';
+import { CreateClassDto } from '../dtos/create-class.dto';
+import { ClassService } from '../services/class.service';
+
+@Controller('class')
+export class ClassController {
+  constructor(private readonly classService: ClassService) {}
+
+  @Post()
+  create(@Body() createClassDto: CreateClassDto) {
+    return this.classService.create(createClassDto);
+  }
+
+  @Get('/classes/:schoolId')
+  findClassesBySchool(
+    @User() user,
+    @Param('schoolId') schoolId: string,
+    @Query() paginationDTO: PaginationDTO,
+  ) {
+    const managerId = user.id;
+    return this.classService.findClassesBySchool(
+      { schoolId, managerId },
+      paginationDTO,
+    );
+  }
+
+  // @Get()
+  // findAll() {
+  //   return this.classService.findAll();
+  // }
+
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.classService.findOne(+id);
+  // }
+
+  // @Put(':id')
+  // update(@Param('id') id: string, @Body() updateClassDto: UpdateClassDto) {
+  //   return this.classService.update(id, updateClassDto);
+  // }
+
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.classService.remove(+id);
+  // }
+}
