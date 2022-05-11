@@ -45,8 +45,8 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           port: ${{ secrets.SSH_PORT }}
           key: ${{ secrets.SSH_KEY }}
-          source: "dist"
-          target: "test"
+          source: "."
+          target: "~/app/ideedutech-backend"
         
       
       # Copiar a pasta dist pra dentro da DO 
