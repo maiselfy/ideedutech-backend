@@ -30,9 +30,11 @@ jobs:
         with: 
           node-version: 14.18.1 
           
+      # Cache no Yarn 
       - name: Cache
         uses: actions/cache@v3.0.2
-        with: 
+        with:
+          path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
 
       # Instalar as dependências 
@@ -53,7 +55,38 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           source: "., !node_modules"
           target: "~/app/ideedutech-backend"
-        
+          
+      - name: Install dependecies on Digital Ocean 
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          script: |
+            cd ~/app/ideedutech-backend 
+            yarn 
+            
+      - name: Run migrations on Digital Ocean 
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          script: |
+            cd ~/app/ideedutech-backend 
+            ./node_modules/.bin/prisma migrate deploy  
+            
+      - name: Restart pm2 
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          script: |
+              pm2 restart main 
   
       # Executar yarn na DO 
       # Executar as migrations na DO
