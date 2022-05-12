@@ -72,6 +72,8 @@ export class WaitlistService {
 
     const [page, qtd, skippedItems] = pagination(paginationDTO);
 
+<<<<<<< HEAD
+=======
     const waitlistLength = await this.prisma.waitList.count({
       where: {
         schoolId,
@@ -81,12 +83,16 @@ export class WaitlistService {
 
     const totalPages = Math.ceil(waitlistLength / qtd) || 1;
 
+>>>>>>> 8e5b9bc1e7f516d3b31e39a09c4f19e49a00fa3c
     const waitlistFilterResult = await this.prisma.waitList.findMany({
       where: {
         schoolId,
         role,
       },
+<<<<<<< HEAD
+=======
       orderBy: [{ createdAt: 'desc' }],
+>>>>>>> 8e5b9bc1e7f516d3b31e39a09c4f19e49a00fa3c
       skip: skippedItems ? skippedItems : undefined,
       take: qtd ? qtd : undefined,
     });
