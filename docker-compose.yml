@@ -1,13 +1,28 @@
-version: '3' # versão do yaml
+version: '3.8'
+services:
+  nest-api:
+    container_name: nest-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    depends_on:
+      - postgres
+    env_file:
+      - .env
 
-services: # representam os containers
-  ideedutech-backend: # nome do serviço
-    image: postgres # imagem que o docker irá se basear para criar o container
-    environment: # variáveis de ambiente
-      POSTGRES_PASSWORD: 'postgres'
-    container_name: ideedutech-backend # nome do container
+  postgres:
+    image: postgres:13
+    container_name: postgres
+    restart: always
+    ports:
+      - 5432:5432
+    env_file:
+      - .env
+    volumes:
+      - postgres:/var/lib/postgresql/data
 
-    ports: # portas para acessar o container
-      - '8081:5432'
-    volumes: # onde serão armazenadas as informações do banco
-      - .docker/dbdata:/var/lib/postgresql/data
+volumes:
+  postgres:
+    name: nest-db

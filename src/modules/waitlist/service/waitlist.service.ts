@@ -72,11 +72,27 @@ export class WaitlistService {
 
     const [page, qtd, skippedItems] = pagination(paginationDTO);
 
+<<<<<<< HEAD
+=======
+    const waitlistLength = await this.prisma.waitList.count({
+      where: {
+        schoolId,
+        role,
+      },
+    });
+
+    const totalPages = Math.ceil(waitlistLength / qtd) || 1;
+
+>>>>>>> 8e5b9bc1e7f516d3b31e39a09c4f19e49a00fa3c
     const waitlistFilterResult = await this.prisma.waitList.findMany({
       where: {
         schoolId,
         role,
       },
+<<<<<<< HEAD
+=======
+      orderBy: [{ createdAt: 'desc' }],
+>>>>>>> 8e5b9bc1e7f516d3b31e39a09c4f19e49a00fa3c
       skip: skippedItems ? skippedItems : undefined,
       take: qtd ? qtd : undefined,
     });
@@ -89,15 +105,13 @@ export class WaitlistService {
       };
     }
 
-    const totalPages = Math.round(waitlistFilterResult.length / qtd);
-
     return {
       data: waitlistFilterResult,
       totalCount: waitlistFilterResult.length,
       page: page,
       limit: qtd,
       status: HttpStatus.OK,
-      totalPages: totalPages > 0 ? totalPages : 1,
+      totalPages: totalPages,
       message: 'Lista de espera retornada com sucesso',
     };
   }
