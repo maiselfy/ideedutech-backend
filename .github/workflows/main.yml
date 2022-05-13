@@ -59,13 +59,14 @@ jobs:
       - name: Install dependecies on Digital Ocean 
         uses: appleboy/ssh-action@master
         with:
-          node-version: 14.18.1
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           port: ${{ secrets.SSH_PORT }}
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd ~/app/ideedutech-backend 
+            nvm use 14.18.1
+            yarn upgrade-interactive --latest 
             yarn 
             
       - name: Run migrations on Digital Ocean 
