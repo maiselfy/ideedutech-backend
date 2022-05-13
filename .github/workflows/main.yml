@@ -65,8 +65,8 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd ~/app/ideedutech-backend 
+            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
             nvm use 14.18.1
-            yarn upgrade-interactive --latest 
             yarn 
             
       - name: Run migrations on Digital Ocean 
