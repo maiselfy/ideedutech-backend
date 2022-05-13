@@ -66,9 +66,9 @@ jobs:
           script: |
             cd ~/app/ideedutech-backend
             node -v 
-            nvm -v
-            nvm install 14.18.1
-            yarn
+            curl -sL https://deb.nodesource.com/setup\_14.x | sudo -E bash -
+            sudo apt install nodejs
+            npm install 
             
       - name: Run migrations on Digital Ocean 
         uses: appleboy/ssh-action@master
