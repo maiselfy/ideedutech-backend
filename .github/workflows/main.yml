@@ -72,10 +72,6 @@ jobs:
             [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
             nvm -v 
             nvm install 14.18.1 
-            nvm use 14.18.1
-            curl -sL https://deb.nodesource.com/setup\_14.x | sudo -E bash -
-            sudo apt install nodejs -S
-            npm install
             yarn 
             
       - name: Run migrations on Digital Ocean 
