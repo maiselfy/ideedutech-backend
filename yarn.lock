@@ -1416,7 +1416,6 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
-<<<<<<< HEAD
 "@jridgewell/trace-mapping@^0.3.8", "@jridgewell/trace-mapping@^0.3.9":
   version "0.3.9"
   resolved "https://registry.yarnpkg.com/@jridgewell/trace-mapping/-/trace-mapping-0.3.9.tgz#6534fd5933a53ba7cbf3a17615e273a0d1273ff9"
@@ -1425,13 +1424,10 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
-=======
->>>>>>> 8e5b9bc1e7f516d3b31e39a09c4f19e49a00fa3c
 "@mapbox/node-pre-gyp@^1.0.0":
   version "1.0.8"
   resolved "https://registry.yarnpkg.com/@mapbox/node-pre-gyp/-/node-pre-gyp-1.0.8.tgz#32abc8a5c624bc4e46c43d84dfb8b26d33a96f58"
   integrity sha512-CMGKi28CF+qlbXh26hDe6NxCd7amqeAzEqnS6IHeO6LoaKyM/n+Xw3HT1COdq8cuioOdlKdqn/hCmqPUOMOywg==
-<<<<<<< HEAD
   dependencies:
     detect-libc "^1.0.3"
     https-proxy-agent "^5.0.0"
@@ -1448,24 +1444,6 @@
   resolved "https://registry.yarnpkg.com/@nestjs/cli/-/cli-8.2.2.tgz#26d6a4d41f87f8c88d4c299837a2df95e4dca205"
   integrity sha512-ZonmNLCHfTVrZGgYf4mrpivnKGaRzVRAcux+WDbzhQDNIz70s7mdOPShXW1Vpq+7uRJDxlgO1vOMhmg4uEUIDg==
   dependencies:
-=======
-  dependencies:
-    detect-libc "^1.0.3"
-    https-proxy-agent "^5.0.0"
-    make-dir "^3.1.0"
-    node-fetch "^2.6.5"
-    nopt "^5.0.0"
-    npmlog "^5.0.1"
-    rimraf "^3.0.2"
-    semver "^7.3.5"
-    tar "^6.1.11"
-
-"@nestjs/cli@^8.2.2":
-  version "8.2.2"
-  resolved "https://registry.yarnpkg.com/@nestjs/cli/-/cli-8.2.2.tgz#26d6a4d41f87f8c88d4c299837a2df95e4dca205"
-  integrity sha512-ZonmNLCHfTVrZGgYf4mrpivnKGaRzVRAcux+WDbzhQDNIz70s7mdOPShXW1Vpq+7uRJDxlgO1vOMhmg4uEUIDg==
-  dependencies:
->>>>>>> 8e5b9bc1e7f516d3b31e39a09c4f19e49a00fa3c
     "@angular-devkit/core" "13.2.5"
     "@angular-devkit/schematics" "13.2.5"
     "@angular-devkit/schematics-cli" "13.2.5"
