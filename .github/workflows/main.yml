@@ -64,10 +64,9 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            cd ~/app/ideedutech-backend 
-            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
-            nvm use 14.18.1
-            yarn 
+            cd ~/app/ideedutech-backend
+            node -v 
+            npm install  
             
       - name: Run migrations on Digital Ocean 
         uses: appleboy/ssh-action@master
