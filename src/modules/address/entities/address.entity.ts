@@ -12,4 +12,3 @@ export class Address {
   createdAt?: Date;
   updatedAt?: Date;
 }
-

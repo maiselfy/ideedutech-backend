@@ -10,6 +10,12 @@ export default class CreateSchoolDTO {
   phone: string;
 
   @IsString()
+  inep?: string;
+
+  @IsString()
+  email?: string;
+
+  @IsString()
   @IsOptional()
   addressId: string;
 

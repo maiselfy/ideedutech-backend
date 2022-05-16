@@ -6,6 +6,8 @@ import { GenerateRefreshToken } from '../auth/providers/generateRefreshToken.pro
 import { GenerateToken } from '../auth/providers/generateToken.provider';
 import { JwtModule } from '@nestjs/jwt';
 import { UserService } from '../user/service/user.service';
+import { StudentService } from '../student/services/student.service';
+import { ManagerService } from '../manager/service/manager.service';
 
 @Module({
   imports: [
@@ -23,6 +25,8 @@ import { UserService } from '../user/service/user.service';
     GenerateRefreshToken,
     GenerateToken,
     UserService,
+    StudentService,
+    ManagerService,
   ],
 })
 export class RefreshTokenModule {}

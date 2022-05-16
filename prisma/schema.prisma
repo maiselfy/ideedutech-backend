@@ -22,6 +22,7 @@ enum Role {
   admin    @map("Administrador")
   manager  @map("Gestor")
   teacher  @map("Professor")
+  student  @map("Estudante")
   others   @map("Outros")
 }
 
@@ -31,6 +32,11 @@ enum TypeUser {
   teacher  @map("Professor")
   student  @map("Estudante")
   others   @map("Outros")
+}
+
+enum TypeRegisterClass {
+  planEducation  @map("Plano de Ensino")
+  loose          @map("Avulso")
 }
 
 enum Day {
@@ -91,6 +97,7 @@ model User {
   admin         Admin?
   teacher       Teacher?
   student       Student?
+  avatar        String?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 }
@@ -105,11 +112,11 @@ model Student {
   classId           String
   entryForm         String
   reasonForTransfer String?
-  parents           Parent[]
   userId            String   @unique
   user              User     @relation(fields: [userId], references: [id])
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+  Test              Test[]
 }
 
 model Manager {
@@ -127,21 +134,8 @@ model Admin {
   status    Boolean
   userId    String   @unique
   user      User     @relation(fields: [userId], references: [id])
-  schools   School[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-}
-
-model Parent {
-  id        String    @id @default(uuid())
-  name      String
-  kinship   String
-  studentId String
-  contact   String
-  addressId String
-  students  Student[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
 }
 
 model Teacher {
@@ -159,6 +153,8 @@ model School {
   id        String     @id @default(uuid())
   name      String
   phone     String
+  inep      String?
+  email     String
   address   Address[]
   cnpj      String?    @unique
   classes   Class[]
@@ -168,8 +164,25 @@ model School {
   students  Student[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
-  Admin     Admin?     @relation(fields: [adminId], references: [id])
-  adminId   String?
+  Period    Period[]
+}
+
+model Discipline {
+  id            String                @id @default(uuid())
+  name          String
+  teacher       Teacher               @relation(fields: [teacherId], references: [id])
+  teacherId     String
+  class         Class                 @relation(fields: [classId], references: [id])
+  classId       String
+  topic         String
+  lessons       Lesson[]
+  homeWorks     HomeWork[]
+  schedules     DisciplineSchedules[]
+  registerClass RegisterClass[]
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+  Content       Content[]
+  Test          Test[]
 }
 
 model Class {
@@ -183,19 +196,6 @@ model Class {
   updatedAt   DateTime     @updatedAt
 }
 
-model Discipline {
-  id        String                @id @default(uuid())
-  name      String
-  teacher   Teacher               @relation(fields: [teacherId], references: [id])
-  teacherId String
-  classes     Class[]
-  lessons   Lesson[]
-  homeWorks HomeWork[]
-  createdAt DateTime              @default(now())
-  updatedAt DateTime              @updatedAt
-  schedules DisciplineSchedules[]
-}
-
 model HomeWork {
   id           String       @id @default(uuid())
   name         String
@@ -206,6 +206,7 @@ model HomeWork {
   isOpen       Boolean
   attachement  String?
   type         TypeHomeWork
+  weight       Float?       @default(1)
   submissions  Submission[]
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
@@ -224,12 +225,78 @@ model Submission {
   updatedAt   DateTime         @updatedAt
 }
 
+model Test {
+  id           String     @id @default(uuid())
+  name         String
+  description  String?
+  discipline   Discipline @relation(fields: [disciplineId], references: [id])
+  disciplineId String
+  student      Student    @relation(fields: [studentId], references: [id])
+  studentId    String
+  rate         Float
+  weight       Float?     @default(1)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model Period {
+  id            String          @id @default(uuid())
+  name          String
+  contents      Content[]
+  registerClass RegisterClass[]
+  schoolId      String
+  school        School          @relation(fields: [schoolId], references: [id])
+  startOfPeriod DateTime
+  endOfPeriod   DateTime
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+}
+
+model Content {
+  id            String          @id @default(uuid())
+  disciplineId  String
+  discipline    Discipline      @relation(fields: [disciplineId], references: [id])
+  name          String
+  subContent    String
+  registerClass RegisterClass[]
+  Period        Period          @relation(fields: [periodId], references: [id])
+  periodId      String
+}
+
+model RegisterClass {
+  id           String            @id @default(uuid())
+  classDate    DateTime
+  type         TypeRegisterClass
+  content      String?
+  subContent   String?
+  Period       Period?           @relation(fields: [periodId], references: [id])
+  periodId     String?
+  observation  String
+  Discipline   Discipline?       @relation(fields: [disciplineId], references: [id])
+  disciplineId String?
+  Content      Content?          @relation(fields: [contentId], references: [id])
+  contentId    String?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+}
+
+model LackOfClass {
+  id              String @id @default(uuid())
+  lessonId        String
+  lesson          Lesson @relation(fields: [lessonId], references: [id])
+  studentId       String
+  student         Student @relation(fields: [studentId], references: [id])
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
 model Lesson {
   id           String     @id @default(uuid())
   name         String
   description  String
   disciplineId String
   discipline   Discipline @relation(fields: [disciplineId], references: [id])
+  //Class Schedule 
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 }

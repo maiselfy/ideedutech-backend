@@ -6,7 +6,10 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
+import { PaginationDTO } from 'src/models/PaginationDTO';
+import { User } from 'src/modules/user/decorators/user.decorator';
 import { CreateTeacherDTO } from '../dtos/createTeacher.dto';
 import { TeacherService } from '../services/teacher.service';
 
@@ -19,9 +22,23 @@ export class TeacherController {
   //   return this.teacherService.create(createTeacherDTO);
   // }
 
-  @Get()
-  findAll() {
-    return this.teacherService.findAll();
+  @Get('/school/:schoolId')
+  findAllTeachersOnSchool(@User() user, @Param('schoolId') schoolId: string) {
+    return this.teacherService.findAllTeachersOnSchool(schoolId, user.id);
+  }
+
+  @Get('/teachers/:schoolId')
+  findTeachersBySchool(
+    @User() user,
+    @Param('schoolId') schoolId: string,
+    @Query() paginationDTO: PaginationDTO,
+  ) {
+    const managerId = user.id;
+
+    return this.teacherService.findTeachersBySchool(
+      { schoolId, managerId },
+      paginationDTO,
+    );
   }
 
   // @Get(':id')

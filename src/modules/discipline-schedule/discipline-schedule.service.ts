@@ -42,7 +42,7 @@ export class DisciplineScheduleService {
           select: {
             id: true,
             name: true,
-            classes: { select: { id: true, name: true } },
+            classId: true,
           },
         },
       },

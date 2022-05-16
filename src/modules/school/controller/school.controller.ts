@@ -6,8 +6,10 @@ import {
   Patch,
   Param,
   Delete,
+  Put,
 } from '@nestjs/common';
 import { Public } from 'src/modules/auth/decorators/public.decorator';
+import { User } from 'src/modules/user/decorators/user.decorator';
 import CreateSchoolDTO from '../dtos/createSchool.dto';
 import { SchoolService } from '../service/school.service';
 
@@ -22,9 +24,19 @@ export class SchoolController {
   }
 
   @Get()
+  findAll(@User() user) {
+    return this.schoolService.findAll(user.id);
+  }
+
+  @Get('/:id')
+  findSchoolById(@User() user, @Param('id') id: string) {
+    return this.schoolService.findSchoolById(id, user.id);
+  }
+
+  @Put(':id')
   @Public()
-  findAll() {
-    return this.schoolService.findAll();
+  update(@Param('id') id: string, @Body() updateInfoSchool) {
+    return this.schoolService.update(id, updateInfoSchool);
   }
 
   // @Get(':id')

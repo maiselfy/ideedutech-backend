@@ -10,6 +10,8 @@ import { AuthService } from './service/auth.service';
 import { GenerateRefreshToken } from './providers/generateRefreshToken.provider';
 import { UserService } from '../user/service/user.service';
 import { GenerateToken } from './providers/generateToken.provider';
+import { StudentService } from '../student/services/student.service';
+import { ManagerService } from '../manager/service/manager.service';
 
 @Module({
   imports: [
@@ -30,6 +32,8 @@ import { GenerateToken } from './providers/generateToken.provider';
     PrismaService,
     UserService,
     GenerateToken,
+    StudentService,
+    ManagerService,
   ],
 })
 export class AuthModule {}

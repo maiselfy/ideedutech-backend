@@ -1,6 +1,5 @@
-import { Address, Gender, TypeUser } from '@prisma/client';
+import { Address, Gender } from '@prisma/client';
 import {
-  IsDate,
   IsEmail,
   IsEmpty,
   IsNotEmpty,
@@ -37,17 +36,11 @@ export default class CreateUserDTO {
   @IsOptional()
   phone: string;
 
-  @IsString()
-  @IsOptional()
-  addressId: string;
+  address: Address;
 
   @IsString()
   @IsOptional()
   gender: Gender;
-
-  @IsString()
-  @IsOptional()
-  type: TypeUser;
 
   @IsEmpty()
   createdAt: Date;
