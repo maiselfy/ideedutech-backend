@@ -1,15 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma';
-import { Exclude } from 'class-transformer';
-import CreateSchoolDTO from '../dtos/createSchool.dto';
-import { ManagerService } from 'src/modules/manager/service/manager.service';
 
 @Injectable()
 export class SchoolService {
-  constructor(
-    private prisma: PrismaService,
-    private managerService: ManagerService,
-  ) {}
+  constructor(private prisma: PrismaService) {}
   async create(createSchoolDTO) {
     const data = createSchoolDTO;
 
@@ -70,32 +64,6 @@ export class SchoolService {
       where: { userId: managerId },
     });
 
-    // const schools = await this.prisma.school.findMany({
-    //   where: {
-    //     managers: {
-    //       some: {
-    //         userId: {
-    //           equals: managerId,
-    //         },
-    //       },
-    //     },
-    //   },
-    //   include: {
-    //     address: {
-    //       select: {
-    //         city: true,
-    //         area: true,
-    //         createdAt: true,
-    //         number: true,
-    //         labelAddress: true,
-    //         uf: true,
-    //         street: true,
-    //       },
-    //     },
-    //     _count: { select: { managers: true, teachers: true, students: true } },
-    //   },
-    // });
-
     if (!schools) {
       throw new HttpException(
         {
@@ -146,20 +114,24 @@ export class SchoolService {
 
       updateSchool.name = updateData.name ? updateData.name : updateSchool.name;
       updateSchool.cnpj = updateData.cnpj ? updateData.cnpj : updateSchool.cnpj;
-      updateSchool.phone = updateData.phone ? updateData.phone : updateSchool.phone;
-      updateSchool.email = updateData.email ? updateData.email : updateSchool.email;
+      updateSchool.phone = updateData.phone
+        ? updateData.phone
+        : updateSchool.phone;
+      updateSchool.email = updateData.email
+        ? updateData.email
+        : updateSchool.email;
 
       const updateSchoolResult = await this.prisma.school.update({
         where: {
-          id: id
-        }, 
+          id: id,
+        },
         data: {
-          name:  updateSchool.name,
-          cnpj:  updateSchool.cnpj,
+          name: updateSchool.name,
+          cnpj: updateSchool.cnpj,
           phone: updateSchool.phone,
-          email: updateSchool.email
-        }
-      })
+          email: updateSchool.email,
+        },
+      });
 
       const updateAddress = await this.prisma.address.findFirst({
         where: {
@@ -171,50 +143,50 @@ export class SchoolService {
         return new HttpException('Not found', HttpStatus.NOT_FOUND);
       }
 
-      updateAddress.street = updateData.address.street ? updateData.address.street : updateAddress.street;
-      updateAddress.city = updateData.address.city ? updateData.address.city : updateAddress.city;
-      updateAddress.number = updateData.address.number ? updateData.address.number : updateAddress.number;
-      updateAddress.zipCode = updateData.address.zipCode ? updateData.address.zipCode : updateAddress.zipCode;
-      updateAddress.area = updateData.address.area ? updateData.address.area : updateAddress.area;
-      updateAddress.uf = updateData.address.uf ? updateData.address.uf : updateAddress.uf;
-      updateAddress.labelAddress = updateData.address.labelAddress ? updateData.address.labelAddress : updateAddress.labelAddress;
+      updateAddress.street = updateData.address.street
+        ? updateData.address.street
+        : updateAddress.street;
+      updateAddress.city = updateData.address.city
+        ? updateData.address.city
+        : updateAddress.city;
+      updateAddress.number = updateData.address.number
+        ? updateData.address.number
+        : updateAddress.number;
+      updateAddress.zipCode = updateData.address.zipCode
+        ? updateData.address.zipCode
+        : updateAddress.zipCode;
+      updateAddress.area = updateData.address.area
+        ? updateData.address.area
+        : updateAddress.area;
+      updateAddress.uf = updateData.address.uf
+        ? updateData.address.uf
+        : updateAddress.uf;
+      updateAddress.labelAddress = updateData.address.labelAddress
+        ? updateData.address.labelAddress
+        : updateAddress.labelAddress;
 
       const updateAddressResult = await this.prisma.address.update({
         where: {
-          id: updateAddress.id
-        }, 
+          id: updateAddress.id,
+        },
         data: {
-          street:  updateAddress.street,
-          city:  updateAddress.city,
+          street: updateAddress.street,
+          city: updateAddress.city,
           number: updateAddress.number,
           zipCode: updateAddress.zipCode,
           area: updateAddress.area,
           uf: updateAddress.uf,
           labelAddress: updateAddress.labelAddress,
-        }
-      })
+        },
+      });
 
       return {
-        data: {updateSchoolResult, updateAddressResult},
+        data: { updateSchoolResult, updateAddressResult },
         status: HttpStatus.OK,
         message: 'Escola atualizada com sucesso.',
       };
-
     } catch (error) {
-      if (error) return error;
-      return new HttpException('FAILED', HttpStatus.BAD_REQUEST);
+      return new HttpException(error, HttpStatus.BAD_REQUEST);
     }
   }
-
-  // findOne(id: number) {
-  //   return `This action returns a #${id} school`;
-  // }
-
-  // update(id: number, updateSchoolDto: UpdateSchoolDto) {
-  //   return `This action updates a #${id} school`;
-  // }
-
-  // remove(id: number) {
-  //   return `This action removes a #${id} school`;
-  // }
 }

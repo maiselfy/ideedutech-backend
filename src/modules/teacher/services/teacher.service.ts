@@ -4,7 +4,6 @@ import { ManagerService } from 'src/modules/manager/service/manager.service';
 import { PrismaService } from 'src/modules/prisma';
 import ListEntitiesForSchoolDTO from 'src/modules/student/dtos/listEntitiesForSchool.dto';
 import pagination from 'src/utils/pagination';
-import { CreateTeacherDTO } from '../dtos/createTeacher.dto';
 
 @Injectable()
 export class TeacherService {
@@ -13,19 +12,6 @@ export class TeacherService {
     private managerService: ManagerService,
   ) {}
 
-  // async create(createTeacherDTO: CreateTeacherDTO) {
-  //   const data = createTeacherDTO;
-
-  //   const createdTeacher = await this.prisma.teacher.create({
-  //     data,
-  //   });
-
-  //   return {
-  //     data: createdTeacher,
-  //     status: HttpStatus.CREATED,
-  //     message: 'Professor cadastrado com sucesso.',
-  //   };
-  // }
   async findAllTeachersOnSchool(schoolId: string, userId: string) {
     try {
       const findSchool = await this.prisma.school.findFirst({
@@ -152,11 +138,19 @@ export class TeacherService {
     };
   }
 
-  // update(id: number, updateTeacherDto: UpdateTeacherDto) {
-  //   return `This action updates a #${id} teacher`;
-  // }
+  async remove(id: string) {
+    const deleteTeacher = await this.prisma.teacher.delete({
+      where: {
+        id: id,
+      },
+    });
 
-  // remove(id: number) {
-  //   return `This action removes a #${id} teacher`;
-  // }
+    if (!deleteTeacher) {
+      throw Error(`Teacher ${id} not found `);
+    }
+
+    return {
+      message: `Teacher ${deleteTeacher} removed `,
+    };
+  }
 }

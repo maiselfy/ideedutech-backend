@@ -1,8 +1,15 @@
 import { ApiTags } from '@nestjs/swagger';
-import { Controller, Get, Post, Body, Param, Put } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Put,
+  BadRequestException,
+} from '@nestjs/common';
 import { Public } from 'src/modules/auth/decorators/public.decorator';
 import { User } from 'src/modules/user/decorators/user.decorator';
-import CreateSchoolDTO from '../dtos/createSchool.dto';
 import { SchoolService } from '../service/school.service';
 
 @ApiTags('School')
@@ -12,7 +19,7 @@ export class SchoolController {
 
   @Post()
   @Public()
-  create(@Body() createSchoolDTO: CreateSchoolDTO) {
+  create(@Body() createSchoolDTO) {
     return this.schoolService.create(createSchoolDTO);
   }
 

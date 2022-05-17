@@ -2,13 +2,12 @@ import { ApiTags } from '@nestjs/swagger';
 import {
   Controller,
   Get,
-  Post,
-  Body,
-  Patch,
   Param,
   Delete,
   Query,
+  NotFoundException,
 } from '@nestjs/common';
+import { Public } from 'src/modules/auth/decorators/public.decorator';
 import { PaginationDTO } from 'src/models/PaginationDTO';
 import { User } from 'src/modules/user/decorators/user.decorator';
 import { TeacherService } from '../services/teacher.service';
@@ -17,11 +16,6 @@ import { TeacherService } from '../services/teacher.service';
 @Controller('teacher')
 export class TeacherController {
   constructor(private readonly teacherService: TeacherService) {}
-
-  // @Post()
-  // create(@Body() createTeacherDTO: CreateTeacherDTO) {
-  //   return this.teacherService.create(createTeacherDTO);
-  // }
 
   @Get('/school/:schoolId')
   findAllTeachersOnSchool(@User() user, @Param('schoolId') schoolId: string) {
@@ -42,18 +36,11 @@ export class TeacherController {
     );
   }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.teacherService.findOne(+id);
-  // }
-
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateTeacherDto: UpdateTeacherDto) {
-  //   return this.teacherService.update(+id, updateTeacherDto);
-  // }
-
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.teacherService.remove(+id);
-  // }
+  @Public()
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.teacherService.remove(id).catch((e) => {
+      throw new NotFoundException(e.message);
+    });
+  }
 }
