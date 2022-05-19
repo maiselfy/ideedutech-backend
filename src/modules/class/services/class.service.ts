@@ -18,10 +18,8 @@ export class ClassService {
       data: {
         name: createClassDto.name,
         schooldId: createClassDto.schoolId,
-<<<<<<< HEAD
-=======
+
         students: { connect: createClassDto.students },
->>>>>>> 8e5b9bc1e7f516d3b31e39a09c4f19e49a00fa3c
       },
     });
     return response;

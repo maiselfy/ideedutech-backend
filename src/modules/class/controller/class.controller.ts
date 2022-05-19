@@ -8,10 +8,9 @@ import {
   Delete,
   Query,
 } from '@nestjs/common';
-<<<<<<< HEAD
-=======
+
 import { ApiTags } from '@nestjs/swagger';
->>>>>>> 8e5b9bc1e7f516d3b31e39a09c4f19e49a00fa3c
+
 import { PaginationDTO } from 'src/models/PaginationDTO';
 import { User } from 'src/modules/user/decorators/user.decorator';
 import ListEntitiesForSchoolDTO from '../../student/dtos/listEntitiesForSchool.dto';
