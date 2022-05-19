@@ -11,14 +11,14 @@ export const mailerConfig: MailerOptions = {
       layoutsDir: path.resolve(__dirname, '..', '..', 'templates'),
     },
   },
-  transport: `smtps://fabriciopinheiro713@gmail.com:playerfoco07@smtp.gmail.com/pool=true`,
+  transport: `smtps://${process.env.USER_MAILER}:${process.env.PASS_MAILER}@smtp.gmail.com/pool=true`,
   /* transport: {
     host: 'smtp.gmail.com',
     port: 465,
     secure: true,
     auth: {
-      user: 'fabriciopinheiro713@gmail.com',
-      pass: 'playerfoco07',
+      user: process.env.USER_MAILER,
+      pass: process.env.PASS_MAILER,
     },
     tls: {
       rejectUnauthorized: false,
