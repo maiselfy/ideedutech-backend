@@ -1,7 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma';
-import { CreatePeriodDTO } from './dto/create-period.dto';
-import { UpdatePeriodDto } from './dto/update-period.dto';
+import { PrismaService } from '../../prisma';
+import { CreatePeriodDTO } from '../dtos/create-period.dto';
 
 @Injectable()
 export class PeriodService {
@@ -22,11 +21,7 @@ export class PeriodService {
         message: 'Perído com sucesso',
       };
     } catch (error) {
-      if (error) return error;
-      return new HttpException(
-        'Not able to create a period',
-        HttpStatus.BAD_REQUEST,
-      );
+      return new HttpException(error, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -47,17 +42,5 @@ export class PeriodService {
       });
       return { response };
     } catch (error) {}
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} period`;
-  }
-
-  update(id: number, updatePeriodDto: UpdatePeriodDto) {
-    return `This action updates a #${id} period`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} period`;
   }
 }

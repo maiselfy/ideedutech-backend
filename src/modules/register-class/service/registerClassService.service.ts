@@ -17,11 +17,10 @@ export class RegisterClassService {
 
       return {
         data: createdRegisterClass,
-        status: HttpStatus.OK,
+        status: HttpStatus.CREATED,
         message: 'Registro de aula cadastrado com sucesso',
       };
     } catch (error) {
-      if (error) return error;
       return new HttpException(
         'Not able to create a register class',
         HttpStatus.BAD_REQUEST,

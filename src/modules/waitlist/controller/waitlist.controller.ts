@@ -5,7 +5,6 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   NotFoundException,
@@ -16,7 +15,9 @@ import CreateWaitlistDTO from '../dtos/createWaitlist.dto';
 import { WaitlistService } from '../service/waitlist.service';
 import { User } from 'src/modules/user/decorators/user.decorator';
 import { PaginationDTO } from 'src/models/PaginationDTO';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Waitlist')
 @Controller('waitlist')
 export class WaitlistController {
   constructor(private readonly waitlistService: WaitlistService) {}
@@ -56,14 +57,4 @@ export class WaitlistController {
       paginationDTO,
     );
   }
-
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.waitlistService.findOne(+id);
-  // }
-
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateWaitlistDto: UpdateWaitlistDto) {
-  //   return this.waitlistService.update(+id, updateWaitlistDto);
-  // }
 }

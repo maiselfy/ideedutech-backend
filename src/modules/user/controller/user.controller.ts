@@ -1,9 +1,18 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Delete,
+  Param,
+  NotFoundException,
+} from '@nestjs/common';
 import { UserService } from '../service/user.service';
-import CreateUserDTO from '../dtos/createUser.dto';
 import { User as UserDecorator } from '../decorators/user.decorator';
 import { Public } from 'src/modules/auth/decorators/public.decorator';
 
+@ApiTags('User')
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -19,23 +28,9 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.userService.findAll();
-  // }
-
-  // @Get(':id')
-  // findById(@Param('id') id: string) {
-  //   return this.userService.findOne(id);
-  // }
-
-  // @Patch(':id')
-  // update(@Param('id') id: string) {
-  //   return this.userService.update(+Zid);
-  // }
-
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.userService.remove(+id);
-  // }
+  @Public()
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.userService.remove(id);
+  }
 }

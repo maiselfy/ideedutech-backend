@@ -1,14 +1,6 @@
-import { Day } from '@prisma/client';
-import { Type } from 'class-transformer';
-import {
-  IsNotEmpty,
-  IsString,
-  IsArray,
-  IsDateString,
-  IsOptional,
-} from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
-export class CreateClassDto {
+export class CreateClassDTO {
   @IsString()
   @IsNotEmpty()
   name: string;
