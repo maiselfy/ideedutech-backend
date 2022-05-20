@@ -98,7 +98,7 @@ model User {
   teacher       Teacher?
   student       Student?
   avatar        String?
-   recoverToken  String?
+  recoverToken  String?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 }
