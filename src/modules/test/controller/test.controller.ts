@@ -21,6 +21,7 @@ export class TestController {
     return this.testService.create(createTestDTO);
   }
 
+  @Public()
   @Get('mean/discipline/:disciplineId/student/:studentId')
   getMeanOfStudentForDiscipline(studentId: string, disciplineId: string) {
     return this.testService.calculateMeanOfStudentForDiscipline(

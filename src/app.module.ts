@@ -23,6 +23,7 @@ import { AppService } from './app.service';
 import { PeriodModule } from './modules/period/period.module';
 import { ContentModule } from './modules/content/content.module';
 import { TestModule } from './modules/test/test.module';
+import { EvaluationModule } from './modules/evaluation/evaluation.module';
 
 ConfigModule.forRoot();
 
@@ -48,6 +49,7 @@ ConfigModule.forRoot();
     PeriodModule,
     RegisterClassModule,
     TestModule,
+    EvaluationModule,
   ],
   controllers: [AppController],
   providers: [

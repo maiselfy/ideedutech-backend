@@ -1,22 +1,16 @@
 import { IsEmpty, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export default class CreateTestDTO {
+export default class CreateEvaluationDTO {
   @IsString()
   @IsNotEmpty()
-  name: string;
+  testId: string;
 
   @IsString()
-  @IsOptional()
-  description: string;
-
-  @IsString()
-  disciplineId: string;
-
-  @IsString()
+  @IsNotEmpty()
   studentId: string;
 
   @IsOptional()
-  weight: number;
+  rate: number;
 
   @IsEmpty()
   createdAt: Date;

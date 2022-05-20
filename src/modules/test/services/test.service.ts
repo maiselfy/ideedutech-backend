@@ -59,7 +59,7 @@ export class TestService {
     return {
       data: createdTest,
       status: HttpStatus.CREATED,
-      message: 'Nota cadastrada com sucesso.',
+      message: 'Avaliação cadastrada com sucesso.',
     };
   }
 
@@ -88,20 +88,26 @@ export class TestService {
     });
 
     const ratesOfStudent = await this.prisma.test.findMany({
+      select: {
+        name: true,
+        weight: true,
+        Evaluation: {
+          select: {
+            rate: true,
+          },
+        },
+      },
       where: {
         studentId,
         disciplineId,
       },
-      select: {
-        name: true,
-        rate: true,
-        weight: true,
-      },
     });
 
-    ratesOfStudent.forEach((rate) => {
-      sum += rate.rate * rate.weight;
-      weight += rate.weight;
+    ratesOfStudent.forEach((test) => {
+      test.Evaluation.forEach((rate) => {
+        sum += rate.rate * test.weight;
+        weight += test.weight;
+      });
     });
 
     const mean = sum / weight;
