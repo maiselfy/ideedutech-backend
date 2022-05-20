@@ -18,7 +18,7 @@ export class StudentService {
     const data = createStudentDTO;
 
     const userExistsOnWaitlist = await this.prisma.waitList.findUnique({
-      where: { value: data.email },
+      where: { value: data.enrollment },
     });
 
     if (!userExistsOnWaitlist) {

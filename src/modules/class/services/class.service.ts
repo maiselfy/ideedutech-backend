@@ -17,6 +17,7 @@ export class ClassService {
       data: {
         name: createClassDto.name,
         schooldId: createClassDto.schoolId,
+        students: { connect: createClassDto.students },
       },
     });
     return response;
@@ -40,16 +41,10 @@ export class ClassService {
     const [page, qtd, skippedItems] = Pagination(paginationDTO);
 
     const classes = await this.prisma.class.findMany({
+      include: { _count: { select: { students: true } } },
       where: {
         school: {
           id: schoolId,
-        },
-      },
-      include: {
-        _count: {
-          select: {
-            students: true,
-          },
         },
       },
       skip: skippedItems ? skippedItems : undefined,

@@ -8,4 +8,8 @@ export class CreateClassDTO {
   @IsString()
   @IsNotEmpty()
   schoolId: string;
+
+  @IsArray()
+  @IsOptional()
+  students: { id: string }[];
 }

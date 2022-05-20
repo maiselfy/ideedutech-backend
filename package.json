@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "babel src --extensions \".ts\" --out-dir dist --copy-files && prisma generate && nest build",
+    "build": "prisma generate && nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "prisma generate && nest start --watch",
@@ -51,12 +51,6 @@
     "swagger-ui-express": "^4.3.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.17.10",
-    "@babel/core": "^7.17.10",
-    "@babel/plugin-proposal-class-properties": "^7.16.7",
-    "@babel/plugin-proposal-decorators": "^7.17.9",
-    "@babel/preset-env": "^7.17.10",
-    "@babel/preset-typescript": "^7.16.7",
     "@nestjs/cli": "^8.2.2",
     "@nestjs/config": "^1.2.0",
     "@nestjs/schematics": "^8.0.0",
