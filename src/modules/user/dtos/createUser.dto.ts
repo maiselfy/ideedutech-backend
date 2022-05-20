@@ -42,6 +42,10 @@ export default class CreateUserDTO {
   @IsOptional()
   gender: Gender;
 
+  @IsString()
+  @IsOptional()
+  recoverToken: string;
+
   @IsEmpty()
   createdAt: Date;
 

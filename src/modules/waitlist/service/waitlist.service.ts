@@ -86,7 +86,9 @@ export class WaitlistService {
         schoolId,
         role,
       },
+
       orderBy: [{ createdAt: 'desc' }],
+
       skip: skippedItems ? skippedItems : undefined,
       take: qtd ? qtd : undefined,
     });
