@@ -1,30 +1,30 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmpty, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export class CreateSchoolDTO {
+export class UpdateSchoolDTO {
   @ApiProperty({
-    example: 'EEFM Educacional Municipal',
+    example: 'EEM Educacional Estadual',
   })
   @IsString()
   @IsNotEmpty()
   name: string;
 
   @ApiProperty({
-    example: '(88) 9 99999999',
+    example: '(00) 8 99999999',
   })
   @IsString()
   @IsNotEmpty()
   phone: string;
 
   @ApiProperty({
-    example: '13082175',
+    example: '31082175',
   })
   @IsOptional()
   @IsString()
   inep?: string;
 
   @ApiProperty({
-    example: 'educacional@gmail.com',
+    example: 'educacionalEstadual@gmail.com',
   })
   @IsString()
   email?: string;
@@ -34,7 +34,7 @@ export class CreateSchoolDTO {
   addressId: string;
 
   @ApiProperty({
-    example: 'XX. XXX. XXX/0001-XX.',
+    example: 'XX. XXX. XXX/0002-XX.',
   })
   @IsString()
   @IsOptional()

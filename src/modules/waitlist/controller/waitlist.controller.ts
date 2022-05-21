@@ -15,7 +15,7 @@ import CreateWaitlistDTO from '../dtos/createWaitlist.dto';
 import { WaitlistService } from '../service/waitlist.service';
 import { User } from 'src/modules/user/decorators/user.decorator';
 import { PaginationDTO } from 'src/models/PaginationDTO';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Waitlist')
 @Controller('waitlist')
@@ -42,6 +42,7 @@ export class WaitlistController {
     });
   }
 
+  @ApiBearerAuth()
   @Get('school/:schoolId/:role')
   getWaitlistByRole(
     @User() user,

@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
 import { CreateClassDTO } from '../dtos/create-class.dto';
 import { PaginationDTO } from 'src/models/PaginationDTO';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ClassService } from '../services/class.service';
 import { User } from 'src/modules/user/decorators/user.decorator';
 
@@ -10,11 +10,13 @@ import { User } from 'src/modules/user/decorators/user.decorator';
 export class ClassController {
   constructor(private readonly classService: ClassService) {}
 
+  @ApiBearerAuth()
   @Post()
   create(@Body() createClassDto: CreateClassDTO) {
     return this.classService.create(createClassDto);
   }
 
+  @ApiBearerAuth()
   @Get('/classes/:schoolId')
   findClassesBySchool(
     @User() user,

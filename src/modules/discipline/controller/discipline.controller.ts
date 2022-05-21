@@ -1,4 +1,4 @@
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
 import { DisciplineService } from '../service/discipline.service';
 import { CreateDisciplineDTO } from '../dtos/createDiscipline.dto';
@@ -10,16 +10,19 @@ import { User } from 'src/modules/user/decorators/user.decorator';
 export class DisciplineController {
   constructor(private readonly disciplineService: DisciplineService) {}
 
+  @ApiBearerAuth()
   @Post()
   create(@Body() createDisciplineDTO: CreateDisciplineDTO) {
     return this.disciplineService.create(createDisciplineDTO);
   }
 
+  @ApiBearerAuth()
   @Get()
   findAll() {
     return this.disciplineService.findAll();
   }
 
+  @ApiBearerAuth()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.disciplineService.findTeacherDisciplines(id);
@@ -38,11 +41,13 @@ export class DisciplineController {
   //   return this.disciplineService.remove(+id);
   // }
 
+  @ApiBearerAuth()
   @Get(':teacherId')
   findTeacherDisciplines(@Param('teacherId') teacherId: string) {
     return this.disciplineService.findTeacherDisciplines(teacherId);
   }
 
+  @ApiBearerAuth()
   @Get('/disciplines/:classId')
   findDisciplinesOfClassBySchool(
     @User() user,

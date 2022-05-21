@@ -120,6 +120,7 @@ export class SchoolService {
       updateSchool.email = updateData.email
         ? updateData.email
         : updateSchool.email;
+      updateSchool.inep = updateData.inep ? updateData.inep : updateSchool.inep;
 
       const updateSchoolResult = await this.prisma.school.update({
         where: {

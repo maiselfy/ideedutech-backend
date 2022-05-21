@@ -1,4 +1,4 @@
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
 import { PaginationDTO } from 'src/models/PaginationDTO';
 import { Public } from 'src/modules/auth/decorators/public.decorator';
@@ -17,6 +17,7 @@ export class ManagerController {
     return this.managerService.create(createManagerDto);
   }
 
+  @ApiBearerAuth()
   @Get('/managers/:schoolId')
   findManagersBySchool(
     @User() user,
