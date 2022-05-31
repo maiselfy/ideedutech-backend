@@ -1,5 +1,13 @@
 import { ApiTags } from '@nestjs/swagger';
-import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { StudentService } from './../services/student.service';
 import { PaginationDTO } from 'src/models/PaginationDTO';
 import { Public } from 'src/modules/auth/decorators/public.decorator';
@@ -13,6 +21,12 @@ export class StudentController {
   @Post()
   create(@Body() createStudentDTO: any) {
     return this.studentService.create(createStudentDTO);
+  }
+
+  @Public()
+  @Post('admin')
+  createByAdmin(@Body() createStudentDTO: any) {
+    return this.studentService.createByAdmin(createStudentDTO);
   }
 
   @Get('/students/:schoolId')

@@ -47,13 +47,13 @@ export class DisciplineScheduleService {
         },
       },
       where: {
-        day: Day[weekDay.toLowerCase()],
-        initialHour: {
-          lte: dateDay,
-        },
-        finishHour: {
-          gte: dateDay,
-        },
+        // day: Day[weekDay.toLowerCase()],
+        // initialHour: {
+        //   lte: dateDay,
+        // },
+        // finishHour: {
+        //   gte: dateDay,
+        // },
       },
     });
 
