@@ -10,7 +10,6 @@ import {
   Delete,
   Query,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
 import { PaginationDTO } from 'src/models/PaginationDTO';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ClassService } from '../services/class.service';
