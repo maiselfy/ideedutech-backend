@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { format, parse } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
-import { PrismaService } from '../prisma';
+import { PrismaService } from '../../prisma';
 import { Day } from '@prisma/client';
-import { CreateDisciplineScheduleDto } from './dto/create-discipline-schedule.dto';
-import { UpdateDisciplineScheduleDto } from './dto/update-discipline-schedule.dto';
+import { CreateDisciplineScheduleDTO } from '../dtos/create-discipline-schedule.dto';
+import { UpdateDisciplineScheduleDto } from '../dtos/update-discipline-schedule.dto';
 import { transformDocument } from '@prisma/client/runtime';
 
 @Injectable()
@@ -16,7 +16,7 @@ export class DisciplineScheduleService {
     disciplineId,
     initialHour,
     finishHour,
-  }: CreateDisciplineScheduleDto) {
+  }: CreateDisciplineScheduleDTO) {
     const response = await this.prisma.disciplineSchedules.create({
       data: {
         day,

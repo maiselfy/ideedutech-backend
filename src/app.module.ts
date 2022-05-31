@@ -22,6 +22,8 @@ import { StudentModule } from './modules/student/student.module';
 import { AppService } from './app.service';
 import { PeriodModule } from './modules/period/period.module';
 import { ContentModule } from './modules/content/content.module';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { mailerConfig } from './configs/mailer.config';
 
 ConfigModule.forRoot();
 
@@ -46,6 +48,7 @@ ConfigModule.forRoot();
     ContentModule,
     PeriodModule,
     RegisterClassModule,
+    MailerModule.forRoot(mailerConfig),
   ],
   controllers: [AppController],
   providers: [

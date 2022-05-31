@@ -1,13 +1,11 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { PaginationDTO } from 'src/models/PaginationDTO';
 import { ManagerService } from 'src/modules/manager/service/manager.service';
 import { PrismaService } from 'src/modules/prisma';
 import pagination from 'src/utils/pagination';
-import CreateStudentDTO from '../dtos/createStudent.dto';
+import { PaginationDTO } from 'src/models/PaginationDTO';
 import ListEntitiesForSchoolDTO from '../dtos/listEntitiesForSchool.dto';
 
 import * as bcrypt from 'bcrypt';
-import CreateUserDTO from 'src/modules/user/dtos/createUser.dto';
 
 @Injectable()
 export class StudentService {

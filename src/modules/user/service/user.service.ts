@@ -1,16 +1,17 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
-import CreateUserDTO from '../dtos/createUser.dto';
-import { User } from '../entities/user.entity';
+
 import { PrismaService } from '../../prisma/prisma.service';
 
 import * as bcrypt from 'bcrypt';
 import { StudentService } from 'src/modules/student/services/student.service';
+import { MailerService } from '@nestjs-modules/mailer';
+import { threadId } from 'worker_threads';
 @Injectable()
 export class UserService {
   constructor(
     private prisma: PrismaService,
     private studentService: StudentService,
+    private mailerService: MailerService,
   ) {}
   async create(createUserDto) {
     const userExistsOnWaitlist = await this.prisma.waitList.findUnique({
@@ -43,6 +44,18 @@ export class UserService {
         address: true,
       },
     });
+
+    const mail = {
+      to: createdUser.email,
+      from: 'noreply@application.com',
+      subject: 'Cadastro realizado com sucesso',
+      template: 'email-confirmation',
+      context: {
+        token: newData.confirmationToken,
+      },
+    };
+
+    await this.mailerService.sendMail(mail);
 
     if (userExistsOnWaitlist.role === 'admin') {
       const createdAdmin = await this.prisma.admin.create({
@@ -114,6 +127,28 @@ export class UserService {
     }
   }
 
+  async changePassword(id: string, password: string) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    const hashSalt = Number(process.env.HASH_SALT);
+
+    let newPassword: string = await bcrypt.hash(password, hashSalt);
+
+    await this.prisma.user.update({
+      where: {
+        id: id,
+      },
+      data: {
+        password: newPassword,
+        recoverToken: null,
+      },
+    });
+  }
+
   findAll() {
     return this.prisma.user.findMany();
   }
@@ -136,11 +171,40 @@ export class UserService {
     return user;
   }
 
-  // update(id: number, updateUserDto: UpdateUserDto) {
-  //   return `This action updates a #${id} user`;
-  // }
+  findByRecoverToken(recoverToken: string) {
+    const user = this.prisma.user.findFirst({
+      where: {
+        recoverToken: recoverToken,
+      },
+    });
 
-  // remove(id: number) {
-  //   return `This action removes a #${id} user`;
-  // }
+    return user;
+  }
+
+  async updateRecoverToken(email: string, recoverToken: string) {
+    await this.prisma.user.update({
+      where: {
+        email: email,
+      },
+      data: {
+        recoverToken: recoverToken,
+      },
+    });
+  }
+
+  async remove(id: string) {
+    const deleteUser = await this.prisma.user.delete({
+      where: {
+        id: id,
+      },
+    });
+
+    if (!deleteUser) {
+      throw Error(`User not found `);
+    }
+
+    return {
+      message: `User removed `,
+    };
+  }
 }

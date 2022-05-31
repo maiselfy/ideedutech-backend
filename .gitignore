@@ -40,4 +40,4 @@ lerna-debug.log*
 tsconfig.build.tsbuildinfo
 .tsbuildinfo
 
-.env
+/.env

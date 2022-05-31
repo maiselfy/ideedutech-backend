@@ -1,16 +1,10 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+import { Controller, Post, Body } from '@nestjs/common';
 import { Public } from 'src/modules/auth/decorators/public.decorator';
 import CreateAddressDTO from '../dtos/createAddress.dto';
 import { AddressService } from '../service/address.service';
 
+@ApiTags('Address')
 @Controller('address')
 export class AddressController {
   constructor(private readonly addressService: AddressService) {}
