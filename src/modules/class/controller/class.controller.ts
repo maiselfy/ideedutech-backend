@@ -1,5 +1,16 @@
-import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
+ 
 import { CreateClassDTO } from '../dtos/create-class.dto';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Put,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { PaginationDTO } from 'src/models/PaginationDTO';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ClassService } from '../services/class.service';
