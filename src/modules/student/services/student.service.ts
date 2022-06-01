@@ -173,6 +173,8 @@ export class StudentService {
       },
     });
 
+    console.log(createdStudent);
+
     const response = {
       ...createdUser,
       ...createdStudent,

@@ -12,6 +12,9 @@ import { StudentService } from './../services/student.service';
 import { PaginationDTO } from 'src/models/PaginationDTO';
 import { Public } from 'src/modules/auth/decorators/public.decorator';
 import { User } from 'src/modules/user/decorators/user.decorator';
+import { CheckPolicies } from 'src/security/decorators/policy.decorator';
+import { ReadManyPolicyHandler } from 'src/security/policies/readMany.policy';
+import { PoliciesGuard } from 'src/security/guards/policy.guard';
 @ApiTags('Student')
 @Controller('student')
 export class StudentController {
@@ -23,8 +26,9 @@ export class StudentController {
     return this.studentService.create(createStudentDTO);
   }
 
-  @Public()
   @Post('admin')
+  @UseGuards(PoliciesGuard)
+  @CheckPolicies(new ReadManyPolicyHandler('Admin'))
   createByAdmin(@Body() createStudentDTO: any) {
     return this.studentService.createByAdmin(createStudentDTO);
   }
