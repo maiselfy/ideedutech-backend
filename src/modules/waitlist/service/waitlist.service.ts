@@ -18,14 +18,14 @@ export class WaitlistService {
 
     const createdWaitlist = await this.prisma.waitList.create({ data });
 
-    const mail = {
-      to: createdWaitlist.value,
-      from: 'noreply@application.com',
-      subject: 'Adicionado a lista da espera da Instituição',
-      template: 'email-confirmation-waitlist',
-    };
+    // const mail = {
+    //   to: createdWaitlist.value,
+    //   from: 'noreply@application.com',
+    //   subject: 'Adicionado a lista da espera da Instituição',
+    //   template: 'email-confirmation-waitlist',
+    // };
 
-    await this.mailerService.sendMail(mail);
+    // await this.mailerService.sendMail(mail);
 
     return {
       data: createdWaitlist,

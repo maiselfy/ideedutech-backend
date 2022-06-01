@@ -8,6 +8,8 @@ import { RefreshTokenService } from '../refresh-token/services/refreshToken.serv
 import { GenerateRefreshToken } from '../auth/providers/generateRefreshToken.provider';
 import { GenerateToken } from '../auth/providers/generateToken.provider';
 import { JwtModule, JwtService } from '@nestjs/jwt';
+import { CaslAbilityFactory } from 'src/security/casl/casl-ability.factory';
+import { CaslAbilityService } from 'src/security/casl/services/casl.ability.service';
 
 @Module({
   imports: [JwtModule.register({})],
@@ -20,6 +22,8 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
     RefreshTokenService,
     GenerateRefreshToken,
     GenerateToken,
+    CaslAbilityFactory,
+    CaslAbilityService,
   ],
 })
 export class StudentModule {}

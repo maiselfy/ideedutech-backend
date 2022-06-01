@@ -1,3 +1,4 @@
+import { TypeUser } from '@prisma/client';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ManagerService } from 'src/modules/manager/service/manager.service';
 import { PrismaService } from 'src/modules/prisma';
@@ -104,7 +105,88 @@ export class StudentService {
     };
   }
 
-  async findAll() {}
+  async createByAdmin(createStudentDTO) {
+    const data = createStudentDTO;
+
+    const user = {
+      name: data.name,
+      email: data.email,
+      password: data.password,
+      birthDate: data.birthDate,
+      phone: data.phone,
+      address: data.address,
+      gender: data.gender,
+    };
+
+    const studentType: TypeUser = 'student';
+
+    const hashSalt = Number(process.env.HASH_SALT);
+    const newData = {
+      ...user,
+      password: await bcrypt.hash(data.password, hashSalt),
+      birthDate: new Date(data.birthDate),
+      type: studentType,
+    };
+
+    const createdUser = await this.prisma.user.create({
+      data: {
+        ...newData,
+        address: {
+          create: data.address,
+        },
+      },
+      include: {
+        address: true,
+      },
+    });
+
+    const classExists = await this.prisma.class.findUnique({
+      where: {
+        id: data.classId,
+      },
+    });
+
+    if (!classExists) {
+      throw new HttpException(
+        `Informações inválidas para a turma, não foi possível cadastrar o estudante.`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const dataStudent = {
+      schoolId: classExists.schooldId,
+      status: true,
+      enrollment: data.enrollment,
+      classId: data.classId,
+      entryForm: data.entryForm,
+      reasonForTransfer: data.reasonForTransfer ? data.reasonForTransfer : null,
+      userId: createdUser.id,
+    };
+
+    const createdStudent = await this.prisma.student.create({
+      data: {
+        ...dataStudent,
+      },
+
+      include: {
+        class: true,
+      },
+    });
+
+    console.log(createdStudent);
+
+    const response = {
+      ...createdUser,
+      ...createdStudent,
+      password: undefined,
+    };
+
+    return {
+      data: response,
+      status: HttpStatus.CREATED,
+      message: 'Estudante cadastrado com sucesso.',
+    };
+  }
 
   async findBySchool({ schoolId, managerId }: ListEntitiesForSchoolDTO) {
     const currentManager = await this.prisma.manager.findUnique({
