@@ -1,8 +1,10 @@
-import { Injectable } from '@nestjs/common';
-import { CreateEvaluationDTO } from '../dtos/createEvaluation.dto';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { PrismaService } from 'src/modules/prisma';
+import CreateEvaluationDTO from '../dtos/createEvaluation.dto';
 
 @Injectable()
 export class EvaluationService {
+  constructor(private prisma: PrismaService) {}
   async create(createEvaluationDTO: CreateEvaluationDTO) {
     const data = createEvaluationDTO;
 
@@ -50,15 +52,15 @@ export class EvaluationService {
       );
     }
 
-    const createdTest = await this.prisma.test.create({
-      data: data,
-    });
+    // const createdTest = await this.prisma.test.create({
+    //   data: data,
+    // });
 
-    return {
-      data: createdTest,
-      status: HttpStatus.CREATED,
-      message: 'Avaliação cadastrada com sucesso.',
-    };
+    // return {
+    //   data: createdTest,
+    //   status: HttpStatus.CREATED,
+    //   message: 'Avaliação cadastrada com sucesso.',
+    // };
   }
 
   // findAll() {

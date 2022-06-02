@@ -22,10 +22,11 @@ import {
   RegisterClass,
   School,
   Student,
-  Submission,
+  EvaluativeDelivery,
   Teacher,
   User,
   WaitList,
+  LackOfClass,
 } from '@prisma/client';
 
 //Definir tipos da minha aplicação.
@@ -42,13 +43,14 @@ export type AppSubjects = Subjects<{
   RefreshToken: RefreshToken;
   User: User;
   HomeWork: HomeWork;
-  Submission: Submission;
+  EvaluativeDelivery: EvaluativeDelivery;
   Period: Period; //Criar entity
   Content: Content; //Criar entity
   Lesson: Lesson; //Criar entity
   DisciplineSchedules: DisciplineSchedules;
   Address: Address;
   RegisterClass: RegisterClass;
+  LackOfClass: LackOfClass;
   all: 'all';
 }>;
 

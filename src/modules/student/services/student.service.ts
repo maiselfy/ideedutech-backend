@@ -105,6 +105,8 @@ export class StudentService {
     };
   }
 
+  async submitEvaluativeDelivery() {}
+
   async createByAdmin(createStudentDTO) {
     const data = createStudentDTO;
 

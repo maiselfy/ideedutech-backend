@@ -1,5 +1,5 @@
 import { ApiTags } from '@nestjs/swagger';
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { HomeWorkService } from '../service/homeWorkService.service';
 
 @ApiTags('Home Work')
@@ -15,5 +15,10 @@ export class HomeWorkController {
   @Get()
   findAll() {
     return this.homeWorkService.findAll();
+  }
+
+  @Get()
+  findHomeWorksForTeacher(@Param('teacherId') teacherId: string) {
+    return this.homeWorkService.listHomeWorksByTeacher(teacherId);
   }
 }

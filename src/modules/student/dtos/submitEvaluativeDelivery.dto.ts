@@ -1,34 +1,29 @@
+import { EvaluationStage, OwnerAction } from '@prisma/client';
 import { IsEmpty, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export default class CreateHomeWorkDTO {
+export default class SubmitEvaluativeDeliveryDTO {
   @IsString()
   @IsNotEmpty()
-  name: string;
+  studentId: string;
 
   @IsString()
   @IsNotEmpty()
-  description: string;
-
-  @IsString()
-  @IsNotEmpty()
-  disciplineId: string;
+  homeWorkId: string;
 
   @IsOptional()
   dueDate: Date;
 
-  @IsOptional()
-  isOpen: boolean;
-
   @IsString()
-  @IsOptional()
+  @IsNotEmpty()
   attachement: string;
 
   @IsString()
   @IsNotEmpty()
-  type: string;
+  owner: OwnerAction;
 
-  @IsOptional()
-  weight: number;
+  @IsString()
+  @IsNotEmpty()
+  stage: EvaluationStage;
 
   @IsEmpty()
   createdAt: Date;

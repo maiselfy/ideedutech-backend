@@ -17,15 +17,13 @@ import { RefreshTokenModule } from './modules/refresh-token/refreshToken.module'
 import { ClassModule } from './modules/class/class.module';
 import { DisciplineScheduleModule } from './modules/discipline-schedule/discipline-schedule.module';
 import { DisciplineModule } from './modules/discipline/discipline.module';
-import { SubmissionModule } from './modules/submission/submission.module';
 import { StudentModule } from './modules/student/student.module';
 import { AppService } from './app.service';
 import { PeriodModule } from './modules/period/period.module';
 import { ContentModule } from './modules/content/content.module';
-import { TestModule } from './modules/test/test.module';
-import { EvaluationModule } from './modules/evaluation/evaluation.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { mailerConfig } from './configs/mailer.config';
+import { EvaluativeDeliveryModule } from './modules/evaluative-delivery/evaluativeDelivery.module';
 
 ConfigModule.forRoot();
 
@@ -41,7 +39,6 @@ ConfigModule.forRoot();
     SchoolModule,
     HomeWorkModule,
     StudentModule,
-    SubmissionModule,
     TeacherModule,
     RefreshTokenModule,
     ClassModule,
@@ -50,8 +47,7 @@ ConfigModule.forRoot();
     ContentModule,
     PeriodModule,
     RegisterClassModule,
-    TestModule,
-    EvaluationModule,
+    EvaluativeDeliveryModule,
     MailerModule.forRoot(mailerConfig),
   ],
   controllers: [AppController],
