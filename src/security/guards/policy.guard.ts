@@ -27,7 +27,7 @@ export class PoliciesGuard implements CanActivate {
     if (user.type === 'admin') {
       ability = this.caslAbilityFactory.createForAdmin();
     } else if (user.type === 'manager') {
-      //ability = this.caslAbilityFactory.createForManager(user);
+      ability = this.caslAbilityFactory.createForUser(user);
     } else if (user.type === 'user') {
       //ability = this.caslAbilityFactory.createForUser(user);
     } else if (user.type === 'establishment') {
