@@ -13,7 +13,7 @@ export class SchoolController {
 
   @Post()
   @Public()
-  create(@Body() createSchoolDTO: CreateSchoolDTO) {
+  create(@Body() createSchoolDTO: any) {
     return this.schoolService.create(createSchoolDTO);
   }
 
