@@ -1,6 +1,7 @@
 import { IsEmpty, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-export default class CreateSubmissionDTO {
+import { EvaluationStage } from '@prisma/client';
+export default class CreateEvaluativeDeliveryDTO {
   @ApiProperty({
     example: '0ac5b816-3716-4b80-b090-37bed6ba37b2',
   })
@@ -24,7 +25,7 @@ export default class CreateSubmissionDTO {
   @ApiProperty({
     example: '2022-04-25T11:54:43.892Z',
   })
-  @IsNotEmpty()
+  @IsOptional()
   duaDate: Date;
 
   @ApiProperty({
@@ -39,7 +40,7 @@ export default class CreateSubmissionDTO {
   })
   @IsString()
   @IsOptional()
-  stage: string;
+  stage: EvaluationStage;
 
   @IsEmpty()
   createdAt: Date;

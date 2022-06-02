@@ -7,7 +7,7 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { CreateEvaluationDTO } from '../dtos/createEvaluation.dto';
+import CreateEvaluationDTO from '../dtos/createEvaluation.dto';
 import { EvaluationService } from '../services/evaluation.service';
 
 @Controller('evaluation')

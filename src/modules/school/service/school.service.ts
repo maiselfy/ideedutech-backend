@@ -7,6 +7,8 @@ export class SchoolService {
   async create(createSchoolDTO) {
     const data = createSchoolDTO;
 
+    console.log(createSchoolDTO);
+
     const createdSchool = await this.prisma.school.create({
       data: {
         ...data,
