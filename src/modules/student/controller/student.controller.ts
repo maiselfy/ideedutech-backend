@@ -1,20 +1,21 @@
-import { StudentService } from './../services/student.service';
+import { ApiTags } from '@nestjs/swagger';
 import {
   Controller,
   Get,
   Post,
   Body,
-  Patch,
   Param,
-  Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
-import ListEntitiesForSchoolDTO from '../dtos/listEntitiesForSchool.dto';
-import { User } from 'src/modules/user/decorators/user.decorator';
+import { StudentService } from './../services/student.service';
 import { PaginationDTO } from 'src/models/PaginationDTO';
 import { Public } from 'src/modules/auth/decorators/public.decorator';
-import CreateStudentDTO from '../dtos/createStudent.dto';
-
+import { User } from 'src/modules/user/decorators/user.decorator';
+import { CheckPolicies } from 'src/security/decorators/policy.decorator';
+import { ReadManyPolicyHandler } from 'src/security/policies/readMany.policy';
+import { PoliciesGuard } from 'src/security/guards/policy.guard';
+@ApiTags('Student')
 @Controller('student')
 export class StudentController {
   constructor(private readonly studentService: StudentService) {}
@@ -25,13 +26,12 @@ export class StudentController {
     return this.studentService.create(createStudentDTO);
   }
 
-  @Get()
-  findAll() {}
-
-  // @Get('/school/:schoolId')
-  // findStudentsBySchool(@User() user, @Param('schoolId') schoolId: string) {
-  //   return this.studentService.findBySchool({ schoolId, managerId: user.id });
-  // }
+  @Post('admin')
+  @UseGuards(PoliciesGuard)
+  @CheckPolicies(new ReadManyPolicyHandler('Admin'))
+  createByAdmin(@Body() createStudentDTO: any) {
+    return this.studentService.createByAdmin(createStudentDTO);
+  }
 
   @Get('/students/:schoolId')
   findStudentsBySchool(

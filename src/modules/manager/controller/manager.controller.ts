@@ -1,20 +1,12 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  Query,
-} from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
 import { PaginationDTO } from 'src/models/PaginationDTO';
 import { Public } from 'src/modules/auth/decorators/public.decorator';
-import ListEntitiesForSchoolDTO from 'src/modules/student/dtos/listEntitiesForSchool.dto';
 import { User } from 'src/modules/user/decorators/user.decorator';
 import { CreateManagerDTO } from '../dtos/createManager.dto';
 import { ManagerService } from '../service/manager.service';
 
+@ApiTags('Manager')
 @Controller('manager')
 export class ManagerController {
   constructor(private readonly managerService: ManagerService) {}
@@ -25,6 +17,7 @@ export class ManagerController {
     return this.managerService.create(createManagerDto);
   }
 
+  @ApiBearerAuth()
   @Get('/managers/:schoolId')
   findManagersBySchool(
     @User() user,

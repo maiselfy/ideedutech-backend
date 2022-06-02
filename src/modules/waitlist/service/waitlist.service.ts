@@ -1,21 +1,31 @@
 import { Role } from '@prisma/client';
-import { HttpStatus, Injectable, HttpException } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { PaginationDTO } from 'src/models/PaginationDTO';
 import { ManagerService } from 'src/modules/manager/service/manager.service';
 import { PrismaService } from 'src/modules/prisma';
 import pagination from 'src/utils/pagination';
 import CreateWaitlistDTO from '../dtos/createWaitlist.dto';
-
+import { MailerService } from '@nestjs-modules/mailer';
 @Injectable()
 export class WaitlistService {
   constructor(
     private prisma: PrismaService,
     private managerService: ManagerService,
+    private mailerService: MailerService,
   ) {}
   async create(createWaitlistDTO: CreateWaitlistDTO) {
     const data = createWaitlistDTO;
 
     const createdWaitlist = await this.prisma.waitList.create({ data });
+
+    // const mail = {
+    //   to: createdWaitlist.value,
+    //   from: 'noreply@application.com',
+    //   subject: 'Adicionado a lista da espera da Instituição',
+    //   template: 'email-confirmation-waitlist',
+    // };
+
+    // await this.mailerService.sendMail(mail);
 
     return {
       data: createdWaitlist,
@@ -65,18 +75,28 @@ export class WaitlistService {
     schoolId,
     paginationDTO: PaginationDTO,
   ) {
-    const currentManager = await this.managerService.findCurrentManager({
+    await this.managerService.findCurrentManager({
       schoolId,
       managerId,
     });
 
     const [page, qtd, skippedItems] = pagination(paginationDTO);
 
+    const waitlistLength = await this.prisma.waitList.count({
+      where: {
+        schoolId,
+        role,
+      },
+    });
+
+    const totalPages = Math.ceil(waitlistLength / qtd) || 1;
+
     const waitlistFilterResult = await this.prisma.waitList.findMany({
       where: {
         schoolId,
         role,
       },
+      orderBy: [{ createdAt: 'desc' }],
       skip: skippedItems ? skippedItems : undefined,
       take: qtd ? qtd : undefined,
     });
@@ -89,24 +109,14 @@ export class WaitlistService {
       };
     }
 
-    const totalPages = Math.round(waitlistFilterResult.length / qtd);
-
     return {
       data: waitlistFilterResult,
       totalCount: waitlistFilterResult.length,
       page: page,
       limit: qtd,
       status: HttpStatus.OK,
-      totalPages: totalPages > 0 ? totalPages : 1,
+      totalPages: totalPages,
       message: 'Lista de espera retornada com sucesso',
     };
   }
-
-  // findOne(id: number) {
-  //   return `This action returns a #${id} waitlist`;
-  // }
-
-  // update(id: number, updateWaitlistDto: UpdateWaitlistDto) {
-  //   return `This action updates a #${id} waitlist`;
-  // }
 }

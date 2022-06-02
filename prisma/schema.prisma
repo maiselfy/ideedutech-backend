@@ -98,6 +98,7 @@ model User {
   teacher       Teacher?
   student       Student?
   avatar        String?
+  recoverToken  String?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 }
@@ -263,6 +264,18 @@ model Period {
   endOfPeriod   DateTime
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
+  id                    String               @id @default(uuid())
+  name                  String
+  contents              Content[]
+  registerClass         RegisterClass[]
+  schoolId              String
+  school                School               @relation(fields: [schoolId], references: [id])
+  startOfPeriod         DateTime
+  endOfPeriod           DateTime
+  disciplineSchedulesId String?
+  disciplineSchedules   DisciplineSchedules? @relation(fields: [disciplineSchedulesId], references: [id])
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
 }
 
 model Content {
@@ -319,8 +332,9 @@ model DisciplineSchedules {
   day          Day
   disciplineId String
   discipline   Discipline @relation(fields: [disciplineId], references: [id])
-  initialHour  DateTime
-  finishHour   DateTime
+  initialHour  String
+  finishHour   String
+  periods      Period[]
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 
