@@ -46,4 +46,13 @@ export class StudentController {
       paginationDTO,
     );
   }
+
+  @Public()
+  @Get('/students/:classId/:name')
+  findStudentsByClass(
+    @Param('name') name: string,
+    @Param('classId') classId: string,
+  ) {
+    return this.studentService.findStudentsByClass(name, classId);
+  }
 }
