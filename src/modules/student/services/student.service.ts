@@ -105,6 +105,8 @@ export class StudentService {
     };
   }
 
+  async submitEvaluativeDelivery() {}
+
   async createByAdmin(createStudentDTO) {
     const data = createStudentDTO;
 
@@ -261,6 +263,25 @@ export class StudentService {
       page: page,
       limit: qtd,
       totalPages: totalPages > 0 ? totalPages : 1,
+      status: HttpStatus.OK,
+      message: 'Estudantes retornados com sucesso.',
+    };
+  }
+
+  async findStudentsByClass(name: string, classId: string) {
+    const students = await this.prisma.student.findMany({
+      where: {
+        classId,
+        user: {
+          name: {
+            contains: name,
+          },
+        },
+      },
+    });
+
+    return {
+      data: students,
       status: HttpStatus.OK,
       message: 'Estudantes retornados com sucesso.',
     };

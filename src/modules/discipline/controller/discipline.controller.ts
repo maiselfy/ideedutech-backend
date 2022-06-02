@@ -4,6 +4,7 @@ import { DisciplineService } from '../service/discipline.service';
 import { CreateDisciplineDTO } from '../dtos/createDiscipline.dto';
 import { PaginationDTO } from 'src/models/PaginationDTO';
 import { User } from 'src/modules/user/decorators/user.decorator';
+import { Public } from 'src/modules/auth/decorators/public.decorator';
 
 @ApiTags('Discipline')
 @Controller('discipline')

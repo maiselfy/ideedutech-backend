@@ -51,15 +51,24 @@ enum Day {
 
 enum TypeHomeWork {
   activity  @map("Atividade")
-  test      @map("Prova")
+  test      @map("Avaliação")
+  exame     @map("Prova")
   work      @map("Trabalho")
   others    @map("Outros")
 }
 
-enum StageSubmission {
-  sent     @map("Enviada")
-  overdue  @map("Atrasada")
-  pending  @map("Pendente")
+enum EvaluationStage {
+  sent       @map("Enviada")
+  overdue    @map("Atrasada")
+  pending    @map("Pendente")
+  evaluated  @map("Avaliada")
+  canceled   @map("Cancelada")
+  others     @map("Outros")
+}
+
+enum OwnerAction {
+  teacher  @map("Professor")
+  student  @map("Estudante")
 }
 
 model WaitList {
@@ -104,19 +113,21 @@ model User {
 }
 
 model Student {
-  id                String   @id @default(uuid())
-  schoolId          String
-  school            School   @relation(fields: [schoolId], references: [id])
-  status            Boolean
-  enrollment        String
-  class             Class    @relation(fields: [classId], references: [id])
-  classId           String
-  entryForm         String
-  reasonForTransfer String?
-  userId            String   @unique
-  user              User     @relation(fields: [userId], references: [id])
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  id                 String               @id @default(uuid())
+  schoolId           String
+  school             School               @relation(fields: [schoolId], references: [id])
+  status             Boolean
+  enrollment         String
+  class              Class                @relation(fields: [classId], references: [id])
+  classId            String
+  entryForm          String
+  reasonForTransfer  String?
+  userId             String               @unique
+  user               User                 @relation(fields: [userId], references: [id])
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  EvaluativeDelivery EvaluativeDelivery[]
+  LackOfClass        LackOfClass[]
 }
 
 model Manager {
@@ -196,29 +207,32 @@ model Class {
 }
 
 model HomeWork {
-  id           String       @id @default(uuid())
-  name         String
-  description  String
-  discipline   Discipline   @relation(fields: [disciplineId], references: [id])
-  disciplineId String
-  dueDate      DateTime
-  isOpen       Boolean
-  attachement  String?
-  type         TypeHomeWork
-  submissions  Submission[]
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  id                 String               @id @default(uuid())
+  name               String
+  description        String
+  discipline         Discipline           @relation(fields: [disciplineId], references: [id])
+  disciplineId       String
+  dueDate            DateTime?
+  isOpen             Boolean?
+  attachement        String?
+  type               TypeHomeWork
+  weight             Float?               @default(1)
+  evaluativeDelivery EvaluativeDelivery[]
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
 }
 
-model Submission {
+model EvaluativeDelivery {
   id          String           @id @default(uuid())
   studentId   String
+  Student     Student          @relation(fields: [studentId], references: [id])
   homeWork    HomeWork         @relation(fields: [homeWorkId], references: [id])
   homeWorkId  String
-  rating      Float?
-  dueDate     DateTime
+  rate        Float?
+  dueDate     DateTime?
   attachement String?
-  stage       StageSubmission?
+  owner       OwnerAction
+  stage       EvaluationStage?
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
 }
@@ -266,14 +280,25 @@ model RegisterClass {
   updatedAt    DateTime          @updatedAt
 }
 
+model LackOfClass {
+  id        String   @id @default(uuid())
+  lessonId  String
+  lesson    Lesson   @relation(fields: [lessonId], references: [id])
+  studentId String
+  student   Student  @relation(fields: [studentId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Lesson {
-  id           String     @id @default(uuid())
+  id           String        @id @default(uuid())
   name         String
   description  String
   disciplineId String
-  discipline   Discipline @relation(fields: [disciplineId], references: [id])
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  discipline   Discipline    @relation(fields: [disciplineId], references: [id])
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  LackOfClass  LackOfClass[]
 }
 
 model DisciplineSchedules {

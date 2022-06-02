@@ -28,6 +28,36 @@ export class HomeWorkService {
     }
   }
 
+  async listHomeWorksByTeacher(teacherId: string) {
+    try {
+      const homeWorks = await this.prisma.discipline.findMany({
+        where: {
+          teacherId,
+        },
+        select: {
+          homeWorks: {
+            orderBy: {
+              createdAt: 'asc',
+            },
+          },
+        },
+      });
+
+      console.log(homeWorks);
+
+      // return {
+      //   data: createdHomeWork,
+      //   status: HttpStatus.CREATED,
+      //   message: 'Home Work Created.',
+      // };
+    } catch (error) {
+      return new HttpException(
+        'Not able to create a home-work',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
   async findAll() {
     return this.prisma.homeWork.findMany();
   }

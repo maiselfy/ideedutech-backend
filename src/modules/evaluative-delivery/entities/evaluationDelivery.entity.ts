@@ -1,6 +1,6 @@
 import { Prisma, Role } from '@prisma/client';
 
-export class Submission {
+export class EvaluativeDelivery {
   studentId: string;
   homeWorkId: string;
   rating?: number;

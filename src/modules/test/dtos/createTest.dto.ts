@@ -1,31 +1,19 @@
 import { IsEmpty, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export default class CreateHomeWorkDTO {
+export default class CreateTestDTO {
   @IsString()
   @IsNotEmpty()
   name: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   description: string;
 
   @IsString()
-  @IsNotEmpty()
   disciplineId: string;
 
-  @IsOptional()
-  dueDate: Date;
-
-  @IsOptional()
-  isOpen: boolean;
-
   @IsString()
-  @IsOptional()
-  attachement: string;
-
-  @IsString()
-  @IsNotEmpty()
-  type: string;
+  studentId: string;
 
   @IsOptional()
   weight: number;
