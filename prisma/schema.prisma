@@ -104,19 +104,22 @@ model User {
 }
 
 model Student {
-  id                String   @id @default(uuid())
+  id                String        @id @default(uuid())
   schoolId          String
-  school            School   @relation(fields: [schoolId], references: [id])
+  school            School        @relation(fields: [schoolId], references: [id])
   status            Boolean
   enrollment        String
-  class             Class    @relation(fields: [classId], references: [id])
+  class             Class         @relation(fields: [classId], references: [id])
   classId           String
   entryForm         String
   reasonForTransfer String?
-  userId            String   @unique
-  user              User     @relation(fields: [userId], references: [id])
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  userId            String        @unique
+  user              User          @relation(fields: [userId], references: [id])
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  Test              Test[]
+  LackOfClass       LackOfClass[]
+  Evaluation        Evaluation[]
 }
 
 model Manager {
@@ -182,6 +185,7 @@ model Discipline {
   createdAt     DateTime              @default(now())
   updatedAt     DateTime              @updatedAt
   Content       Content[]
+  Test          Test[]
 }
 
 model Class {
@@ -205,6 +209,7 @@ model HomeWork {
   isOpen       Boolean
   attachement  String?
   type         TypeHomeWork
+  weight       Float?       @default(1)
   submissions  Submission[]
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
@@ -223,7 +228,42 @@ model Submission {
   updatedAt   DateTime         @updatedAt
 }
 
+model Test {
+  id           String       @id @default(uuid())
+  name         String
+  description  String?
+  discipline   Discipline   @relation(fields: [disciplineId], references: [id])
+  disciplineId String
+  weight       Float?       @default(1)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  Student      Student?     @relation(fields: [studentId], references: [id])
+  studentId    String?
+  Evaluation   Evaluation[]
+}
+
+model Evaluation {
+  id        String   @id @default(uuid())
+  test      Test     @relation(fields: [testId], references: [id])
+  testId    String
+  student   Student  @relation(fields: [studentId], references: [id])
+  studentId String
+  rate      Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Period {
+  id            String          @id @default(uuid())
+  name          String
+  contents      Content[]
+  registerClass RegisterClass[]
+  schoolId      String
+  school        School          @relation(fields: [schoolId], references: [id])
+  startOfPeriod DateTime
+  endOfPeriod   DateTime
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
   id                    String               @id @default(uuid())
   name                  String
   contents              Content[]
@@ -266,14 +306,25 @@ model RegisterClass {
   updatedAt    DateTime          @updatedAt
 }
 
+model LackOfClass {
+  id        String   @id @default(uuid())
+  lessonId  String
+  lesson    Lesson   @relation(fields: [lessonId], references: [id])
+  studentId String
+  student   Student  @relation(fields: [studentId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Lesson {
-  id           String     @id @default(uuid())
+  id           String        @id @default(uuid())
   name         String
   description  String
   disciplineId String
-  discipline   Discipline @relation(fields: [disciplineId], references: [id])
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  discipline   Discipline    @relation(fields: [disciplineId], references: [id])
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  LackOfClass  LackOfClass[]
 }
 
 model DisciplineSchedules {
