@@ -29,6 +29,22 @@ export class ClassService {
     return `This action returns a #${id} class`;
   }
 
+  async remove(classId: string) {
+    const deleteClass = await this.prisma.class.delete({
+      where: {
+        id: classId,
+      },
+    });
+
+    if (!deleteClass) {
+      throw Error('Class not found');
+    }
+
+    return {
+      message: 'Class removed',
+    };
+  }
+
   async findClassesBySchool(
     { schoolId, managerId }: ListEntitiesForSchoolDTO,
     paginationDTO: PaginationDTO,

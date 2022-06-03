@@ -1,4 +1,3 @@
- 
 import { CreateClassDTO } from '../dtos/create-class.dto';
 import {
   Controller,
@@ -9,6 +8,7 @@ import {
   Param,
   Delete,
   Query,
+  NotFoundException,
 } from '@nestjs/common';
 import { PaginationDTO } from 'src/models/PaginationDTO';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -40,23 +40,11 @@ export class ClassController {
     );
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.classService.findAll();
-  // }
-
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.classService.findOne(+id);
-  // }
-
-  // @Put(':id')
-  // update(@Param('id') id: string, @Body() updateClassDto: UpdateClassDto) {
-  //   return this.classService.update(id, updateClassDto);
-  // }
-
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.classService.remove(+id);
-  // }
+  @ApiBearerAuth()
+  @Delete(':id')
+  remove(@Param('id') classId: string) {
+    return this.classService.remove(classId).catch((e) => {
+      throw new NotFoundException(e.message);
+    });
+  }
 }
