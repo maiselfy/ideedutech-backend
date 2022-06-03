@@ -64,13 +64,16 @@ export class CaslAbilityFactory {
 
     console.log(user);
 
-    if (user.type === 'Admin') {
+    if (user.type === 'admin') {
       can(Action.Manage, 'User'); // read-write access to everything
-    } else if (user.type === 'Manager') {
+    } else if (user.type === 'manager') {
       can(Action.Create, 'User');
-      can(Action.ReadMany, 'User', { id: user.id });
-      can(Action.ReadUnique, 'User', { id: user.id });
-      can(Action.Delete, 'User', { id: user.id });
+      can(Action.Create, 'Student');
+      can(Action.ReadUnique, 'Class');
+      can(Action.ReadMany, 'Class');
+      // can(Action.ReadMany, 'User', { id: user.id });
+      // can(Action.ReadUnique, 'User', { id: user.id });
+      // can(Action.Delete, 'User', { id: user.id });
     }
 
     return build({
