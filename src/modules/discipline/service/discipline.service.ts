@@ -18,8 +18,6 @@ export class DisciplineService {
     classId,
     schedules,
   }: CreateDisciplineDTO) {
-    console.log(schedules);
-
     const createdDiscipline = await this.prisma.discipline.create({
       data: {
         name,
