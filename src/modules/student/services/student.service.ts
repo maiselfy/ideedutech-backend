@@ -286,4 +286,34 @@ export class StudentService {
       message: 'Estudantes retornados com sucesso.',
     };
   }
+
+  async findStudentsByClassId(classId: string) {
+    const students = await this.prisma.student.findMany({
+      where: {
+        classId: classId,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            birthDate: true,
+            phone: true,
+            createdAt: true,
+            updatedAt: true,
+            gender: true,
+            type: true,
+            avatar: true,
+          },
+        },
+      },
+    });
+
+    return {
+      data: students,
+      status: HttpStatus.OK,
+      message: 'Sucess.',
+    };
+  }
 }
