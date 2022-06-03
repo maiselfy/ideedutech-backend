@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 
 import { HomeWorkController } from './controller/homeWork.controller';
-import { HomeWorkService } from './service/homeWorkService.service';
 import { PrismaService } from '../prisma';
+import { HomeWorkService } from './service/homeWork.service';
 
 @Module({
   controllers: [HomeWorkController],
