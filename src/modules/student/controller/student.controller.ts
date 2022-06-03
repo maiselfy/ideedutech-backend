@@ -55,4 +55,9 @@ export class StudentController {
   ) {
     return this.studentService.findStudentsByClass(name, classId);
   }
+
+  @Get('classes/:classId')
+  findStudentsByClassId(@Param('classId') classId: string) {
+    return this.studentService.findStudentsByClassId(classId);
+  }
 }
