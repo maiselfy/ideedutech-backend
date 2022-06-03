@@ -54,17 +54,13 @@ model Student {
   schoolId           String
   status             Boolean
   enrollment         String
-<<<<<<< HEAD
-  class              Class                @relation(fields: [classId], references: [id], onDelete: Cascade)
-=======
->>>>>>> develop
   classId            String
+  class              Class                @relation(fields: [classId], references: [id], onDelete: Cascade)
   entryForm          String
   reasonForTransfer  String?
   createdAt          DateTime             @default(now())
   updatedAt          DateTime             @updatedAt
   userId             String               @unique
-  class              Class                @relation(fields: [classId], references: [id])
   school             School               @relation(fields: [schoolId], references: [id])
   user               User                 @relation(fields: [userId], references: [id])
   EvaluativeDelivery EvaluativeDelivery[]
@@ -123,16 +119,6 @@ model Discipline {
   id            String                @id @default(uuid())
   name          String
   teacherId     String
-<<<<<<< HEAD
-  class         Class                 @relation(fields: [classId], references: [id], onDelete: Cascade)
-  classId       String
-  topic         String
-  lessons       Lesson[]
-  homeWorks     HomeWork[]
-  schedules     DisciplineSchedules[]
-  registerClass RegisterClass[]
-=======
->>>>>>> develop
   createdAt     DateTime              @default(now())
   updatedAt     DateTime              @updatedAt
   classId       String
