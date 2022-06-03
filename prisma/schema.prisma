@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["referentialActions"]
 }
 
 datasource db {
@@ -54,12 +55,12 @@ model Student {
   status             Boolean
   enrollment         String
   classId            String
+  class              Class                @relation(fields: [classId], references: [id], onDelete: Cascade)
   entryForm          String
   reasonForTransfer  String?
   createdAt          DateTime             @default(now())
   updatedAt          DateTime             @updatedAt
   userId             String               @unique
-  class              Class                @relation(fields: [classId], references: [id])
   school             School               @relation(fields: [schoolId], references: [id])
   user               User                 @relation(fields: [userId], references: [id])
   EvaluativeDelivery EvaluativeDelivery[]
