@@ -38,90 +38,163 @@ export class HomeWorkService {
       const { startDate, endDate, disciplineId, classId, type, isOpen } =
         searchHomeWorksByTeacher;
 
-      const homeWorks = await this.prisma.discipline.findMany({
-        where: {
-          teacher: {
-            user: {
-              id: teacherId,
+      // const homeWorks = await this.prisma.homeWork.findMany({
+
+      //   select: {
+      //     discipline: {
+      //       select: {
+      //         name: true,
+      //         class: {
+      //           select: {
+      //             name: true,
+      //           },
+      //         },
+      //         homeWorks: {
+      //           select: {
+      //             dueDate: true,
+      //             isOpen: true,
+      //             _count: {
+      //               select: {
+      //                 evaluativeDelivery: true,
+      //               },
+      //             },
+      //           },
+      //         },
+      //       },
+      //     },
+      //   },
+      // });
+
+      const homeWorks = await this.prisma.class.findMany({
+        select: {
+          _count: {
+            select: {
+              students: true,
             },
           },
-        },
-        select: {
-          homeWorks: {
+          name: true,
+          disciplines: {
             select: {
-              _count: {
-                select: {
-                  evaluativeDelivery: true,
-                },
-              },
-              id: true,
-              discipline: {
-                select: {
-                  name: true,
-                  class: {
-                    select: {
-                      name: true,
-                    },
-                  },
-                },
-              },
-
-              dueDate: true,
-              isOpen: true,
-              evaluativeDelivery: {
-                where: {
-                  stage: 'evaluated',
-                },
+              name: true,
+              homeWorks: {
                 select: {
                   id: true,
-                  stage: true,
-                  student: {
+                  dueDate: true,
+                  isOpen: true,
+                  name: true,
+                  type: true,
+                  evaluativeDelivery: {
                     select: {
+                      stage: true,
                       id: true,
+                      owner: true,
                     },
                   },
                 },
               },
-
-              name: true,
             },
-            where: {
-              dueDate: {
-                gte: startDate ? startDate : undefined,
-                lte: endDate ? endDate : undefined,
+          },
+        },
+        where: {
+          disciplines: {
+            some: {
+              id: disciplineId ? disciplineId : undefined,
+              classId: classId ? classId : undefined,
+              teacher: {
+                userId: teacherId,
               },
-              disciplineId: disciplineId ? disciplineId : undefined,
-              type: type ? type : undefined,
-              isOpen: isOpen ? isOpen : undefined,
-              discipline: {
-                classId: classId ? classId : undefined,
+              homeWorks: {
+                some: {
+                  dueDate: {
+                    gte: startDate ? startDate : undefined,
+                    lte: endDate ? endDate : undefined,
+                  },
+                  type: type ? type : undefined,
+                  isOpen: isOpen ? isOpen : undefined,
+                },
               },
             },
           },
         },
       });
 
-      let evaluatedHomeworks = 0;
-      let evaluatedTotal = 0;
+      // const homeWorks = await this.prisma.discipline.findMany({
+      //   where: {
+      //     teacher: {
+      //       user: {
+      //         id: teacherId,
+      //       },
+      //     },
+      //   },
+      //   select: {
+      //     homeWorks: {
+      //       select: {
+      //         _count: {
+      //           select: {
+      //             evaluativeDelivery: true,
+      //           },
+      //         },
+      //         id: true,
+      //         discipline: {
+      //           select: {
+      //             name: true,
+      //             class: {
+      //               select: {
+      //                 name: true,
+      //               },
+      //             },
+      //           },
+      //         },
 
-      homeWorks.forEach((homeWork) => {
-        homeWork.homeWorks.map((item) => {
-          evaluatedTotal += item._count.evaluativeDelivery;
-          const lenghtEvaluetive = item.evaluativeDelivery.length;
-          evaluatedHomeworks += lenghtEvaluetive;
-        });
-      });
+      //         dueDate: true,
+      //         isOpen: true,
+      //         evaluativeDelivery: {
+      //           where: {
+      //             stage: 'evaluated',
+      //           },
+      //           select: {
+      //             id: true,
+      //             stage: true,
+      //             student: {
+      //               select: {
+      //                 id: true,
+      //               },
+      //             },
+      //           },
+      //         },
 
-      console.log((evaluatedHomeworks / evaluatedTotal) * 100);
+      //         name: true,
+      //       },
+      //       where: {
+      //         dueDate: {
+      //           gte: startDate ? startDate : undefined,
+      //           lte: endDate ? endDate : undefined,
+      //         },
+      //         disciplineId: disciplineId ? disciplineId : undefined,
+      //         type: type ? type : undefined,
+      //         isOpen: isOpen ? isOpen : undefined,
+      //         discipline: {
+      //           classId: classId ? classId : undefined,
+      //         },
+      //       },
+      //     },
+      //   },
+      // });
 
-      const dataFormatted = {
-        ...homeWorks,
-        evaluatedHomeworks,
-        evaluatedTotal,
-      };
+      // homeWorks.reduce((acc, curr, index) => {}, []);
+
+      // homeWorks.forEach((homeWork) => {
+      //   homeWork.homeWorks.map((item) => {
+      //     evaluatedTotal += item._count.evaluativeDelivery;
+      //     const lenghtEvaluetive = item.evaluativeDelivery.length;
+      //     evaluatedHomeworks += lenghtEvaluetive;
+      //   });
+      // });
+
+      // console.log((evaluatedHomeworks / evaluatedTotal) * 100);
 
       return {
-        data: dataFormatted,
+        data: homeWorks,
         status: HttpStatus.CREATED,
         message: 'Home Works Listadas com sucesso.',
       };
