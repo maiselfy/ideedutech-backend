@@ -40,7 +40,11 @@ export class HomeWorkService {
 
       const homeWorks = await this.prisma.discipline.findMany({
         where: {
-          teacherId,
+          teacher: {
+            user: {
+              id: teacherId,
+            },
+          },
         },
         select: {
           homeWorks: {
@@ -122,10 +126,7 @@ export class HomeWorkService {
         message: 'Home Works Listadas com sucesso.',
       };
     } catch (error) {
-      return new HttpException(
-        'Not able to create a home-work',
-        HttpStatus.BAD_REQUEST,
-      );
+      return new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
