@@ -18,13 +18,15 @@ export class DisciplineService {
     classId,
     schedules,
   }: CreateDisciplineDTO) {
+    console.log(schedules);
+
     const createdDiscipline = await this.prisma.discipline.create({
       data: {
         name,
         topic,
         teacher: { connect: { id: teacherId } },
         class: { connect: { id: classId } },
-        schedules: { createMany: { data: schedules } },
+        schedules: { createMany: { data: schedules || [] } },
       },
     });
 

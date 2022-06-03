@@ -83,6 +83,43 @@ export class SchoolService {
     };
   }
 
+  async findAllByAdmin() {
+    const schools = await this.prisma.school.findMany({
+      include: {
+        address: {
+          select: {
+            city: true,
+            area: true,
+            createdAt: true,
+            number: true,
+            labelAddress: true,
+            uf: true,
+            street: true,
+          },
+        },
+        _count: {
+          select: { managers: true, teachers: true, students: true },
+        },
+      },
+    });
+
+    if (!schools) {
+      throw new HttpException(
+        {
+          error: 'Não existem escolas registradas em nossa base de dados.',
+          code: 'Teste',
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return {
+      data: schools,
+      status: HttpStatus.OK,
+      message: 'Escolas retornadas com sucesso.',
+    };
+  }
+
   async findSchoolById(id: string, userId: string) {
     const response = await this.prisma.school.findFirst({
       where: { id, managers: { some: { userId } } },

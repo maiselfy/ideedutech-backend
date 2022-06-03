@@ -24,6 +24,12 @@ export class SchoolController {
   }
 
   @ApiBearerAuth()
+  @Get('admin')
+  findAllByAdmin() {
+    return this.schoolService.findAllByAdmin();
+  }
+
+  @ApiBearerAuth()
   @Get('/:id')
   findSchoolById(@User() user, @Param('id') id: string) {
     return this.schoolService.findSchoolById(id, user.id);
