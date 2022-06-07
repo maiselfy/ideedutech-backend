@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmpty, IsNotEmpty, IsString } from 'class-validator';
 
-export class CreateLackOfClassDTO {
+export class RemoveLackOfClassDTO {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
@@ -10,15 +10,9 @@ export class CreateLackOfClassDTO {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  studentId: string[];
+  studentId: string;
 
   @IsNotEmpty()
   @ApiProperty()
   date: string;
-
-  @IsEmpty()
-  createdAt: Date;
-
-  @IsEmpty()
-  updatedAt: Date;
 }

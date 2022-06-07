@@ -1,8 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { format, parseISO } from 'date-fns';
 import { PrismaService } from 'src/modules/prisma';
-import { CreateLackOfClassDTO } from '../dtos/createLackOfClass.dto';
-import { CreateLessonDTO } from '../dtos/createLesson.dto';
-import { TestDTO } from '../dtos/test.dto';
+import { CreateManyLackLessonDTO } from '../dtos/createManyLackLesson.dto';
+import { RemoveLackOfClassDTO } from '../dtos/removeLackOfClass.dto';
 import { LessonService } from './lesson.service';
 
 @Injectable()
@@ -11,8 +11,8 @@ export class LackOfClassService {
     private prisma: PrismaService,
     private lessonService: LessonService,
   ) {}
-  async create(testDTO: TestDTO) {
-    const data = testDTO.createLackOfClassDTO;
+  async createMany(createManyLackLesson: CreateManyLackLessonDTO) {
+    const data = createManyLackLesson.createLackOfClassDTO;
 
     console.log(data);
 
@@ -37,27 +37,52 @@ export class LackOfClassService {
     });
 
     const createdLesson = await this.lessonService.create(
-      testDTO.createLessonDTO,
+      createManyLackLesson.createLessonDTO,
     );
 
-    const { id } = createdLesson.data;
+    const { id } = createdLesson;
 
-    // Data de hoje
-    const dateFormatted = new Date(data.date);
-    // Reseta as horas, minutos, segundos...
-    dateFormatted.setHours(0, 0, 0, 0);
+    console.log(data.date);
 
-    validStudents.forEach(async (student) => {
-      const lackOfClass = await this.prisma.lackOfClass.create({
-        data: {
-          ...data,
-          date: dateFormatted,
-          lessonId: id,
+    const formattedDate = format(new Date(data.date), 'dd/MM/yyyy');
+
+    console.log(formattedDate);
+
+    const lacksOfClass = validStudents.map(async (student) => {
+      const existsLackForDay = await this.prisma.lackOfClass.findFirst({
+        where: {
+          lessonId: data.lessonId,
           studentId: student,
+          date: {
+            equals: formattedDate,
+          },
         },
       });
-      console.log(lackOfClass);
+
+      if (!existsLackForDay) {
+        const lackOfClass = await this.prisma.lackOfClass.create({
+          data: {
+            ...data,
+            date: formattedDate,
+            lessonId: id,
+            studentId: student,
+          },
+        });
+
+        return lackOfClass;
+      }
     });
+
+    const formattedData = {
+      ...createdLesson,
+      ...lacksOfClass,
+    };
+
+    return {
+      data: formattedData,
+      status: HttpStatus.CREATED,
+      message: 'Frequência para a aula cadastrada com sucesso.',
+    };
   }
 
   // findAll() {
@@ -72,7 +97,70 @@ export class LackOfClassService {
   //   return `This action updates a #${id} lesson`;
   // }
 
-  // remove(id: number) {
-  //   return `This action removes a #${id} lesson`;
-  // }
+  async remove(removeLackOfClassDTO: RemoveLackOfClassDTO) {
+    const data = removeLackOfClassDTO;
+
+    const lesson = await this.prisma.lesson.findUnique({
+      where: {
+        id: data.lessonId,
+      },
+    });
+
+    if (!lesson) {
+      throw new HttpException(
+        'Erro. Aula não encontrada.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const studentInClass = await this.prisma.discipline.findFirst({
+      where: {
+        class: {
+          students: {
+            some: {
+              id: data.studentId,
+            },
+          },
+        },
+      },
+    });
+
+    if (!studentInClass) {
+      throw new HttpException(
+        'Erro. Estudante não encontrado para a disciplina correspondente.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const formattedDate = format(new Date(data.date), 'dd/MM/yyyy');
+
+    const lackOfClass = await this.prisma.lackOfClass.findFirst({
+      where: {
+        studentId: data.studentId,
+        lessonId: data.lessonId,
+        date: {
+          equals: formattedDate,
+        },
+      },
+    });
+
+    if (!lackOfClass) {
+      throw new HttpException(
+        'Erro. Não há registro para esse aluno, no dia dessa aula correspondente.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const removedLackOfClass = await this.prisma.lackOfClass.delete({
+      where: {
+        id: lackOfClass.id,
+      },
+    });
+
+    return {
+      data: removedLackOfClass,
+      status: HttpStatus.OK,
+      message: 'Registro removido da frequência.',
+    };
+  }
 }

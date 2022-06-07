@@ -26,11 +26,7 @@ export class LessonService {
       data,
     });
 
-    return {
-      data: createdLesson,
-      status: HttpStatus.CREATED,
-      message: 'Escola cadastrada com sucesso.',
-    };
+    return createdLesson;
   }
 
   // findAll() {

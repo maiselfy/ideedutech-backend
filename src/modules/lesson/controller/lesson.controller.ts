@@ -8,9 +8,8 @@ import {
   Delete,
 } from '@nestjs/common';
 import { Public } from 'src/security/decorators/public.decorator';
-import { CreateLackOfClassDTO } from '../dtos/createLackOfClass.dto';
 import { CreateLessonDTO } from '../dtos/createLesson.dto';
-import { TestDTO } from '../dtos/test.dto';
+import { CreateManyLackLessonDTO } from '../dtos/createManyLackLesson.dto';
 import { LackOfClassService } from '../services/lackOfClass.service';
 import { LessonService } from '../services/lesson.service';
 
@@ -28,8 +27,18 @@ export class LessonController {
 
   @Public()
   @Post('/lackOfClass')
-  createLackOfClass(@Body() testDTO: any) {
-    return this.lackOfClassService.create(testDTO);
+  createLackOfClass(@Body() createManyLackLessonDTO: CreateManyLackLessonDTO) {
+    return this.lackOfClassService.createMany(createManyLackLessonDTO);
+  }
+
+  @Public()
+  @Delete('/remove/:lessonId/:studentId/:date')
+  removeLackOfClass(
+    @Param('lessonId') lessonId: string,
+    @Param('studentId') studentId: string,
+    @Param('date') date: string,
+  ) {
+    return this.lackOfClassService.remove({ lessonId, studentId, date });
   }
 
   // @Get()

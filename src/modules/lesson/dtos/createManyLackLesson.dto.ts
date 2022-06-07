@@ -1,11 +1,13 @@
-import { LackOfClass } from '@prisma/client';
-import { ApiProperty } from '@nestjs/swagger';
-import { IsEmpty, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty } from 'class-validator';
 import { CreateLessonDTO } from './createLesson.dto';
 import { CreateLackOfClassDTO } from './createLackOfClass.dto';
+import { ApiProperty } from '@nestjs/swagger';
 
-export class TestDTO {
+export class CreateManyLackLessonDTO {
+  @ApiProperty()
+  @IsNotEmpty()
   createLessonDTO: CreateLessonDTO;
 
+  @IsNotEmpty()
   createLackOfClassDTO: CreateLackOfClassDTO;
 }
