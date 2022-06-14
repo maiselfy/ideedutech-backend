@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Address } from '@prisma/client';
 import { IsEmpty, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateSchoolDTO {
@@ -10,11 +11,24 @@ export class CreateSchoolDTO {
   name: string;
 
   @ApiProperty({
+    example: 'XX. XXX. XXX/0001-XX.',
+  })
+  @IsString()
+  @IsOptional()
+  cnpj?: string;
+
+  @ApiProperty({
     example: '(88) 9 99999999',
   })
   @IsString()
   @IsNotEmpty()
   phone: string;
+
+  @ApiProperty({
+    example: 'educacional@gmail.com',
+  })
+  @IsString()
+  email?: string;
 
   @ApiProperty({
     example: '13082175',
@@ -23,22 +37,23 @@ export class CreateSchoolDTO {
   @IsString()
   inep?: string;
 
-  @ApiProperty({
-    example: 'educacional@gmail.com',
-  })
-  @IsString()
-  email?: string;
-
   @IsString()
   @IsOptional()
   addressId: string;
 
   @ApiProperty({
-    example: 'XX. XXX. XXX/0001-XX.',
+    example: {
+      Rua: 'Rua Maria Francelina Pinheiro Landim',
+      city: 'Solonópole',
+      number: '928',
+      zipCode: '63620000',
+      area: 'Brasil',
+      uf: 'CE',
+      labelAddress: 'Minha Casa',
+    },
   })
-  @IsString()
   @IsOptional()
-  cnpj?: string;
+  address: Address;
 
   @IsEmpty()
   createdAt: Date;
@@ -46,3 +61,5 @@ export class CreateSchoolDTO {
   @IsEmpty()
   updatedAt: Date;
 }
+
+

@@ -1,5 +1,4 @@
 import { Role } from '@prisma/client';
-
 import {
   Controller,
   Get,
