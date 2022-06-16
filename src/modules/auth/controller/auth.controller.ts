@@ -35,12 +35,22 @@ export class AuthController {
   }
 
   @Public()
-  @Patch('/reset-password/:token')
+  @Patch('/verify-token/:token')
+  async verifyToken(@Param('token') token: string) {
+    await this.authService.verifyToken(token);
+
+    return {
+      message: 'Token verificado com sucesso',
+    };
+  }
+
+  @Public()
+  @Patch('/reset-password/:userId')
   async resetPassword(
-    @Param('token') token: string,
+    @Param('userId') userId: string,
     @Body() changePasswordDTO: ChangePasswordDTO,
   ) {
-    await this.authService.resetPassword(token, changePasswordDTO);
+    await this.authService.resetPassword(userId, changePasswordDTO);
 
     return {
       message: 'Senha alterada com sucesso',

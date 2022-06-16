@@ -120,8 +120,8 @@ export class AuthService {
     const mail = {
       to: user.email,
       from: 'noreply@application.com',
-      subject: 'Recuperação de senha',
-      template: 'recover-password',
+      subject: 'Verificação de token',
+      template: 'verify-token',
       context: {
         token: recoverToken,
       },
@@ -130,27 +130,39 @@ export class AuthService {
     await this.mailerService.sendMail(mail);
   }
 
-  async resetPassword(
-    recoverToken: string,
-    changePasswordDTO: ChangePasswordDTO,
-  ) {
+  async verifyToken(recoverToken: string) {
     const user = await this.userService.findByRecoverToken(recoverToken);
 
     if (!user) throw new NotFoundException('token inválido');
 
+    const userId = user.id;
+
+    const mail = {
+      to: user.email,
+      from: 'noreply@application.com',
+      subject: 'Validação',
+      template: 'recover-password',
+      context: {
+        id: userId,
+      },
+    };
+    await this.mailerService.sendMail(mail);
+  }
+
+  async resetPassword(userId: string, changePasswordDTO: ChangePasswordDTO) {
     try {
-      await this.changePassword(user.id, changePasswordDTO);
+      await this.changePassword(userId, changePasswordDTO);
     } catch (error) {
       throw error;
     }
   }
 
-  async changePassword(id: string, changePasswordDTO: ChangePasswordDTO) {
+  async changePassword(userId: string, changePasswordDTO: ChangePasswordDTO) {
     const { password, passwordConfirmation } = changePasswordDTO;
 
     if (password != passwordConfirmation)
       throw new UnprocessableEntityException('As senhas não conferem');
 
-    await this.userService.changePassword(id, password);
+    await this.userService.changePassword(userId, password);
   }
 }

@@ -154,12 +154,6 @@ export class UserService {
   }
 
   async changePassword(id: string, password: string) {
-    const user = await this.prisma.user.findUnique({
-      where: {
-        id,
-      },
-    });
-
     const hashSalt = Number(process.env.HASH_SALT);
 
     let newPassword: string = await bcrypt.hash(password, hashSalt);
@@ -230,8 +224,12 @@ export class UserService {
 
       updateUser.name = updateData.name ? updateData.name : updateUser.name;
       updateUser.phone = updateData.phone ? updateData.phone : updateUser.phone;
-      updateUser.gender = updateData.gender ? updateData.gender : updateUser.gender;
-      updateUser.birthDate = updateData.birthDate ? new Date(updateData.birthDate) : updateUser.birthDate;
+      updateUser.gender = updateData.gender
+        ? updateData.gender
+        : updateUser.gender;
+      updateUser.birthDate = updateData.birthDate
+        ? new Date(updateData.birthDate)
+        : updateUser.birthDate;
 
       await this.prisma.user.update({
         where: {
@@ -252,13 +250,27 @@ export class UserService {
           },
         });
 
-        updateAddress.street = updateData.address.street ? updateData.address.street : updateAddress.street;
-        updateAddress.city = updateData.address.city ? updateData.address.city : updateAddress.city;
-        updateAddress.number = updateData.address.number ? updateData.address.number : updateAddress.number;
-        updateAddress.zipCode = updateData.address.zipCode ? updateData.address.zipCode : updateAddress.zipCode;
-        updateAddress.area = updateData.address.area ? updateData.address.area : updateAddress.area;
-        updateAddress.uf = updateData.address.uf ? updateData.address.uf : updateAddress.uf;
-        updateAddress.labelAddress = updateData.address.labelAddress ? updateData.address.labelAddress : updateAddress.labelAddress;
+        updateAddress.street = updateData.address.street
+          ? updateData.address.street
+          : updateAddress.street;
+        updateAddress.city = updateData.address.city
+          ? updateData.address.city
+          : updateAddress.city;
+        updateAddress.number = updateData.address.number
+          ? updateData.address.number
+          : updateAddress.number;
+        updateAddress.zipCode = updateData.address.zipCode
+          ? updateData.address.zipCode
+          : updateAddress.zipCode;
+        updateAddress.area = updateData.address.area
+          ? updateData.address.area
+          : updateAddress.area;
+        updateAddress.uf = updateData.address.uf
+          ? updateData.address.uf
+          : updateAddress.uf;
+        updateAddress.labelAddress = updateData.address.labelAddress
+          ? updateData.address.labelAddress
+          : updateAddress.labelAddress;
 
         await this.prisma.address.update({
           where: {
