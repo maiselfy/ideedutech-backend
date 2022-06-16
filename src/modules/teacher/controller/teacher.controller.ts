@@ -36,6 +36,23 @@ export class TeacherController {
     );
   }
 
+  @Get('/classes/:schoolId/:teacherId')
+  findClassesByTeacherOnSchool(
+    @User() user,
+    @Param('schoolId') schoolId: string,
+    @Param('teacherId') teacherId: string,
+    @Query() paginationDTO: PaginationDTO,
+  ) {
+    const managerId = user.id;
+
+    return this.teacherService.findClassesByTeacherOnSchool(
+      schoolId,
+      teacherId,
+      managerId,
+      paginationDTO,
+    );
+  }
+
   @Public()
   @Delete(':id')
   remove(@Param('id') id: string) {

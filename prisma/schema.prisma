@@ -174,17 +174,6 @@ model EvaluativeDelivery {
   updatedAt   DateTime         @updatedAt
 }
 
-model Submission {
-  id          String           @id @default(uuid())
-  studentId   String
-  student     Student          @relation(fields: [studentId], references: [id])
-  homeWorkId  String
-  homeWork    HomeWork         @relation(fields: [homeWorkId], references: [id])
-  attachement String?
-  stage       EvaluationStage?
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-}
 
 model Period {
   id                    String               @id @default(uuid())

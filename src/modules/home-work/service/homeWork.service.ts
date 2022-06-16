@@ -253,8 +253,34 @@ export class HomeWorkService {
 
       // console.log((evaluatedHomeworks / evaluatedTotal) * 100);
 
+      const ty = homeWorks.map((homeWork) => {
+        const a = homeWork.disciplines.map((x) => {
+          const b = x.homeWorks.map((k) => {
+            const y = {
+              class: homeWork.name,
+              qtdStudents: homeWork._count.students,
+              nameDiscipline: x.name,
+              homeWork: {
+                name: k.name,
+                isOpen: k.isOpen,
+                type: k.type,
+                dueDate: k.dueDate,
+              },
+            };
+            return y;
+          });
+          return b;
+        });
+
+        return a;
+      });
+
+      ty.reduce(acc, curr, (idx) => {
+        console.log(acc);
+      });
+
       return {
-        data: homeWorks,
+        data: ty,
         status: HttpStatus.CREATED,
         message: 'Home Works Listadas com sucesso.',
       };
