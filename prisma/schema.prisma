@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["referentialActions"]
 }
 
@@ -116,20 +116,19 @@ model School {
 }
 
 model Discipline {
-  id            String                @id @default(uuid())
-  name          String
-  teacherId     String
-  createdAt     DateTime              @default(now())
-  updatedAt     DateTime              @updatedAt
-  classId       String
-  topic         String
-  class         Class                 @relation(fields: [classId], references: [id])
-  teacher       Teacher               @relation(fields: [teacherId], references: [id])
-  Content       Content[]
-  schedules     DisciplineSchedules[]
-  homeWorks     HomeWork[]
-  lessons       Lesson[]
-  registerClass RegisterClass[]
+  id        String                @id @default(uuid())
+  name      String
+  teacherId String
+  createdAt DateTime              @default(now())
+  updatedAt DateTime              @updatedAt
+  classId   String
+  topic     String
+  class     Class                 @relation(fields: [classId], references: [id])
+  teacher   Teacher               @relation(fields: [teacherId], references: [id])
+  Content   Content[]
+  schedules DisciplineSchedules[]
+  homeWorks HomeWork[]
+  lessons   Lesson[]
 }
 
 model Class {
@@ -202,20 +201,20 @@ model Content {
 }
 
 model RegisterClass {
-  id           String            @id @default(uuid())
-  classDate    DateTime
-  type         TypeRegisterClass
-  content      String?
-  subContent   String?
-  periodId     String?
-  observation  String
-  disciplineId String?
-  contentId    String?
-  createdAt    DateTime          @default(now())
-  updatedAt    DateTime          @updatedAt
-  Content      Content?          @relation(fields: [contentId], references: [id])
-  Discipline   Discipline?       @relation(fields: [disciplineId], references: [id])
-  Period       Period?           @relation(fields: [periodId], references: [id])
+  id          String            @id @default(uuid())
+  classDate   DateTime
+  type        TypeRegisterClass
+  content     String?
+  subContent  String?
+  periodId    String?
+  observation String
+  lessonId    String?
+  contentId   String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  Content     Content?          @relation(fields: [contentId], references: [id])
+  Lesson      Lesson?           @relation(fields: [lessonId], references: [id])
+  Period      Period?           @relation(fields: [periodId], references: [id])
 }
 
 model LackOfClass {
@@ -229,16 +228,17 @@ model LackOfClass {
 }
 
 model Lesson {
-  id           String        @id @default(uuid())
-  name         String
-  description  String
-  disciplineId String
-  notes        String?
-  classDate    DateTime? 
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  discipline   Discipline    @relation(fields: [disciplineId], references: [id])
-  LackOfClass  LackOfClass[]
+  id            String          @id @default(uuid())
+  name          String
+  description   String
+  disciplineId  String
+  notes         String?
+  classDate     DateTime?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  discipline    Discipline      @relation(fields: [disciplineId], references: [id])
+  LackOfClass   LackOfClass[]
+  RegisterClass RegisterClass[]
 }
 
 model DisciplineSchedules {
@@ -271,62 +271,62 @@ model Address {
 }
 
 enum Gender {
-  male @map("Masculino")
-  female @map("Feminino")
-  notBinary @map("Não Binário")
-  others @map("Outros")
-  notInform @map("Prefiro Não Informar")
+  male       @map("Masculino")
+  female     @map("Feminino")
+  notBinary  @map("Não Binário")
+  others     @map("Outros")
+  notInform  @map("Prefiro Não Informar")
 }
 
 enum Role {
-  admin @map("Administrador")
-  manager @map("Gestor")
-  teacher @map("Professor")
-  others @map("Outros")
-  student @map("Estudante")
+  admin    @map("Administrador")
+  manager  @map("Gestor")
+  teacher  @map("Professor")
+  others   @map("Outros")
+  student  @map("Estudante")
 }
 
 enum TypeUser {
-  admin @map("Administrador")
-  manager @map("Gestor")
-  teacher @map("Professor")
-  student @map("Estudante")
-  others @map("Outros")
+  admin    @map("Administrador")
+  manager  @map("Gestor")
+  teacher  @map("Professor")
+  student  @map("Estudante")
+  others   @map("Outros")
 }
 
 enum TypeRegisterClass {
-  planEducation @map("Plano de Ensino")
-  loose @map("Avulso")
+  planEducation  @map("Plano de Ensino")
+  loose          @map("Avulso")
 }
 
 enum Day {
-  monday @map("Segunda-Feira")
-  thursday @map("Terça-Feira")
-  wednesday @map("Quarta-Feira")
-  tuesday @map("Quinta-Feira")
-  friday @map("Sexta-Feira")
-  saturday @map("Sábado")
-  sunday @map("Domingo")
+  monday     @map("Segunda-Feira")
+  thursday   @map("Terça-Feira")
+  wednesday  @map("Quarta-Feira")
+  tuesday    @map("Quinta-Feira")
+  friday     @map("Sexta-Feira")
+  saturday   @map("Sábado")
+  sunday     @map("Domingo")
 }
 
 enum TypeHomeWork {
-  activity @map("Atividade")
-  exame @map("Prova")
-  work @map("Trabalho")
-  others @map("Outros")
-  test @map("Avaliação")
+  activity  @map("Atividade")
+  exame     @map("Prova")
+  work      @map("Trabalho")
+  others    @map("Outros")
+  test      @map("Avaliação")
 }
 
 enum EvaluationStage {
-  sent @map("Enviada")
-  overdue @map("Atrasada")
-  pending @map("Pendente")
-  evaluated @map("Avaliada")
-  canceled @map("Cancelada")
-  others @map("Outros")
+  sent       @map("Enviada")
+  overdue    @map("Atrasada")
+  pending    @map("Pendente")
+  evaluated  @map("Avaliada")
+  canceled   @map("Cancelada")
+  others     @map("Outros")
 }
 
 enum OwnerAction {
-  teacher @map("Professor")
-  student @map("Estudante")
+  teacher  @map("Professor")
+  student  @map("Estudante")
 }
