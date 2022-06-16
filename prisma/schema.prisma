@@ -116,20 +116,19 @@ model School {
 }
 
 model Discipline {
-  id            String                @id @default(uuid())
-  name          String
-  teacherId     String
-  createdAt     DateTime              @default(now())
-  updatedAt     DateTime              @updatedAt
-  classId       String
-  topic         String
-  class         Class                 @relation(fields: [classId], references: [id])
-  teacher       Teacher               @relation(fields: [teacherId], references: [id])
-  Content       Content[]
-  schedules     DisciplineSchedules[]
-  homeWorks     HomeWork[]
-  lessons       Lesson[]
-  registerClass RegisterClass[]
+  id        String                @id @default(uuid())
+  name      String
+  teacherId String
+  createdAt DateTime              @default(now())
+  updatedAt DateTime              @updatedAt
+  classId   String
+  topic     String
+  class     Class                 @relation(fields: [classId], references: [id])
+  teacher   Teacher               @relation(fields: [teacherId], references: [id])
+  Content   Content[]
+  schedules DisciplineSchedules[]
+  homeWorks HomeWork[]
+  lessons   Lesson[]
 }
 
 model Class {
@@ -202,22 +201,20 @@ model Content {
 }
 
 model RegisterClass {
-  id           String            @id @default(uuid())
-  classDate    DateTime
-  type         TypeRegisterClass
-  content      String?
-  subContent   String?
-  periodId     String?
-  observation  String
-  lessonId     String?
-  contentId    String?
-  createdAt    DateTime          @default(now())
-  updatedAt    DateTime          @updatedAt
-  Content      Content?          @relation(fields: [contentId], references: [id])
-  Lesson       Lesson?           @relation(fields: [lessonId], references: [id])
-  Period       Period?           @relation(fields: [periodId], references: [id])
-  Discipline   Discipline?       @relation(fields: [disciplineId], references: [id])
-  disciplineId String?
+  id          String            @id @default(uuid())
+  classDate   DateTime
+  type        TypeRegisterClass
+  content     String?
+  subContent  String?
+  periodId    String?
+  observation String
+  lessonId    String?
+  contentId   String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  Content     Content?          @relation(fields: [contentId], references: [id])
+  Lesson      Lesson?           @relation(fields: [lessonId], references: [id])
+  Period      Period?           @relation(fields: [periodId], references: [id])
 }
 
 model LackOfClass {
