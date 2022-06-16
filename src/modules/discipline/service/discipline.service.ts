@@ -51,7 +51,7 @@ export class DisciplineService {
       },
     });
 
-    const currentManager = await this.managerService.findCurrentManager({
+    await this.managerService.findCurrentManager({
       schoolId: classSchool.schooldId,
       managerId,
     });

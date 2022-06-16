@@ -1,5 +1,5 @@
 import { Role } from '@prisma/client';
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PaginationDTO } from 'src/models/PaginationDTO';
 import { ManagerService } from 'src/modules/manager/service/manager.service';
 import { PrismaService } from 'src/modules/prisma';
@@ -16,7 +16,33 @@ export class WaitlistService {
   async create(createWaitlistDTO: CreateWaitlistDTO) {
     const data = createWaitlistDTO;
 
-    const createdWaitlist = await this.prisma.waitList.create({ data });
+    const existsRegisterOnWaitlist = await this.prisma.waitList.findFirst({
+      where: {
+        value: data.value,
+        schoolId: data.schoolId,
+      },
+    });
+
+    if (existsRegisterOnWaitlist) {
+      throw new HttpException(
+        `Este registro já existe para essa escola, por favor altere os dados de email ou matrícula e tente novamente.`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    const createdWaitlist = await this.prisma.waitList.create({
+      data: {
+        ...data,
+        approved: false,
+      },
+    });
+
+    if (!createdWaitlist) {
+      throw new HttpException(
+        `Erro ao adicionar registro na waitList.`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
 
     // const mail = {
     //   to: createdWaitlist.value,

@@ -15,100 +15,30 @@ export class StudentService {
     private managerService: ManagerService,
   ) {}
 
-  async create(createStudentDTO) {
+  async create(createStudentDTO, managerId: string) {
     const data = createStudentDTO;
 
-    const userExistsOnWaitlist = await this.prisma.waitList.findUnique({
-      where: { value: data.enrollment },
-    });
-
-    if (!userExistsOnWaitlist) {
-      throw new HttpException(
-        `Acesso negado. Informações inválidas`,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
-    const user = {
-      name: data.name,
-      email: data.email,
-      password: data.password,
-      birthDate: data.birthDate,
-      phone: data.phone,
-      address: data.address,
-      gender: data.gender,
-    };
-
-    const hashSalt = Number(process.env.HASH_SALT);
-    const newData = {
-      ...user,
-      password: await bcrypt.hash(data.password, hashSalt),
-      birthDate: new Date(data.birthDate),
-      type: userExistsOnWaitlist.role,
-    };
-
-    const createdUser = await this.prisma.user.create({
-      data: {
-        ...newData,
-        address: {
-          create: data.address,
+    const currentSchool = await this.prisma.school.findFirst({
+      where: {
+        classes: {
+          some: {
+            id: data.classId,
+          },
         },
       },
-      include: {
-        address: true,
-      },
     });
 
-    const classExists = await this.prisma.class.findUnique({
-      where: {
-        id: data.classId,
-      },
-    });
-
-    if (!classExists) {
+    if (!currentSchool) {
       throw new HttpException(
         `Informações inválidas para a turma, não foi possível cadastrar o estudante.`,
         HttpStatus.BAD_REQUEST,
       );
     }
 
-    const dataStudent = {
-      schoolId: userExistsOnWaitlist.schoolId,
-      status: true,
-      enrollment: data.enrollment,
-      classId: data.classId,
-      entryForm: data.entryForm,
-      reasonForTransfer: data.reasonForTransfer ? data.reasonForTransfer : null,
-      userId: createdUser.id,
-    };
-
-    const createdStudent = await this.prisma.student.create({
-      data: {
-        ...dataStudent,
-      },
-
-      include: {
-        class: true,
-      },
+    await this.managerService.findCurrentManager({
+      schoolId: currentSchool.id,
+      managerId,
     });
-
-    const response = {
-      ...createdUser,
-      ...createdStudent,
-      password: undefined,
-    };
-
-    return {
-      data: response,
-      status: HttpStatus.CREATED,
-      message: 'Estudante cadastrado com sucesso.',
-    };
-  }
-
-  async submitEvaluativeDelivery() {}
-
-  async createByAdmin(createStudentDTO) {
-    const data = createStudentDTO;
 
     const user = {
       name: data.name,
@@ -156,7 +86,7 @@ export class StudentService {
     }
 
     const dataStudent = {
-      schoolId: classExists.schooldId,
+      schoolId: currentSchool.id,
       status: true,
       enrollment: data.enrollment,
       classId: data.classId,
@@ -175,8 +105,6 @@ export class StudentService {
       },
     });
 
-    console.log(createdStudent);
-
     const response = {
       ...createdUser,
       ...createdStudent,
@@ -189,6 +117,8 @@ export class StudentService {
       message: 'Estudante cadastrado com sucesso.',
     };
   }
+
+  async submitEvaluativeDelivery() {}
 
   async findBySchool({ schoolId, managerId }: ListEntitiesForSchoolDTO) {
     const currentManager = await this.prisma.manager.findUnique({
@@ -226,7 +156,7 @@ export class StudentService {
     { schoolId, managerId }: ListEntitiesForSchoolDTO,
     paginationDTO: PaginationDTO,
   ) {
-    const currentManager = await this.managerService.findCurrentManager({
+    await this.managerService.findCurrentManager({
       schoolId,
       managerId,
     });
