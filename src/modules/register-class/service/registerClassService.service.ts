@@ -15,6 +15,13 @@ export class RegisterClassService {
         },
       });
 
+      if (!createdRegisterClass) {
+        throw new HttpException(
+          'Não foi possível criar o registro de aula, por favor tente novamente.',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
       return {
         data: createdRegisterClass,
         status: HttpStatus.CREATED,

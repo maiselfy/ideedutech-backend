@@ -1,35 +1,24 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmpty, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export class CreateLessonDTO {
+export class UpdateLessonDTO {
   @ApiProperty()
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   name: string;
 
   @ApiProperty()
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   description: string;
 
   @ApiProperty()
-  @IsNotEmpty()
   @IsString()
-  disciplineId: string;
-
-  @ApiProperty()
   @IsOptional()
-  @IsString()
   classDate: Date;
 
   @ApiProperty()
   @IsString()
   @IsOptional()
   notes: string;
-
-  @IsEmpty()
-  createdAt: Date;
-
-  @IsEmpty()
-  updatedAt: Date;
 }

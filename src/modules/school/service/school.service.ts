@@ -7,8 +7,6 @@ export class SchoolService {
   async create(createSchoolDTO) {
     const data = createSchoolDTO;
 
-    console.log(createSchoolDTO);
-
     const createdSchool = await this.prisma.school.create({
       data: {
         ...data,
@@ -20,6 +18,13 @@ export class SchoolService {
         address: true,
       },
     });
+
+    if (!createdSchool) {
+      throw new HttpException(
+        'Não foi possível criar a escola, por favor tente novamente.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
 
     return {
       data: createdSchool,

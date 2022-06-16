@@ -3,40 +3,43 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
+  Put,
 } from '@nestjs/common';
+import { CreateLessonDTO } from '../dtos/createLesson.dto';
+import { UpdateLessonDTO } from '../dtos/updateLesson.dto';
 import { LessonService } from '../services/lesson.service';
-import { CreateLessonDto } from './dto/create-lesson.dto';
-import { UpdateLessonDto } from './dto/update-lesson.dto';
 
 @Controller('lesson')
 export class LessonController {
   constructor(private readonly lessonService: LessonService) {}
 
   @Post()
-  create(@Body() createLessonDto: CreateLessonDto) {
-    return this.lessonService.create(createLessonDto);
+  create(@Body() createLessonDTO: CreateLessonDTO) {
+    return this.lessonService.create(createLessonDTO);
   }
 
-  @Get()
-  findAll() {
-    return this.lessonService.findAll();
+  // @Get()
+  // findAll() {
+  //   return this.lessonService.findAll();
+  // }
+
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.lessonService.findOne(+id);
+  // }
+
+  @Put('/update/:lessonId')
+  update(
+    @Param('lessonId') lessonId: string,
+    @Body() updateLessonDTO: UpdateLessonDTO,
+  ) {
+    return this.lessonService.updateLesson(lessonId, updateLessonDTO);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.lessonService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateLessonDto: UpdateLessonDto) {
-    return this.lessonService.update(+id, updateLessonDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.lessonService.remove(+id);
-  }
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.lessonService.remove(+id);
+  // }
 }

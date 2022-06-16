@@ -24,7 +24,7 @@ import { ContentModule } from './modules/content/content.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { mailerConfig } from './configs/mailer.config';
 import { EvaluativeDeliveryModule } from './modules/evaluative-delivery/evaluativeDelivery.module';
-import { LessonModule } from './lesson/lesson.module';
+import { LessonModule } from './modules/lesson/lesson.module';
 
 ConfigModule.forRoot();
 
