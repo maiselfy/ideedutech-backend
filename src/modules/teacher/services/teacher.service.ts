@@ -62,7 +62,7 @@ export class TeacherService {
     { schoolId, managerId }: ListEntitiesForSchoolDTO,
     paginationDTO: PaginationDTO,
   ) {
-    const currentManager = await this.managerService.findCurrentManager({
+    await this.managerService.findCurrentManager({
       schoolId,
       managerId,
     });

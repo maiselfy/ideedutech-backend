@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma';
 import CreateAddressDTO from '../dtos/createAddress.dto';
 
@@ -9,6 +9,13 @@ export class AddressService {
     const data = createAddressDTO;
 
     const createdAddress = await this.prisma.address.create({ data });
+
+    if (!createdAddress) {
+      throw new HttpException(
+        `Informações inválidas para o endereço, não foi possível prosseguir com a criação.`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
 
     return {
       data: createdAddress,
