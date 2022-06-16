@@ -149,6 +149,7 @@ model HomeWork {
   description        String
   disciplineId       String
   discipline         Discipline           @relation(fields: [disciplineId], references: [id])
+  startDate          DateTime?
   dueDate            DateTime?
   isOpen             Boolean?
   attachement        String?
@@ -232,6 +233,8 @@ model Lesson {
   name         String
   description  String
   disciplineId String
+  notes        String?
+  classDate    DateTime? 
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   discipline   Discipline    @relation(fields: [disciplineId], references: [id])
