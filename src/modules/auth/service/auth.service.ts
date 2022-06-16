@@ -17,20 +17,21 @@ import { UserToken } from '../models/UserToken';
 import { GenerateRefreshToken } from '../providers/generateRefreshToken.provider';
 import { GenerateToken } from '../providers/generateToken.provider';
 import { MailerService } from '@nestjs-modules/mailer';
-import { stringify } from 'querystring';
+import { StudentService } from 'src/modules/student/services/student.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private userService: UserService,
+    private studentService: StudentService,
     private generateRefreshToken: GenerateRefreshToken,
     private generateToken: GenerateToken,
     private mailerService: MailerService,
   ) {}
 
-  async login(email: string, password: string): Promise<UserToken> {
-    const user: User = await this.validateUser(email, password);
+  async login(login: string, password: string): Promise<UserToken> {
+    const user = await this.validateUser(login, password);
 
     if (!user) {
       throw new HttpException(
@@ -39,10 +40,10 @@ export class AuthService {
       );
     }
 
-    const accessToken = await this.generateToken.generateToken(user.id);
+    const accessToken = await this.generateToken.generateToken(user.userId);
 
     const refreshToken = await this.generateRefreshToken.generateRefreshToken(
-      user.id,
+      user.userId,
     );
 
     return {
@@ -51,27 +52,58 @@ export class AuthService {
     };
   }
 
-  private async validateUser(email: string, password: string) {
-    const user = await this.userService.findByEmail(email);
+  private async validateUser(login: string, password: string) {
+    const typeValue = login.indexOf('@') > -1;
 
-    if (!user) {
-      throw new UnauthorizedError(
-        'Não existe um usuário com esse email em nossa base de dados.',
+    if (!typeValue) {
+      const user = await this.studentService.findByEnrollment(login);
+
+      if (!user) {
+        throw new UnauthorizedError(
+          'Não existe um usuário com esse email em nossa base de dados.',
+        );
+      }
+
+      const isPasswordValid = await bcrypt.compare(
+        password,
+        user.user.password,
       );
+
+      if (!isPasswordValid) {
+        throw new UnauthorizedError(
+          'Senha incorreta, por favor, tente novamente.',
+        );
+      }
+
+      const userId = user.userId;
+
+      return {
+        userId,
+        password: undefined,
+      };
+    } else {
+      const user = await this.userService.findByEmail(login);
+      if (!user) {
+        throw new UnauthorizedError(
+          'Não existe um usuário com esse email em nossa base de dados.',
+        );
+      }
+
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+
+      if (!isPasswordValid) {
+        throw new UnauthorizedError(
+          'Senha incorreta, por favor, tente novamente.',
+        );
+      }
+
+      const userId = user.id;
+
+      return {
+        userId,
+        password: undefined,
+      };
     }
-
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-
-    if (!isPasswordValid) {
-      throw new UnauthorizedError(
-        'Senha incorreta, por favor, tente novamente.',
-      );
-    }
-
-    return {
-      ...user,
-      password: undefined,
-    };
   }
 
   async sendRecoverPasswordEmail(email: string) {

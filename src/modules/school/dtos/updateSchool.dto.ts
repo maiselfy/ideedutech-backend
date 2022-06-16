@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Address } from '@prisma/client';
 import { IsEmpty, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class UpdateSchoolDTO {
@@ -56,44 +56,7 @@ export class UpdateSchoolDTO {
     },
   })
   @IsOptional()
-  @Type(() => Address)
-  address: any;
-
-  @IsEmpty()
-  createdAt: Date;
-
-  @IsEmpty()
-  updatedAt: Date;
-}
-
-class Address {
-  @IsString()
-  @IsNotEmpty()
-  street: string;
-
-  @IsString()
-  @IsNotEmpty()
-  city: string;
-
-  @IsString()
-  @IsNotEmpty()
-  number: string;
-
-  @IsString()
-  @IsNotEmpty()
-  zipCode: string;
-
-  @IsString()
-  @IsNotEmpty()
-  area: string;
-
-  @IsString()
-  @IsNotEmpty()
-  uf: string;
-
-  @IsString()
-  @IsNotEmpty()
-  labelAddress: string;
+  address: Address;
 
   @IsEmpty()
   createdAt: Date;

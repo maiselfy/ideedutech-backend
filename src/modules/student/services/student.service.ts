@@ -175,8 +175,6 @@ export class StudentService {
       },
     });
 
-    console.log(createdStudent);
-
     const response = {
       ...createdUser,
       ...createdStudent,
@@ -315,5 +313,21 @@ export class StudentService {
       status: HttpStatus.OK,
       message: 'Sucess.',
     };
+  }
+
+  findByEnrollment(enrollment: string) {
+    const student = this.prisma.student.findFirst({
+      where: {
+        enrollment: enrollment,
+      },
+      include: {
+        user: {
+          select: {
+            password: true,
+          },
+        },
+      },
+    });
+    return student;
   }
 }
