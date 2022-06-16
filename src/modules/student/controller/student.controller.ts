@@ -20,17 +20,11 @@ import { CreatePolicyHandler } from 'src/security/policies/create.policy';
 export class StudentController {
   constructor(private readonly studentService: StudentService) {}
 
-  @Public()
-  @Post()
-  create(@Body() createStudentDTO: any) {
-    return this.studentService.create(createStudentDTO);
-  }
+  @Post('/manager')
+  create(@Body() createStudentDTO: any, @User() user) {
+    const managerId = user.id;
 
-  @Post('manager')
-  @UseGuards(PoliciesGuard)
-  @CheckPolicies(new CreatePolicyHandler('Student'))
-  createByAdmin(@Body() createStudentDTO: any) {
-    return this.studentService.createByAdmin(createStudentDTO);
+    return this.studentService.create(createStudentDTO, managerId);
   }
 
   @Get('/students/:schoolId')

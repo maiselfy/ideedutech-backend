@@ -19,6 +19,13 @@ export class SchoolService {
       },
     });
 
+    if (!createdSchool) {
+      throw new HttpException(
+        'Não foi possível criar a escola, por favor tente novamente.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     return {
       data: createdSchool,
       status: HttpStatus.CREATED,
@@ -62,6 +69,43 @@ export class SchoolService {
         },
       },
       where: { userId: managerId },
+    });
+
+    if (!schools) {
+      throw new HttpException(
+        {
+          error: 'Não existem escolas registradas em nossa base de dados.',
+          code: 'Teste',
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return {
+      data: schools,
+      status: HttpStatus.OK,
+      message: 'Escolas retornadas com sucesso.',
+    };
+  }
+
+  async findAllByAdmin() {
+    const schools = await this.prisma.school.findMany({
+      include: {
+        address: {
+          select: {
+            city: true,
+            area: true,
+            createdAt: true,
+            number: true,
+            labelAddress: true,
+            uf: true,
+            street: true,
+          },
+        },
+        _count: {
+          select: { managers: true, teachers: true, students: true },
+        },
+      },
     });
 
     if (!schools) {

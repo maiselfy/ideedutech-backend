@@ -71,6 +71,15 @@ export class UserService {
         password: undefined,
       };
 
+      await this.prisma.waitList.update({
+        data: {
+          approved: true,
+        },
+        where: {
+          id: userExistsOnWaitlist.id,
+        },
+      });
+
       return {
         data: response,
         status: HttpStatus.CREATED,
@@ -93,6 +102,15 @@ export class UserService {
         password: undefined,
       };
 
+      await this.prisma.waitList.update({
+        data: {
+          approved: true,
+        },
+        where: {
+          id: userExistsOnWaitlist.id,
+        },
+      });
+
       return {
         data: response,
         status: HttpStatus.CREATED,
@@ -113,12 +131,20 @@ export class UserService {
         password: undefined,
       };
 
+      await this.prisma.waitList.update({
+        data: {
+          approved: true,
+        },
+        where: {
+          id: userExistsOnWaitlist.id,
+        },
+      });
+
       return {
         data: response,
         status: HttpStatus.CREATED,
         message: 'Professor cadastrado com sucesso.',
       };
-    } else if (userExistsOnWaitlist.role === 'student') {
     } else {
       throw new HttpException(
         `Permissões insuficientes, não foi possível prosseguir com o cadastro desse tipo de usuário.`,

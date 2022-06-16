@@ -19,14 +19,14 @@ export default class CreateRegisterClassDTO {
   })
   @IsString()
   @IsOptional()
-  contentId?: string;
+  contentId: string;
 
   @ApiProperty({
     example: 'd1123a7e-f2fd-468e-87df-3b1e0c4780b6',
   })
   @IsString()
   @IsOptional()
-  periodId?: string;
+  periodId: string;
 
   @IsString()
   @IsNotEmpty()
@@ -44,11 +44,11 @@ export default class CreateRegisterClassDTO {
   })
   @IsString()
   @IsOptional()
-  disciplineId?: string;
+  lessonId: string;
 
   @IsEmpty()
-  createdAt?: Date;
+  createdAt: Date;
 
   @IsEmpty()
-  updatedAt?: Date;
+  updatedAt: Date;
 }

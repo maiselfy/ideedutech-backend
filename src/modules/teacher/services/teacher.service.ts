@@ -62,7 +62,7 @@ export class TeacherService {
     { schoolId, managerId }: ListEntitiesForSchoolDTO,
     paginationDTO: PaginationDTO,
   ) {
-    const currentManager = await this.managerService.findCurrentManager({
+    await this.managerService.findCurrentManager({
       schoolId,
       managerId,
     });
@@ -70,7 +70,7 @@ export class TeacherService {
     const [page, qtd, skippedItems] = pagination(paginationDTO);
 
     const teachers = await this.prisma.teacher.findMany({
-      select: { user: true },
+      select: { user: true, id: true },
       where: {
         schools: {
           some: {
@@ -91,7 +91,8 @@ export class TeacherService {
 
     const formattedTeachers = teachers.reduce((acc, manager) => {
       acc.push({
-        id: manager.user.id,
+        id: manager.id,
+        userId: manager.user.id,
         name: manager.user.name,
         email: manager.user.email,
         birthDate: manager.user.birthDate,
