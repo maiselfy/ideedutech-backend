@@ -140,16 +140,9 @@ export class TeacherService {
   }
 
   async findClassesByTeacherOnSchool(
-    schoolId: string,
     teacherId: string,
-    managerId: string,
     paginationDTO: PaginationDTO,
   ) {
-    await this.managerService.findCurrentManager({
-      schoolId,
-      managerId,
-    });
-
     const [page, qtd, skippedItems] = pagination(paginationDTO);
 
     const classes = await this.prisma.class.findMany({
@@ -159,18 +152,12 @@ export class TeacherService {
             teacherId: teacherId,
           },
         },
-        schooldId: schoolId,
       },
       include: {
         _count: {
           select: {
             disciplines: true,
             students: true,
-          },
-        },
-        school: {
-          select: {
-            name: true,
           },
         },
       },
@@ -188,12 +175,10 @@ export class TeacherService {
     const formattedClasses = classes.map((classOfSchool) => {
       const formattedClass = {
         ...classOfSchool,
-        schoolName: classOfSchool?.school?.name,
         qtdStudents: classOfSchool?._count?.students,
         qtdDisciplines: classOfSchool?._count?.disciplines,
       };
 
-      delete formattedClass.school;
       delete formattedClass._count;
 
       return formattedClass;

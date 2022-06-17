@@ -98,33 +98,6 @@ export class HomeWorkService {
       const { startDate, endDate, disciplineId, classId, type, isOpen } =
         searchHomeWorksByTeacher;
 
-      // const homeWorks = await this.prisma.homeWork.findMany({
-
-      //   select: {
-      //     discipline: {
-      //       select: {
-      //         name: true,
-      //         class: {
-      //           select: {
-      //             name: true,
-      //           },
-      //         },
-      //         homeWorks: {
-      //           select: {
-      //             dueDate: true,
-      //             isOpen: true,
-      //             _count: {
-      //               select: {
-      //                 evaluativeDelivery: true,
-      //               },
-      //             },
-      //           },
-      //         },
-      //       },
-      //     },
-      //   },
-      // });
-
       const homeWorks = await this.prisma.class.findMany({
         select: {
           _count: {
@@ -178,85 +151,10 @@ export class HomeWorkService {
         },
       });
 
-      // const homeWorks = await this.prisma.discipline.findMany({
-      //   where: {
-      //     teacher: {
-      //       user: {
-      //         id: teacherId,
-      //       },
-      //     },
-      //   },
-      //   select: {
-      //     homeWorks: {
-      //       select: {
-      //         _count: {
-      //           select: {
-      //             evaluativeDelivery: true,
-      //           },
-      //         },
-      //         id: true,
-      //         discipline: {
-      //           select: {
-      //             name: true,
-      //             class: {
-      //               select: {
-      //                 name: true,
-      //               },
-      //             },
-      //           },
-      //         },
-
-      //         dueDate: true,
-      //         isOpen: true,
-      //         evaluativeDelivery: {
-      //           where: {
-      //             stage: 'evaluated',
-      //           },
-      //           select: {
-      //             id: true,
-      //             stage: true,
-      //             student: {
-      //               select: {
-      //                 id: true,
-      //               },
-      //             },
-      //           },
-      //         },
-
-      //         name: true,
-      //       },
-      //       where: {
-      //         dueDate: {
-      //           gte: startDate ? startDate : undefined,
-      //           lte: endDate ? endDate : undefined,
-      //         },
-      //         disciplineId: disciplineId ? disciplineId : undefined,
-      //         type: type ? type : undefined,
-      //         isOpen: isOpen ? isOpen : undefined,
-      //         discipline: {
-      //           classId: classId ? classId : undefined,
-      //         },
-      //       },
-      //     },
-      //   },
-      // });
-
-      // homeWorks.reduce((acc, curr, index) => {}, []);
-
-      // homeWorks.forEach((homeWork) => {
-      //   homeWork.homeWorks.map((item) => {
-      //     evaluatedTotal += item._count.evaluativeDelivery;
-      //     const lenghtEvaluetive = item.evaluativeDelivery.length;
-      //     evaluatedHomeworks += lenghtEvaluetive;
-      //   });
-      // });
-
-      // console.log((evaluatedHomeworks / evaluatedTotal) * 100);
-
-      const ty = homeWorks.map((homeWork) => {
-        const a = homeWork.disciplines.map((x) => {
-          const b = x.homeWorks.map((k) => {
-            const y = {
+      const formattedData = homeWorks.map((homeWork) => {
+        const formattedDisciplines = homeWork.disciplines.map((x) => {
+          const formattedHomeWorks = x.homeWorks.map((k) => {
+            const formatedHomeWork = {
               class: homeWork.name,
               qtdStudents: homeWork._count.students,
               nameDiscipline: x.name,
@@ -267,20 +165,15 @@ export class HomeWorkService {
                 dueDate: k.dueDate,
               },
             };
-            return y;
+            return formatedHomeWork;
           });
-          return b;
+          return formattedHomeWorks;
         });
-
-        return a;
-      });
-
-      ty.reduce(acc, curr, (idx) => {
-        console.log(acc);
+        return formattedDisciplines;
       });
 
       return {
-        data: ty,
+        data: formattedData,
         status: HttpStatus.CREATED,
         message: 'Home Works Listadas com sucesso.',
       };
@@ -291,5 +184,26 @@ export class HomeWorkService {
 
   async findAll() {
     return this.prisma.homeWork.findMany();
+  }
+
+  async getHomeWork(homeWorkId: string) {
+    const homeWork = await this.prisma.homeWork.findUnique({
+      where: {
+        id: homeWorkId,
+      },
+    });
+
+    if (!homeWork) {
+      throw new HttpException(
+        'Erro. Homework não encontrada.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    return {
+      data: homeWork,
+      status: HttpStatus.OK,
+      message: `Homework retornada com sucesso.`,
+    };
   }
 }
