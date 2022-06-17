@@ -246,4 +246,20 @@ export class StudentService {
       message: 'Sucess.',
     };
   }
+
+  findByEnrollment(enrollment: string) {
+    const student = this.prisma.student.findFirst({
+      where: {
+        enrollment: enrollment,
+      },
+      include: {
+        user: {
+          select: {
+            password: true,
+          },
+        },
+      },
+    });
+    return student;
+  }
 }

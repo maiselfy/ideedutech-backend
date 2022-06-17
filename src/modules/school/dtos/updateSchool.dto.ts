@@ -1,44 +1,62 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Address } from '@prisma/client';
 import { IsEmpty, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class UpdateSchoolDTO {
   @ApiProperty({
-    example: 'EEM Educacional Estadual',
+    example: 'EEFM Educacional Municipal',
   })
   @IsString()
+  @IsOptional()
   @IsNotEmpty()
   name: string;
 
   @ApiProperty({
-    example: '(00) 8 99999999',
+    example: 'XX. XXX. XXX/0001-XX.',
   })
   @IsString()
+  @IsOptional()
+  cnpj?: string;
+
+  @ApiProperty({
+    example: '(88) 9 99999999',
+  })
+  @IsString()
+  @IsOptional()
   @IsNotEmpty()
   phone: string;
 
   @ApiProperty({
-    example: '31082175',
+    example: 'educacional@gmail.com',
+  })
+  @IsOptional()
+  @IsString()
+  email?: string;
+
+  @ApiProperty({
+    example: '13082175',
   })
   @IsOptional()
   @IsString()
   inep?: string;
-
-  @ApiProperty({
-    example: 'educacionalEstadual@gmail.com',
-  })
-  @IsString()
-  email?: string;
 
   @IsString()
   @IsOptional()
   addressId: string;
 
   @ApiProperty({
-    example: 'XX. XXX. XXX/0002-XX.',
+    example: {
+      Rua: 'Rua Maria Francelina Pinheiro Landim',
+      city: 'Solonópole',
+      number: '928',
+      zipCode: '63620000',
+      area: 'Brasil',
+      uf: 'CE',
+      labelAddress: 'Minha Casa',
+    },
   })
-  @IsString()
   @IsOptional()
-  cnpj?: string;
+  address: Address;
 
   @IsEmpty()
   createdAt: Date;

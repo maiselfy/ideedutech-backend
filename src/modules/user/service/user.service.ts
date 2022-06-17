@@ -218,6 +218,73 @@ export class UserService {
     });
   }
 
+  async update(id, updateInfoUser) {
+    try {
+      const updateData = updateInfoUser;
+
+      const updateUser = await this.prisma.user.findUnique({
+        where: {
+          id: id,
+        },
+      });
+
+      updateUser.name = updateData.name ? updateData.name : updateUser.name;
+      updateUser.phone = updateData.phone ? updateData.phone : updateUser.phone;
+      updateUser.gender = updateData.gender ? updateData.gender : updateUser.gender;
+      updateUser.birthDate = updateData.birthDate ? new Date(updateData.birthDate) : updateUser.birthDate;
+
+      await this.prisma.user.update({
+        where: {
+          id: id,
+        },
+        data: {
+          name: updateUser.name,
+          phone: updateUser.phone,
+          gender: updateUser.gender,
+          birthDate: updateUser.birthDate,
+        },
+      });
+
+      if (updateData.address) {
+        const updateAddress = await this.prisma.address.findFirst({
+          where: {
+            userId: updateUser.id,
+          },
+        });
+
+        updateAddress.street = updateData.address.street ? updateData.address.street : updateAddress.street;
+        updateAddress.city = updateData.address.city ? updateData.address.city : updateAddress.city;
+        updateAddress.number = updateData.address.number ? updateData.address.number : updateAddress.number;
+        updateAddress.zipCode = updateData.address.zipCode ? updateData.address.zipCode : updateAddress.zipCode;
+        updateAddress.area = updateData.address.area ? updateData.address.area : updateAddress.area;
+        updateAddress.uf = updateData.address.uf ? updateData.address.uf : updateAddress.uf;
+        updateAddress.labelAddress = updateData.address.labelAddress ? updateData.address.labelAddress : updateAddress.labelAddress;
+
+        await this.prisma.address.update({
+          where: {
+            id: updateAddress.id,
+          },
+          data: {
+            street: updateAddress.street,
+            city: updateAddress.city,
+            number: updateAddress.number,
+            zipCode: updateAddress.zipCode,
+            area: updateAddress.area,
+            uf: updateAddress.uf,
+            labelAddress: updateAddress.labelAddress,
+          },
+        });
+      }
+
+      return {
+        status: HttpStatus.OK,
+        message: 'Escola atualizada com sucesso.',
+      };
+    } catch (error) {
+      return new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+  }
+
   async remove(id: string) {
     const deleteUser = await this.prisma.user.delete({
       where: {

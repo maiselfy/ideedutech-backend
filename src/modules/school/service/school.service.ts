@@ -152,10 +152,6 @@ export class SchoolService {
         },
       });
 
-      if (!updateSchool) {
-        return new HttpException('Not found', HttpStatus.NOT_FOUND);
-      }
-
       updateSchool.name = updateData.name ? updateData.name : updateSchool.name;
       updateSchool.cnpj = updateData.cnpj ? updateData.cnpj : updateSchool.cnpj;
       updateSchool.phone = updateData.phone
@@ -166,7 +162,7 @@ export class SchoolService {
         : updateSchool.email;
       updateSchool.inep = updateData.inep ? updateData.inep : updateSchool.inep;
 
-      const updateSchoolResult = await this.prisma.school.update({
+      await this.prisma.school.update({
         where: {
           id: id,
         },
@@ -178,55 +174,52 @@ export class SchoolService {
         },
       });
 
-      const updateAddress = await this.prisma.address.findFirst({
-        where: {
-          schoolId: updateSchool.id,
-        },
-      });
+      if (updateData.address) {
+        const updateAddress = await this.prisma.address.findFirst({
+          where: {
+            schoolId: updateSchool.id,
+          },
+        });
 
-      if (!updateAddress) {
-        return new HttpException('Not found', HttpStatus.NOT_FOUND);
+        updateAddress.street = updateData.address.street
+          ? updateData.address.street
+          : updateAddress.street;
+        updateAddress.city = updateData.address.city
+          ? updateData.address.city
+          : updateAddress.city;
+        updateAddress.number = updateData.address.number
+          ? updateData.address.number
+          : updateAddress.number;
+        updateAddress.zipCode = updateData.address.zipCode
+          ? updateData.address.zipCode
+          : updateAddress.zipCode;
+        updateAddress.area = updateData.address.area
+          ? updateData.address.area
+          : updateAddress.area;
+        updateAddress.uf = updateData.address.uf
+          ? updateData.address.uf
+          : updateAddress.uf;
+        updateAddress.labelAddress = updateData.address.labelAddress
+          ? updateData.address.labelAddress
+          : updateAddress.labelAddress;
+
+        await this.prisma.address.update({
+          where: {
+            id: updateAddress.id,
+          },
+          data: {
+            street: updateAddress.street,
+            city: updateAddress.city,
+            number: updateAddress.number,
+            zipCode: updateAddress.zipCode,
+            area: updateAddress.area,
+            uf: updateAddress.uf,
+            labelAddress: updateAddress.labelAddress,
+          },
+        });
       }
 
-      updateAddress.street = updateData.address.street
-        ? updateData.address.street
-        : updateAddress.street;
-      updateAddress.city = updateData.address.city
-        ? updateData.address.city
-        : updateAddress.city;
-      updateAddress.number = updateData.address.number
-        ? updateData.address.number
-        : updateAddress.number;
-      updateAddress.zipCode = updateData.address.zipCode
-        ? updateData.address.zipCode
-        : updateAddress.zipCode;
-      updateAddress.area = updateData.address.area
-        ? updateData.address.area
-        : updateAddress.area;
-      updateAddress.uf = updateData.address.uf
-        ? updateData.address.uf
-        : updateAddress.uf;
-      updateAddress.labelAddress = updateData.address.labelAddress
-        ? updateData.address.labelAddress
-        : updateAddress.labelAddress;
-
-      const updateAddressResult = await this.prisma.address.update({
-        where: {
-          id: updateAddress.id,
-        },
-        data: {
-          street: updateAddress.street,
-          city: updateAddress.city,
-          number: updateAddress.number,
-          zipCode: updateAddress.zipCode,
-          area: updateAddress.area,
-          uf: updateAddress.uf,
-          labelAddress: updateAddress.labelAddress,
-        },
-      });
-
       return {
-        data: { updateSchoolResult, updateAddressResult },
         status: HttpStatus.OK,
         message: 'Escola atualizada com sucesso.',
       };

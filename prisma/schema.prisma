@@ -174,7 +174,6 @@ model EvaluativeDelivery {
   updatedAt   DateTime         @updatedAt
 }
 
-
 model Period {
   id                    String               @id @default(uuid())
   startOfPeriod         DateTime
