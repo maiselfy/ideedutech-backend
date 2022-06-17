@@ -26,7 +26,12 @@ export class HomeWorkController {
     return this.homeWorkService.findAll();
   }
 
-  @Get('teacher')
+  @Get('/:homeWorkId')
+  findHomeWorkById(@Param('homeWorkId') homeWorkId: string) {
+    return this.homeWorkService.getHomeWork(homeWorkId);
+  }
+
+  @Get('/teacher/homeworks')
   findHomeWorksForTeacher(
     @User() user,
     @Query() searchHomeWorksByTeacher: SearchHomeWorksByTeacherDTO,

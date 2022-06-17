@@ -23,9 +23,6 @@ export default class SubmissionOfStudentDTO {
   @IsOptional()
   attachement: string;
 
-  @ApiProperty({
-    example: 'pending',
-  })
   stage: EvaluationStage;
 
   owner: OwnerAction;

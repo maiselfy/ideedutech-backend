@@ -85,7 +85,7 @@ export class TeacherService {
     if (!teachers) {
       throw new HttpException(
         'Não existem professores cadastrados para esta escola.',
-        HttpStatus.BAD_GATEWAY,
+        HttpStatus.NOT_FOUND,
       );
     }
 
@@ -136,6 +136,65 @@ export class TeacherService {
       data: teacher,
       status: HttpStatus.OK,
       message: `Professor retornado com sucesso.`,
+    };
+  }
+
+  async findClassesByTeacherOnSchool(
+    teacherId: string,
+    paginationDTO: PaginationDTO,
+  ) {
+    const [page, qtd, skippedItems] = pagination(paginationDTO);
+
+    const classes = await this.prisma.class.findMany({
+      where: {
+        disciplines: {
+          some: {
+            teacherId: teacherId,
+          },
+        },
+      },
+      include: {
+        _count: {
+          select: {
+            disciplines: true,
+            students: true,
+          },
+        },
+      },
+      skip: skippedItems ? skippedItems : undefined,
+      take: qtd ? qtd : undefined,
+    });
+
+    if (!classes) {
+      throw new HttpException(
+        'Não existem turmas para este professor, nessa escola.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const formattedClasses = classes.map((classOfSchool) => {
+      const formattedClass = {
+        ...classOfSchool,
+        qtdStudents: classOfSchool?._count?.students,
+        qtdDisciplines: classOfSchool?._count?.disciplines,
+      };
+
+      delete formattedClass._count;
+
+      return formattedClass;
+    });
+
+    const totalCount = formattedClasses.length;
+    const totalPages = Math.round(totalCount / qtd);
+
+    return {
+      data: formattedClasses,
+      totalCount: formattedClasses.length,
+      page: paginationDTO.page ? page : 1,
+      limit: 5,
+      totalPages: totalPages > 0 ? totalPages : 1,
+      status: HttpStatus.OK,
+      message: 'Turmas retornadas com sucesso.',
     };
   }
 

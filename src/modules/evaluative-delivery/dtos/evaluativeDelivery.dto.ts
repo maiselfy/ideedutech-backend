@@ -29,9 +29,6 @@ export default class CreateEvaluativeDeliveryDTO {
   @IsOptional()
   attachement: string;
 
-  @ApiProperty({
-    example: 'pending',
-  })
   stage: EvaluationStage;
 
   owner: OwnerAction;
