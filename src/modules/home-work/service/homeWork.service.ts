@@ -1,24 +1,84 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma';
 import CreateHomeWorkDTO from '../dtos/createHomeWork.dto';
+import CreateTestDTO from '../dtos/createTest.dto';
 import { SearchHomeWorksByTeacherDTO } from '../dtos/searchHomeWorksByTeacher.dto';
 
 @Injectable()
 export class HomeWorkService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createHomeWorkDTO) {
+  async createHomeWork(createHomeWorkDTO: CreateHomeWorkDTO) {
     try {
       const data = createHomeWorkDTO;
 
-      console.log(data);
+      const discipline = await this.prisma.discipline.findUnique({
+        where: {
+          id: data.disciplineId,
+        },
+      });
+
+      if (!discipline) {
+        throw new HttpException(
+          'Erro. Disciplina não encontrada.',
+          HttpStatus.NOT_FOUND,
+        );
+      }
 
       const createdHomeWork = await this.prisma.homeWork.create({
         data,
       });
 
+      if (!createdHomeWork) {
+        throw new HttpException(
+          'Não foi possível criar a avaliação, por favor tente novamente.',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
       return {
         data: createdHomeWork,
+        status: HttpStatus.CREATED,
+        message: `${data.type} criada com sucesso.`,
+      };
+    } catch (error) {
+      return new HttpException(
+        'Not able to create a home-work',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async createTest(createTestDTO: CreateTestDTO) {
+    try {
+      const data = createTestDTO;
+
+      const discipline = await this.prisma.discipline.findUnique({
+        where: {
+          id: data.disciplineId,
+        },
+      });
+
+      if (!discipline) {
+        throw new HttpException(
+          'Erro. Disciplina não encontrada.',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      const createdTest = await this.prisma.homeWork.create({
+        data,
+      });
+
+      if (!createdTest) {
+        throw new HttpException(
+          'Não foi possível criar a avaliação, por favor tente novamente.',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      return {
+        data: createdTest,
         status: HttpStatus.CREATED,
         message: `${data.type} criada com sucesso.`,
       };
