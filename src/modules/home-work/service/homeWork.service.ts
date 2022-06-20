@@ -98,6 +98,19 @@ export class HomeWorkService {
       const { startDate, endDate, disciplineId, classId, type, isOpen } =
         searchHomeWorksByTeacher;
 
+      const teacher = await this.prisma.teacher.findFirst({
+        where: {
+          userId: teacherId,
+        },
+      });
+
+      if (!teacher) {
+        throw new HttpException(
+          'Erro. Este professor não existe ou não foi encontrado',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
       const homeWorks = await this.prisma.class.findMany({
         select: {
           _count: {
@@ -134,7 +147,7 @@ export class HomeWorkService {
               id: disciplineId ? disciplineId : undefined,
               classId: classId ? classId : undefined,
               teacher: {
-                userId: teacherId,
+                id: teacher.id,
               },
               homeWorks: {
                 some: {
@@ -152,21 +165,23 @@ export class HomeWorkService {
       });
 
       const formattedData = homeWorks.map((homeWork) => {
-        const formattedDisciplines = homeWork.disciplines.map((x) => {
-          const formattedHomeWorks = x.homeWorks.map((k) => {
-            const formatedHomeWork = {
-              class: homeWork.name,
-              qtdStudents: homeWork._count.students,
-              nameDiscipline: x.name,
-              homeWork: {
-                name: k.name,
-                isOpen: k.isOpen,
-                type: k.type,
-                dueDate: k.dueDate,
-              },
-            };
-            return formatedHomeWork;
-          });
+        const formattedDisciplines = homeWork.disciplines.map((discipline) => {
+          const formattedHomeWorks = discipline.homeWorks.map(
+            (homeWorkData) => {
+              const formatedHomeWork = {
+                class: homeWork.name,
+                qtdStudents: homeWork._count.students,
+                nameDiscipline: discipline.name,
+                homeWork: {
+                  name: homeWorkData.name,
+                  isOpen: homeWorkData.isOpen,
+                  type: homeWorkData.type,
+                  dueDate: homeWorkData.dueDate,
+                },
+              };
+              return formatedHomeWork;
+            },
+          );
           return formattedHomeWorks;
         });
         return formattedDisciplines;

@@ -36,8 +36,9 @@ export class HomeWorkController {
     @User() user,
     @Query() searchHomeWorksByTeacher: SearchHomeWorksByTeacherDTO,
   ) {
+    const teacherId = user.id;
     return this.homeWorkService.listHomeWorksByTeacher(
-      user.id,
+      teacherId,
       searchHomeWorksByTeacher,
     );
   }

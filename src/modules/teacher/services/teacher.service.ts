@@ -143,13 +143,26 @@ export class TeacherService {
     teacherId: string,
     paginationDTO: PaginationDTO,
   ) {
+    const teacher = await this.prisma.teacher.findFirst({
+      where: {
+        userId: teacherId,
+      },
+    });
+
+    if (!teacher) {
+      throw new HttpException(
+        'Erro. Este professor não existe ou não foi encontrado',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
     const [page, qtd, skippedItems] = pagination(paginationDTO);
 
     const classes = await this.prisma.class.findMany({
       where: {
         disciplines: {
           some: {
-            teacherId: teacherId,
+            teacherId: teacher.id,
           },
         },
       },
