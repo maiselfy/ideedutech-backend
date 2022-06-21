@@ -126,3 +126,4 @@ export class DisciplineService {
     return classes;
   }
 }
+

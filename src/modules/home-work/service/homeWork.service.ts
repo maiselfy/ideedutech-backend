@@ -173,6 +173,7 @@ export class HomeWorkService {
                 qtdStudents: homeWork._count.students,
                 nameDiscipline: discipline.name,
                 homeWork: {
+                  id: homeWorkData.id,
                   name: homeWorkData.name,
                   isOpen: homeWorkData.isOpen,
                   type: homeWorkData.type,
