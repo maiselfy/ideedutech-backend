@@ -4,7 +4,9 @@ import {
   HttpStatus,
   Injectable,
 } from '@nestjs/common';
+import { PaginationDTO } from 'src/models/PaginationDTO';
 import { PrismaService } from 'src/modules/prisma';
+import pagination from 'src/utils/pagination';
 import CreateHomeWorkDTO from '../dtos/createHomeWork.dto';
 import CreateTestDTO from '../dtos/createTest.dto';
 import { SearchHomeWorksByTeacherDTO } from '../dtos/searchHomeWorksByTeacher.dto';
@@ -98,11 +100,9 @@ export class HomeWorkService {
   async listHomeWorksByTeacher(
     teacherId: string,
     searchHomeWorksByTeacher: SearchHomeWorksByTeacherDTO,
+    paginationDTO: PaginationDTO,
   ) {
     try {
-      const { startDate, endDate, disciplineId, classId, type, isOpen } =
-        searchHomeWorksByTeacher;
-
       const teacher = await this.prisma.teacher.findFirst({
         where: {
           userId: teacherId,
@@ -115,6 +115,11 @@ export class HomeWorkService {
           HttpStatus.NOT_FOUND,
         );
       }
+
+      const [page, qtd, skippedItems] = pagination(paginationDTO);
+
+      const { startDate, endDate, disciplineId, classId, type, isOpen } =
+        searchHomeWorksByTeacher;
 
       const homeWorks = await this.prisma.homeWork.findMany({
         where: {
@@ -148,6 +153,8 @@ export class HomeWorkService {
             },
           },
         },
+        skip: skippedItems ? skippedItems : undefined,
+        take: qtd ? qtd : undefined,
       });
 
       const formattedData = homeWorks.map((homeWork) => {
@@ -165,8 +172,15 @@ export class HomeWorkService {
         return data;
       });
 
+      const totalCount = formattedData.length;
+      const totalPages = Math.round(totalCount / qtd);
+
       return {
         data: formattedData,
+        totalCount,
+        page: paginationDTO.page ? page : 1,
+        limit: qtd,
+        totalPages: totalPages > 0 ? totalPages : 1,
         status: HttpStatus.CREATED,
         message: 'Home Works Listadas com sucesso.',
       };

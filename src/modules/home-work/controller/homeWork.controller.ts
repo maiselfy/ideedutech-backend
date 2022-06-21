@@ -5,6 +5,7 @@ import { SearchHomeWorksByTeacherDTO } from '../dtos/searchHomeWorksByTeacher.dt
 import { User } from 'src/modules/user/decorators/user.decorator';
 import CreateTestDTO from '../dtos/createTest.dto';
 import CreateHomeWorkDTO from '../dtos/createHomeWork.dto';
+import { PaginationDTO } from 'src/models/PaginationDTO';
 
 @ApiTags('Home Work')
 @Controller('homeWork')
@@ -35,11 +36,13 @@ export class HomeWorkController {
   findHomeWorksForTeacher(
     @User() user,
     @Query() searchHomeWorksByTeacher: SearchHomeWorksByTeacherDTO,
+    @Query() paginationDTO: PaginationDTO,
   ) {
     const teacherId = user.id;
     return this.homeWorkService.listHomeWorksByTeacher(
       teacherId,
       searchHomeWorksByTeacher,
+      paginationDTO,
     );
   }
 }
