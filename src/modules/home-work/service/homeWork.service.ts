@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  ConsoleLogger,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma';
 import CreateHomeWorkDTO from '../dtos/createHomeWork.dto';
 import CreateTestDTO from '../dtos/createTest.dto';
@@ -111,52 +116,33 @@ export class HomeWorkService {
         );
       }
 
-      const homeWorks = await this.prisma.class.findMany({
-        select: {
-          _count: {
-            select: {
-              students: true,
-            },
+      const homeWorks = await this.prisma.homeWork.findMany({
+        where: {
+          discipline: {
+            teacherId: teacher.id,
+            id: disciplineId ? disciplineId : undefined,
+            classId: classId ? classId : undefined,
           },
+          dueDate: {
+            gte: startDate ? startDate : undefined,
+            lte: endDate ? endDate : undefined,
+          },
+          type: type ? type : undefined,
+          isOpen: isOpen ? isOpen : undefined,
+        },
+        select: {
+          id: true,
           name: true,
-          disciplines: {
+          isOpen: true,
+          type: true,
+          dueDate: true,
+          discipline: {
             select: {
               name: true,
-              homeWorks: {
+              class: {
                 select: {
-                  id: true,
-                  dueDate: true,
-                  isOpen: true,
                   name: true,
-                  type: true,
-                  evaluativeDelivery: {
-                    select: {
-                      stage: true,
-                      id: true,
-                      owner: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-        where: {
-          disciplines: {
-            some: {
-              id: disciplineId ? disciplineId : undefined,
-              classId: classId ? classId : undefined,
-              teacher: {
-                id: teacher.id,
-              },
-              homeWorks: {
-                some: {
-                  dueDate: {
-                    gte: startDate ? startDate : undefined,
-                    lte: endDate ? endDate : undefined,
-                  },
-                  type: type ? type : undefined,
-                  isOpen: isOpen ? isOpen : undefined,
+                  _count: true,
                 },
               },
             },
@@ -165,27 +151,18 @@ export class HomeWorkService {
       });
 
       const formattedData = homeWorks.map((homeWork) => {
-        const formattedDisciplines = homeWork.disciplines.map((discipline) => {
-          const formattedHomeWorks = discipline.homeWorks.map(
-            (homeWorkData) => {
-              const formatedHomeWork = {
-                class: homeWork.name,
-                qtdStudents: homeWork._count.students,
-                nameDiscipline: discipline.name,
-                homeWork: {
-                  id: homeWorkData.id,
-                  name: homeWorkData.name,
-                  isOpen: homeWorkData.isOpen,
-                  type: homeWorkData.type,
-                  dueDate: homeWorkData.dueDate,
-                },
-              };
-              return formatedHomeWork;
-            },
-          );
-          return formattedHomeWorks;
-        });
-        return formattedDisciplines;
+        const data = {
+          className: homeWork.discipline.class.name,
+          qtdStudents: homeWork.discipline.class._count.students,
+          disciplineName: homeWork.discipline.name,
+          id: homeWork.id,
+          name: homeWork.name,
+          isOpen: homeWork.isOpen,
+          type: homeWork.type,
+          dueDate: homeWork.dueDate,
+        };
+
+        return data;
       });
 
       return {
