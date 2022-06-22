@@ -106,7 +106,8 @@ export class AuthService {
     }
   }
 
-  async sendRecoverPasswordEmail(email: string) {
+  async sendRecoverPasswordEmail(sendRecoverPasswordDTO) {
+    const { email } = sendRecoverPasswordDTO;
     const user = await this.userService.findByEmail(email);
 
     if (!user) {
@@ -135,7 +136,7 @@ export class AuthService {
 
     if (!user) throw new NotFoundException('token inválido');
 
-    const userId = user.id;
+    let userId = user.id;
 
     const mail = {
       to: user.email,
@@ -143,7 +144,7 @@ export class AuthService {
       subject: 'Validação',
       template: 'recover-password',
       context: {
-        id: userId,
+        userId: userId,
       },
     };
     await this.mailerService.sendMail(mail);
