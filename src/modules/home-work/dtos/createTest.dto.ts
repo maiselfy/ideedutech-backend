@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { TypeHomeWork } from '@prisma/client';
 import { IsEmpty, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export default class CreateHomeWorkDTO {
+export default class CreateTestDTO {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
@@ -20,20 +20,7 @@ export default class CreateHomeWorkDTO {
 
   @ApiProperty()
   @IsOptional()
-  startDate: Date;
-
-  @ApiProperty()
-  @IsOptional()
   dueDate: Date;
-
-  @ApiProperty()
-  @IsOptional()
-  isOpen: boolean;
-
-  @ApiProperty()
-  @IsString()
-  @IsOptional()
-  attachement: string;
 
   @ApiProperty()
   @IsString()

@@ -1,21 +1,47 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  ConsoleLogger,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
+import { PaginationDTO } from 'src/models/PaginationDTO';
 import { PrismaService } from 'src/modules/prisma';
+import pagination from 'src/utils/pagination';
 import CreateHomeWorkDTO from '../dtos/createHomeWork.dto';
+import CreateTestDTO from '../dtos/createTest.dto';
 import { SearchHomeWorksByTeacherDTO } from '../dtos/searchHomeWorksByTeacher.dto';
 
 @Injectable()
 export class HomeWorkService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createHomeWorkDTO) {
+  async createHomeWork(createHomeWorkDTO: CreateHomeWorkDTO) {
     try {
       const data = createHomeWorkDTO;
 
-      console.log(data);
+      const discipline = await this.prisma.discipline.findUnique({
+        where: {
+          id: data.disciplineId,
+        },
+      });
+
+      if (!discipline) {
+        throw new HttpException(
+          'Erro. Disciplina não encontrada.',
+          HttpStatus.NOT_FOUND,
+        );
+      }
 
       const createdHomeWork = await this.prisma.homeWork.create({
         data,
       });
+
+      if (!createdHomeWork) {
+        throw new HttpException(
+          'Não foi possível criar a avaliação, por favor tente novamente.',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
 
       return {
         data: createdHomeWork,
@@ -30,171 +56,131 @@ export class HomeWorkService {
     }
   }
 
-  async listHomeWorksByTeacher(
-    teacherId: string,
-    searchHomeWorksByTeacher: SearchHomeWorksByTeacherDTO,
-  ) {
+  async createTest(createTestDTO: CreateTestDTO) {
     try {
-      const { startDate, endDate, disciplineId, classId, type, isOpen } =
-        searchHomeWorksByTeacher;
+      const data = createTestDTO;
 
-      // const homeWorks = await this.prisma.homeWork.findMany({
-
-      //   select: {
-      //     discipline: {
-      //       select: {
-      //         name: true,
-      //         class: {
-      //           select: {
-      //             name: true,
-      //           },
-      //         },
-      //         homeWorks: {
-      //           select: {
-      //             dueDate: true,
-      //             isOpen: true,
-      //             _count: {
-      //               select: {
-      //                 evaluativeDelivery: true,
-      //               },
-      //             },
-      //           },
-      //         },
-      //       },
-      //     },
-      //   },
-      // });
-
-      const homeWorks = await this.prisma.class.findMany({
-        select: {
-          _count: {
-            select: {
-              students: true,
-            },
-          },
-          name: true,
-          disciplines: {
-            select: {
-              name: true,
-              homeWorks: {
-                select: {
-                  id: true,
-                  dueDate: true,
-                  isOpen: true,
-                  name: true,
-                  type: true,
-                  evaluativeDelivery: {
-                    select: {
-                      stage: true,
-                      id: true,
-                      owner: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
+      const discipline = await this.prisma.discipline.findUnique({
         where: {
-          disciplines: {
-            some: {
-              id: disciplineId ? disciplineId : undefined,
-              classId: classId ? classId : undefined,
-              teacher: {
-                userId: teacherId,
-              },
-              homeWorks: {
-                some: {
-                  dueDate: {
-                    gte: startDate ? startDate : undefined,
-                    lte: endDate ? endDate : undefined,
-                  },
-                  type: type ? type : undefined,
-                  isOpen: isOpen ? isOpen : undefined,
-                },
-              },
-            },
-          },
+          id: data.disciplineId,
         },
       });
 
-      // const homeWorks = await this.prisma.discipline.findMany({
-      //   where: {
-      //     teacher: {
-      //       user: {
-      //         id: teacherId,
-      //       },
-      //     },
-      //   },
-      //   select: {
-      //     homeWorks: {
-      //       select: {
-      //         _count: {
-      //           select: {
-      //             evaluativeDelivery: true,
-      //           },
-      //         },
-      //         id: true,
-      //         discipline: {
-      //           select: {
-      //             name: true,
-      //             class: {
-      //               select: {
-      //                 name: true,
-      //               },
-      //             },
-      //           },
-      //         },
+      if (!discipline) {
+        throw new HttpException(
+          'Erro. Disciplina não encontrada.',
+          HttpStatus.NOT_FOUND,
+        );
+      }
 
-      //         dueDate: true,
-      //         isOpen: true,
-      //         evaluativeDelivery: {
-      //           where: {
-      //             stage: 'evaluated',
-      //           },
-      //           select: {
-      //             id: true,
-      //             stage: true,
-      //             student: {
-      //               select: {
-      //                 id: true,
-      //               },
-      //             },
-      //           },
-      //         },
+      const createdTest = await this.prisma.homeWork.create({
+        data,
+      });
 
-      //         name: true,
-      //       },
-      //       where: {
-      //         dueDate: {
-      //           gte: startDate ? startDate : undefined,
-      //           lte: endDate ? endDate : undefined,
-      //         },
-      //         disciplineId: disciplineId ? disciplineId : undefined,
-      //         type: type ? type : undefined,
-      //         isOpen: isOpen ? isOpen : undefined,
-      //         discipline: {
-      //           classId: classId ? classId : undefined,
-      //         },
-      //       },
-      //     },
-      //   },
-      // });
-
-      // homeWorks.reduce((acc, curr, index) => {}, []);
-
-      // homeWorks.forEach((homeWork) => {
-      //   homeWork.homeWorks.map((item) => {
-      //     evaluatedTotal += item._count.evaluativeDelivery;
-      //     const lenghtEvaluetive = item.evaluativeDelivery.length;
-      //     evaluatedHomeworks += lenghtEvaluetive;
-      //   });
-      // });
-
-      // console.log((evaluatedHomeworks / evaluatedTotal) * 100);
+      if (!createdTest) {
+        throw new HttpException(
+          'Não foi possível criar a avaliação, por favor tente novamente.',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
 
       return {
-        data: homeWorks,
+        data: createdTest,
+        status: HttpStatus.CREATED,
+        message: `${data.type} criada com sucesso.`,
+      };
+    } catch (error) {
+      return new HttpException(
+        'Not able to create a home-work',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async listHomeWorksByTeacher(
+    teacherId: string,
+    searchHomeWorksByTeacher: SearchHomeWorksByTeacherDTO,
+    paginationDTO: PaginationDTO,
+  ) {
+    try {
+      const teacher = await this.prisma.teacher.findFirst({
+        where: {
+          userId: teacherId,
+        },
+      });
+
+      if (!teacher) {
+        throw new HttpException(
+          'Erro. Este professor não existe ou não foi encontrado',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      const [page, qtd, skippedItems] = pagination(paginationDTO);
+
+      const { startDate, endDate, disciplineId, classId, type, isOpen } =
+        searchHomeWorksByTeacher;
+
+      const homeWorks = await this.prisma.homeWork.findMany({
+        where: {
+          discipline: {
+            teacherId: teacher.id,
+            id: disciplineId ? disciplineId : undefined,
+            classId: classId ? classId : undefined,
+          },
+          dueDate: {
+            gte: startDate ? startDate : undefined,
+            lte: endDate ? endDate : undefined,
+          },
+          type: type ? type : undefined,
+          isOpen: isOpen ? isOpen : undefined,
+        },
+        select: {
+          id: true,
+          name: true,
+          isOpen: true,
+          type: true,
+          dueDate: true,
+          discipline: {
+            select: {
+              name: true,
+              class: {
+                select: {
+                  name: true,
+                  _count: true,
+                },
+              },
+            },
+          },
+        },
+        skip: skippedItems ? skippedItems : undefined,
+        take: qtd ? qtd : undefined,
+      });
+
+      const formattedData = homeWorks.map((homeWork) => {
+        const data = {
+          className: homeWork.discipline.class.name,
+          qtdStudents: homeWork.discipline.class._count.students,
+          disciplineName: homeWork.discipline.name,
+          id: homeWork.id,
+          name: homeWork.name,
+          isOpen: homeWork.isOpen,
+          type: homeWork.type,
+          dueDate: homeWork.dueDate,
+        };
+
+        return data;
+      });
+
+      const totalCount = formattedData.length;
+      const totalPages = Math.round(totalCount / qtd);
+
+      return {
+        data: formattedData,
+        totalCount,
+        page: paginationDTO.page ? page : 1,
+        limit: qtd,
+        totalPages: totalPages > 0 ? totalPages : 1,
         status: HttpStatus.CREATED,
         message: 'Home Works Listadas com sucesso.',
       };
@@ -205,5 +191,26 @@ export class HomeWorkService {
 
   async findAll() {
     return this.prisma.homeWork.findMany();
+  }
+
+  async getHomeWork(homeWorkId: string) {
+    const homeWork = await this.prisma.homeWork.findUnique({
+      where: {
+        id: homeWorkId,
+      },
+    });
+
+    if (!homeWork) {
+      throw new HttpException(
+        'Erro. Homework não encontrada.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    return {
+      data: homeWork,
+      status: HttpStatus.OK,
+      message: `Homework retornada com sucesso.`,
+    };
   }
 }
