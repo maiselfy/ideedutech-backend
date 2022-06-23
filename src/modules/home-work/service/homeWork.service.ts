@@ -100,7 +100,6 @@ export class HomeWorkService {
   async listHomeWorksByTeacher(
     teacherId: string,
     searchHomeWorksByTeacher: SearchHomeWorksByTeacherDTO,
-    paginationDTO: PaginationDTO,
   ) {
     try {
       const teacher = await this.prisma.teacher.findFirst({
@@ -116,10 +115,34 @@ export class HomeWorkService {
         );
       }
 
-      const [page, qtd, skippedItems] = pagination(paginationDTO);
+      const {
+        startDate,
+        endDate,
+        disciplineId,
+        classId,
+        type,
+        isOpen,
+        page,
+        qtd,
+        orderBy,
+        sort,
+      } = searchHomeWorksByTeacher;
 
-      const { startDate, endDate, disciplineId, classId, type, isOpen } =
-        searchHomeWorksByTeacher;
+      const paginationDTO: PaginationDTO = {
+        page,
+        qtd,
+        orderBy,
+        sort,
+      };
+
+      const [pageReturn, qtdReturn, skippedItemsReturn] =
+        pagination(paginationDTO);
+
+      const orderByFormatted = {};
+
+      if (orderBy) {
+        orderByFormatted[orderBy] = sort ? sort : 'desc';
+      }
 
       const homeWorks = await this.prisma.homeWork.findMany({
         where: {
@@ -141,6 +164,7 @@ export class HomeWorkService {
           isOpen: true,
           type: true,
           dueDate: true,
+          description: true,
           discipline: {
             select: {
               name: true,
@@ -153,33 +177,57 @@ export class HomeWorkService {
             },
           },
         },
-        skip: skippedItems ? skippedItems : undefined,
-        take: qtd ? qtd : undefined,
+        skip: skippedItemsReturn ? skippedItemsReturn : undefined,
+        take: qtdReturn ? qtdReturn : undefined,
+        orderBy: orderByFormatted
+          ? orderByFormatted
+          : {
+              createdAt: 'desc',
+            },
       });
 
-      const formattedData = homeWorks.map((homeWork) => {
-        const data = {
-          className: homeWork.discipline.class.name,
-          qtdStudents: homeWork.discipline.class._count.students,
-          disciplineName: homeWork.discipline.name,
-          id: homeWork.id,
-          name: homeWork.name,
-          isOpen: homeWork.isOpen,
-          type: homeWork.type,
-          dueDate: homeWork.dueDate,
-        };
+      const formattedData = Promise.allSettled(
+        homeWorks.map(async (homeWork) => {
+          const evaluativeDelivery =
+            await this.prisma.evaluativeDelivery.findMany({
+              distinct: ['studentId'],
+              where: {
+                homeWorkId: homeWork.id,
+                owner: 'student',
+                stage: {
+                  in: ['sent', 'evaluated'],
+                },
+              },
+            });
 
-        return data;
-      });
+          const peddingSubmissions =
+            homeWork.discipline.class._count.students -
+            evaluativeDelivery.length;
 
-      const totalCount = formattedData.length;
-      const totalPages = Math.round(totalCount / qtd);
+          const data = {
+            className: homeWork.discipline.class.name,
+            qtdStudents: homeWork.discipline.class._count.students,
+            disciplineName: homeWork.discipline.name,
+            id: homeWork.id,
+            name: homeWork.name,
+            isOpen: homeWork.isOpen,
+            type: homeWork.type,
+            dueDate: homeWork.dueDate,
+            peddingSubmissions,
+          };
+
+          return data;
+        }),
+      );
+
+      const totalCount = (await formattedData).length;
+      const totalPages = Math.round(totalCount / qtdReturn);
 
       return {
-        data: formattedData,
+        data: await formattedData,
         totalCount,
-        page: paginationDTO.page ? page : 1,
-        limit: qtd,
+        page: pageReturn ? pageReturn : 1,
+        limit: qtdReturn,
         totalPages: totalPages > 0 ? totalPages : 1,
         status: HttpStatus.CREATED,
         message: 'Home Works Listadas com sucesso.',

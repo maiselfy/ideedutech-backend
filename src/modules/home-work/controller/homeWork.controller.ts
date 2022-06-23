@@ -36,13 +36,11 @@ export class HomeWorkController {
   findHomeWorksForTeacher(
     @User() user,
     @Query() searchHomeWorksByTeacher: SearchHomeWorksByTeacherDTO,
-    @Query() paginationDTO: PaginationDTO,
   ) {
     const teacherId = user.id;
     return this.homeWorkService.listHomeWorksByTeacher(
       teacherId,
       searchHomeWorksByTeacher,
-      paginationDTO,
     );
   }
 }
