@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { AuthService } from '../service/auth.service';
 import { LoginRequestDTO } from '../dtos/LoginRequest.dto';
+import { SendRecoverPasswordDTO } from '../dtos/SendRecoverPassword.dto';
 import { Public } from '../decorators/public.decorator';
 
 @ApiTags('Authentication')
@@ -27,10 +28,22 @@ export class AuthController {
 
   @Public()
   @Post('/send-recover-email')
-  async sendRecoverPasswordEmail(@Body('email') email: string) {
-    await this.authService.sendRecoverPasswordEmail(email);
+  async sendRecoverPasswordEmail(
+    @Body() sendRecoverPasswordDTO: SendRecoverPasswordDTO,
+  ) {
+    await this.authService.sendRecoverPasswordEmail(sendRecoverPasswordDTO);
     return {
       message: 'Foi enviado um email com instruções para resetar sua senha',
+    };
+  }
+
+  @Public()
+  @Post('/verify-token/:token')
+  async verifyToken(@Param('token') token: string) {
+    await this.authService.verifyToken(token);
+
+    return {
+      message: 'Token Válido',
     };
   }
 
@@ -39,7 +52,7 @@ export class AuthController {
   async resetPassword(
     @Param('token') token: string,
     @Body() changePasswordDTO: ChangePasswordDTO,
-  ) {
+  ): Promise<{ message: string }> {
     await this.authService.resetPassword(token, changePasswordDTO);
 
     return {

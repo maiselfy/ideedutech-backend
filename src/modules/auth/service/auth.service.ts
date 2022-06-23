@@ -106,21 +106,34 @@ export class AuthService {
     }
   }
 
-  async sendRecoverPasswordEmail(email: string) {
+  generateRandomString() {
+    var randomString = '';
+    var strings =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    for (var i = 0; i < 6; i++) {
+      randomString += strings.charAt(
+        Math.floor(Math.random() * strings.length),
+      );
+    }
+    return randomString;
+  }
+
+  async sendRecoverPasswordEmail(sendRecoverPasswordDTO) {
+    const { email } = sendRecoverPasswordDTO;
     const user = await this.userService.findByEmail(email);
 
     if (!user) {
       throw new NotFoundException('Não há usuário cadastrado com esse email.');
     }
 
-    let recoverToken: string;
-    recoverToken = randomBytes(32).toString('hex');
+    let recoverToken: string = this.generateRandomString();
+
     await this.userService.updateRecoverToken(email, recoverToken);
 
     const mail = {
       to: user.email,
-      from: 'noreply@application.com',
-      subject: 'Recuperação de senha',
+      from: 'naoresponda@ideedutec.com.br',
+      subject: 'Solicitação de alteração de senha',
       template: 'recover-password',
       context: {
         token: recoverToken,
@@ -130,27 +143,33 @@ export class AuthService {
     await this.mailerService.sendMail(mail);
   }
 
-  async resetPassword(
-    recoverToken: string,
-    changePasswordDTO: ChangePasswordDTO,
-  ) {
+  async verifyToken(recoverToken: string) {
     const user = await this.userService.findByRecoverToken(recoverToken);
 
-    if (!user) throw new NotFoundException('token inválido');
+    if (!user) throw new NotFoundException('Token Inválido');
+  }
 
+  async resetPassword(token: string, changePasswordDTO: ChangePasswordDTO) {
     try {
+      const user = await this.userService.findByRecoverToken(token);
+
+      if (!user) throw new NotFoundException('token inválido');
+
       await this.changePassword(user.id, changePasswordDTO);
     } catch (error) {
-      throw error;
+      return new HttpException('Failed!!!', HttpStatus.BAD_REQUEST);
     }
   }
 
-  async changePassword(id: string, changePasswordDTO: ChangePasswordDTO) {
+  async changePassword(
+    userId: string,
+    changePasswordDTO: ChangePasswordDTO,
+  ): Promise<void> {
     const { password, passwordConfirmation } = changePasswordDTO;
 
-    if (password != passwordConfirmation)
+    if (password == passwordConfirmation)
       throw new UnprocessableEntityException('As senhas não conferem');
 
-    await this.userService.changePassword(id, password);
+    await this.userService.changePassword(userId, password);
   }
 }
