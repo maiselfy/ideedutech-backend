@@ -161,16 +161,15 @@ export class AuthService {
     }
   }
 
-  async changePassword(userId: string, changePasswordDTO: ChangePasswordDTO) {
-    try {
-      const { password, passwordConfirmation } = changePasswordDTO;
+  async changePassword(
+    userId: string,
+    changePasswordDTO: ChangePasswordDTO,
+  ): Promise<void> {
+    const { password, passwordConfirmation } = changePasswordDTO;
 
-      if (password != passwordConfirmation)
-        throw new UnprocessableEntityException('As senhas não conferem');
+    if (password == passwordConfirmation)
+      throw new UnprocessableEntityException('As senhas não conferem');
 
-      await this.userService.changePassword(userId, password);
-    } catch (error) {
-      return new HttpException('Failed!!!', HttpStatus.BAD_REQUEST);
-    }
+    await this.userService.changePassword(userId, password);
   }
 }
