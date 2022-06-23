@@ -191,10 +191,10 @@ export class UserService {
     return user;
   }
 
-  findByRecoverToken(recoverToken: string) {
+  async findByRecoverToken(token: string) {
     const user = this.prisma.user.findFirst({
       where: {
-        recoverToken: recoverToken,
+        recoverToken: token,
       },
     });
 
