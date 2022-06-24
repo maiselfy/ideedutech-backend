@@ -5,6 +5,7 @@ import {
   Controller,
   HttpCode,
   HttpStatus,
+  NotFoundException,
   Param,
   Patch,
   Post,
@@ -52,7 +53,7 @@ export class AuthController {
   async resetPassword(
     @Param('token') token: string,
     @Body() changePasswordDTO: ChangePasswordDTO,
-  ): Promise<{ message: string }> {
+  ) {
     await this.authService.resetPassword(token, changePasswordDTO);
 
     return {
