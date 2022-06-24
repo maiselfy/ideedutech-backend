@@ -211,6 +211,85 @@ export class TeacherService {
     };
   }
 
+  async findDisciplinesByTeacher(
+    teacherId: string,
+    paginationDTO: PaginationDTO,
+  ) {
+    const teacher = await this.prisma.teacher.findFirst({
+      where: {
+        userId: teacherId,
+      },
+    });
+
+    if (!teacher) {
+      throw new HttpException(
+        'Erro. Este professor não existe ou não foi encontrado',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const [page, qtd, skippedItems] = pagination(paginationDTO);
+
+    const disciplines = await this.prisma.discipline.findMany({
+      where: {
+        teacherId: teacher.id,
+      },
+      select: {
+        id: true,
+        name: true,
+        topic: true,
+        class: {
+          select: {
+            name: true,
+            school: {
+              select: {
+                name: true,
+              },
+            },
+            _count: {
+              select: {
+                students: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!disciplines) {
+      throw new HttpException(
+        'Este professor não possui disciplinas cadastradas.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const formattedDisciplines = disciplines.map((discipline) => {
+      const formattedData = {
+        id: discipline.id,
+        name: discipline.name,
+        topic: discipline.topic,
+        className: discipline.class.name,
+        school: discipline.class.school,
+        qtdStudents: discipline.class._count.students,
+      };
+
+      return formattedData;
+    });
+
+    const totalCount = formattedDisciplines.length;
+    const totalPages = Math.round(totalCount / qtd);
+
+    return {
+      data: formattedDisciplines,
+      totalCount: formattedDisciplines.length,
+      page: paginationDTO.page ? page : 1,
+      limit: 5,
+      totalPages: totalPages > 0 ? totalPages : 1,
+      status: HttpStatus.OK,
+      message: 'Disciplinas retornadas com sucesso.',
+    };
+  }
+
   async remove(id: string) {
     const deleteTeacher = await this.prisma.teacher.delete({
       where: {

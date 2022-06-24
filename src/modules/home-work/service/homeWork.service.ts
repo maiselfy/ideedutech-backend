@@ -5,7 +5,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { PaginationDTO } from 'src/models/PaginationDTO';
-import { PrismaService } from 'src/modules/prisma';
+import { HomeWork, PrismaService, TypeHomeWork } from 'src/modules/prisma';
 import pagination from 'src/utils/pagination';
 import CreateHomeWorkDTO from '../dtos/createHomeWork.dto';
 import CreateTestDTO from '../dtos/createTest.dto';
@@ -97,10 +97,9 @@ export class HomeWorkService {
     }
   }
 
-  async listHomeWorksByTeacher(
+  async listactivitiesByTeacher(
     teacherId: string,
     searchHomeWorksByTeacher: SearchHomeWorksByTeacherDTO,
-    paginationDTO: PaginationDTO,
   ) {
     try {
       const teacher = await this.prisma.teacher.findFirst({
@@ -116,72 +115,357 @@ export class HomeWorkService {
         );
       }
 
-      const [page, qtd, skippedItems] = pagination(paginationDTO);
+      const {
+        startDate,
+        endDate,
+        disciplineId,
+        classId,
+        type,
+        isOpen,
+        page,
+        qtd,
+        orderBy,
+        sort,
+      } = searchHomeWorksByTeacher;
 
-      const { startDate, endDate, disciplineId, classId, type, isOpen } =
-        searchHomeWorksByTeacher;
+      const paginationDTO: PaginationDTO = {
+        page,
+        qtd,
+        orderBy,
+        sort,
+      };
 
-      const homeWorks = await this.prisma.homeWork.findMany({
-        where: {
-          discipline: {
-            teacherId: teacher.id,
-            id: disciplineId ? disciplineId : undefined,
-            classId: classId ? classId : undefined,
-          },
-          dueDate: {
-            gte: startDate ? startDate : undefined,
-            lte: endDate ? endDate : undefined,
-          },
-          type: type ? type : undefined,
-          isOpen: isOpen ? isOpen : undefined,
-        },
-        select: {
-          id: true,
-          name: true,
-          isOpen: true,
-          type: true,
-          dueDate: true,
-          discipline: {
-            select: {
-              name: true,
-              class: {
-                select: {
-                  name: true,
-                  _count: true,
-                },
-              },
-            },
-          },
-        },
-        skip: skippedItems ? skippedItems : undefined,
-        take: qtd ? qtd : undefined,
-      });
+      const [pageReturn, qtdReturn, skippedItemsReturn] =
+        pagination(paginationDTO);
 
-      const formattedData = homeWorks.map((homeWork) => {
+      const orderByFormatted = {};
+
+      if (orderBy) {
+        orderByFormatted[orderBy] = sort ? sort : 'desc';
+      }
+
+      // const homeWorks = await this.prisma.homeWork.findMany({
+
+      //   // where: {
+      //   //   discipline: {
+      //   //     teacherId: teacher.id,
+      //   //     id: disciplineId ? disciplineId : undefined,
+      //   //     classId: classId ? classId : undefined,
+      //   //   },
+      //   //   dueDate: {
+      //   //     gte: startDate ? startDate : undefined,
+      //   //     lte: endDate ? endDate : undefined,
+      //   //   },
+      //   //   type: type ? type : undefined,
+      //   //   isOpen: isOpen ? isOpen : undefined,
+      //   // },
+      //   select: {
+      //     id: true,
+      //     name: true,
+      //     isOpen: true,
+      //     type: true,
+      //     dueDate: true,
+      //     description: true,
+      //     discipline: {
+      //       select: {
+      //         name: true,
+      //         class: {
+      //           select: {
+      //             name: true,
+      //             _count: true,
+      //           },
+      //         },
+      //       },
+      //     },
+      //   },
+      //   // skip: skippedItemsReturn ? skippedItemsReturn : undefined,
+      //   // take: qtdReturn ? qtdReturn : undefined,
+      //   // orderBy: orderByFormatted
+      //   //   ? orderByFormatted
+      //   //   : {
+      //   //       createdAt: 'desc',
+      //   //     },
+      // });
+
+      // const teacherId = teacher.id ? teacher.id : '';
+      // const disciplineId = disciplineId ? disciplineId : '';
+      // const classId = classId ? classId : '';
+      // const startDate = startDate ? startDate : '';
+      // const endDate = endDate ? endDate : '';
+      // const type = type ? type : '';
+      // const isOpen = isOpen ? isOpen : '';
+
+      interface IHomeWorksByTeacher {
+        id: string;
+        name: string;
+        isOpen: boolean;
+        type: TypeHomeWork;
+        dueDate: Date;
+        description: string;
+        disciplinename: string;
+        classname: string;
+        disciplineName: string;
+        qtdstudents: number;
+        qtdsubmissions: number;
+        peddingsubmissions: number;
+      }
+
+      const aux = await this.prisma.$queryRaw<
+        IHomeWorksByTeacher[]
+      >`SELECT hw.id, hw.name, hw."isOpen", hw."type", hw."dueDate", hw.description, ds."name" as disciplineName, cs.name as className, (select count(*) from "Student" s
+      where "classId" = cs.id) as qtdStudents, (select count(distinct ed."studentId") from "EvaluativeDelivery" ed where ed."homeWorkId" = hw.id and ed."owner"::text = 'Estudante' and ed.stage in ('Enviada', 'Avaliada')) as qtdSubmissions and hw."type"::text = 'Atividade' FROM "HomeWork" hw, "Discipline" ds, "Class" cs
+      WHERE hw."disciplineId" = ds.id AND ds."classId" = cs.id and ds."teacherId" = ${teacher.id}`;
+
+      const formattedData = aux.map((homeWork) => {
         const data = {
-          className: homeWork.discipline.class.name,
-          qtdStudents: homeWork.discipline.class._count.students,
-          disciplineName: homeWork.discipline.name,
-          id: homeWork.id,
-          name: homeWork.name,
-          isOpen: homeWork.isOpen,
-          type: homeWork.type,
-          dueDate: homeWork.dueDate,
+          ...homeWork,
+          className: homeWork.classname,
+          disciplineName: homeWork.disciplinename,
+          qtdStudents: homeWork.qtdstudents,
+          peddingSubmissions:
+            Number(homeWork.qtdstudents) - Number(homeWork.qtdsubmissions),
         };
+
+        delete data.qtdsubmissions;
+        delete data.qtdstudents;
+        delete data.disciplinename;
+        delete data.classname;
 
         return data;
       });
 
-      const totalCount = formattedData.length;
-      const totalPages = Math.round(totalCount / qtd);
+      // const formattedData = Promise.allSettled(
+      //   homeWorks.map(async (homeWork) => {
+      //     const evaluativeDelivery =
+      //       await this.prisma.evaluativeDelivery.findMany({
+      //         distinct: ['studentId'],
+      //         where: {
+      //           homeWorkId: homeWork.id,
+      //           owner: 'student',
+      //           stage: {
+      //             in: ['sent', 'evaluated'],
+      //           },
+      //         },
+      //       });
+
+      //     const peddingSubmissions =
+      //       homeWork.discipline.class._count.students -
+      //       evaluativeDelivery.length;
+
+      //     const data = {
+      //       className: homeWork.discipline.class.name,
+      //       qtdStudents: homeWork.discipline.class._count.students,
+      //       disciplineName: homeWork.discipline.name,
+      //       id: homeWork.id,
+      //       name: homeWork.name,
+      //       isOpen: homeWork.isOpen,
+      //       type: homeWork.type,
+      //       dueDate: homeWork.dueDate,
+      //       peddingSubmissions,
+      //     };
+
+      //     return data;
+      //   }),
+      // );
+
+      // const totalCount = (await formattedData).length;
+      // const totalPages = Math.round(totalCount / qtdReturn);
 
       return {
         data: formattedData,
-        totalCount,
-        page: paginationDTO.page ? page : 1,
-        limit: qtd,
-        totalPages: totalPages > 0 ? totalPages : 1,
-        status: HttpStatus.CREATED,
+        // totalCount,
+        // page: pageReturn ? pageReturn : 1,
+        // limit: qtdReturn,
+        // totalPages: totalPages > 0 ? totalPages : 1,
+        status: HttpStatus.OK,
+        message: 'Home Works Listadas com sucesso.',
+      };
+    } catch (error) {
+      return new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async listHomeWorksByTeacher(
+    teacherId: string,
+    searchHomeWorksByTeacher: SearchHomeWorksByTeacherDTO,
+  ) {
+    try {
+      const teacher = await this.prisma.teacher.findFirst({
+        where: {
+          userId: teacherId,
+        },
+      });
+
+      if (!teacher) {
+        throw new HttpException(
+          'Erro. Este professor não existe ou não foi encontrado',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      const {
+        startDate,
+        endDate,
+        disciplineId,
+        classId,
+        type,
+        isOpen,
+        page,
+        qtd,
+        orderBy,
+        sort,
+      } = searchHomeWorksByTeacher;
+
+      const paginationDTO: PaginationDTO = {
+        page,
+        qtd,
+        orderBy,
+        sort,
+      };
+
+      const [pageReturn, qtdReturn, skippedItemsReturn] =
+        pagination(paginationDTO);
+
+      const orderByFormatted = {};
+
+      if (orderBy) {
+        orderByFormatted[orderBy] = sort ? sort : 'desc';
+      }
+
+      // const homeWorks = await this.prisma.homeWork.findMany({
+
+      //   // where: {
+      //   //   discipline: {
+      //   //     teacherId: teacher.id,
+      //   //     id: disciplineId ? disciplineId : undefined,
+      //   //     classId: classId ? classId : undefined,
+      //   //   },
+      //   //   dueDate: {
+      //   //     gte: startDate ? startDate : undefined,
+      //   //     lte: endDate ? endDate : undefined,
+      //   //   },
+      //   //   type: type ? type : undefined,
+      //   //   isOpen: isOpen ? isOpen : undefined,
+      //   // },
+      //   select: {
+      //     id: true,
+      //     name: true,
+      //     isOpen: true,
+      //     type: true,
+      //     dueDate: true,
+      //     description: true,
+      //     discipline: {
+      //       select: {
+      //         name: true,
+      //         class: {
+      //           select: {
+      //             name: true,
+      //             _count: true,
+      //           },
+      //         },
+      //       },
+      //     },
+      //   },
+      //   // skip: skippedItemsReturn ? skippedItemsReturn : undefined,
+      //   // take: qtdReturn ? qtdReturn : undefined,
+      //   // orderBy: orderByFormatted
+      //   //   ? orderByFormatted
+      //   //   : {
+      //   //       createdAt: 'desc',
+      //   //     },
+      // });
+
+      // const teacherId = teacher.id ? teacher.id : '';
+      // const disciplineId = disciplineId ? disciplineId : '';
+      // const classId = classId ? classId : '';
+      // const startDate = startDate ? startDate : '';
+      // const endDate = endDate ? endDate : '';
+      // const type = type ? type : '';
+      // const isOpen = isOpen ? isOpen : '';
+
+      interface IHomeWorksByTeacher {
+        id: string;
+        name: string;
+        isOpen: boolean;
+        type: TypeHomeWork;
+        dueDate: Date;
+        description: string;
+        disciplinename: string;
+        classname: string;
+        disciplineName: string;
+        qtdstudents: number;
+        qtdsubmissions: number;
+        peddingsubmissions: number;
+      }
+
+      const aux = await this.prisma.$queryRaw<
+        IHomeWorksByTeacher[]
+      >`SELECT hw.id, hw.name, hw."isOpen", hw."type", hw."dueDate", hw.description, ds."name" as disciplineName, cs.name as className, (select count(*) from "Student" s
+      where "classId" = cs.id) as qtdStudents, (select count(distinct ed."studentId") from "EvaluativeDelivery" ed where ed."homeWorkId" = hw.id and ed."owner"::text = 'Estudante' and hw."type"::text = 'Atividade' and ed.stage in ('Enviada', 'Avaliada')) as qtdSubmissions FROM "HomeWork" hw, "Discipline" ds, "Class" cs
+      WHERE hw."disciplineId" = ds.id AND ds."classId" = cs.id and ds."teacherId" = ${teacher.id}`;
+
+      const formattedData = aux.map((homeWork) => {
+        const data = {
+          ...homeWork,
+          className: homeWork.classname,
+          disciplineName: homeWork.disciplinename,
+          qtdStudents: homeWork.qtdstudents,
+          peddingSubmissions:
+            Number(homeWork.qtdstudents) - Number(homeWork.qtdsubmissions),
+        };
+
+        delete data.qtdsubmissions;
+        delete data.qtdstudents;
+        delete data.disciplinename;
+        delete data.classname;
+
+        return data;
+      });
+
+      // const formattedData = Promise.allSettled(
+      //   homeWorks.map(async (homeWork) => {
+      //     const evaluativeDelivery =
+      //       await this.prisma.evaluativeDelivery.findMany({
+      //         distinct: ['studentId'],
+      //         where: {
+      //           homeWorkId: homeWork.id,
+      //           owner: 'student',
+      //           stage: {
+      //             in: ['sent', 'evaluated'],
+      //           },
+      //         },
+      //       });
+
+      //     const peddingSubmissions =
+      //       homeWork.discipline.class._count.students -
+      //       evaluativeDelivery.length;
+
+      //     const data = {
+      //       className: homeWork.discipline.class.name,
+      //       qtdStudents: homeWork.discipline.class._count.students,
+      //       disciplineName: homeWork.discipline.name,
+      //       id: homeWork.id,
+      //       name: homeWork.name,
+      //       isOpen: homeWork.isOpen,
+      //       type: homeWork.type,
+      //       dueDate: homeWork.dueDate,
+      //       peddingSubmissions,
+      //     };
+
+      //     return data;
+      //   }),
+      // );
+
+      // const totalCount = (await formattedData).length;
+      // const totalPages = Math.round(totalCount / qtdReturn);
+
+      return {
+        data: formattedData,
+        // totalCount,
+        // page: pageReturn ? pageReturn : 1,
+        // limit: qtdReturn,
+        // totalPages: totalPages > 0 ? totalPages : 1,
+        status: HttpStatus.OK,
         message: 'Home Works Listadas com sucesso.',
       };
     } catch (error) {

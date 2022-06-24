@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { TypeHomeWork } from '@prisma/client';
-import { IsOptional, IsString } from 'class-validator';
+import { IsNumberString, IsOptional, IsString } from 'class-validator';
 
 export class SearchHomeWorksByTeacherDTO {
   @ApiProperty()
@@ -28,4 +28,19 @@ export class SearchHomeWorksByTeacherDTO {
 
   @IsOptional()
   isOpen: boolean;
+
+  @IsOptional()
+  @IsNumberString()
+  page: string;
+
+  @IsOptional()
+  @IsNumberString()
+  qtd: string;
+
+  @IsOptional()
+  @IsString()
+  orderBy: string;
+
+  @IsOptional()
+  sort: 'asc' | 'desc';
 }
