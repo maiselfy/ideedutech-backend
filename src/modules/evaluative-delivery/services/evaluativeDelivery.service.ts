@@ -62,27 +62,69 @@ export class EvaluativeDeliveryService {
         );
       }
 
-      const updatedEvaluativeDelivery =
-        await this.prisma.evaluativeDelivery.create({
-          data: {
-            ...data,
+      const evaluativeDeliveryExists =
+        await this.prisma.evaluativeDelivery.findFirst({
+          where: {
+            homeWorkId: data.homeWorkId,
+            studentId: data.studentId,
             owner: 'teacher',
-            stage: 'evaluated',
+            rate: {
+              not: null,
+            },
           },
         });
 
-      if (!updatedEvaluativeDelivery) {
-        throw new HttpException(
-          'Não foi possível criar a correção, por favor tente novamente.',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
+      console.log(evaluativeDeliveryExists);
 
-      return {
-        data: updatedEvaluativeDelivery,
-        status: HttpStatus.CREATED,
-        message: 'Correção criada com sucesso.',
-      };
+      if (evaluativeDeliveryExists) {
+        const updatedEvaluativeDelivery =
+          await this.prisma.evaluativeDelivery.update({
+            data: {
+              ...data,
+              owner: 'teacher',
+              stage: 'evaluated',
+              rate: data.rate,
+            },
+            where: {
+              id: evaluativeDeliveryExists.id,
+            },
+          });
+
+        if (!updatedEvaluativeDelivery) {
+          throw new HttpException(
+            'Não foi possível criar a correção, por favor tente novamente.',
+            HttpStatus.BAD_REQUEST,
+          );
+        }
+
+        return {
+          data: updatedEvaluativeDelivery,
+          status: HttpStatus.CREATED,
+          message: 'Correção criada com sucesso.',
+        };
+      } else {
+        const updatedEvaluativeDelivery =
+          await this.prisma.evaluativeDelivery.create({
+            data: {
+              ...data,
+              owner: 'teacher',
+              stage: 'evaluated',
+            },
+          });
+
+        if (!updatedEvaluativeDelivery) {
+          throw new HttpException(
+            'Não foi possível criar a correção, por favor tente novamente.',
+            HttpStatus.BAD_REQUEST,
+          );
+        }
+
+        return {
+          data: updatedEvaluativeDelivery,
+          status: HttpStatus.CREATED,
+          message: 'Correção criada com sucesso.',
+        };
+      }
     } else {
       const updatedEvaluativeDelivery =
         await this.prisma.evaluativeDelivery.create({
