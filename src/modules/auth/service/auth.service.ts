@@ -153,23 +153,35 @@ export class AuthService {
     try {
       const user = await this.userService.findByRecoverToken(token);
 
-      if (!user) throw new NotFoundException('token inválido');
+      if (!user) {
+        throw new HttpException(
+          'Token Inválido para usuário',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      console.log('User: ', user);
+      console.log('Token: ', token);
 
       await this.changePassword(user.id, changePasswordDTO);
     } catch (error) {
-      return new HttpException('Failed!!!', HttpStatus.BAD_REQUEST);
+      if (error) throw error;
+      throw new HttpException('Failed!!!', HttpStatus.BAD_REQUEST);
     }
   }
 
-  async changePassword(
-    userId: string,
-    changePasswordDTO: ChangePasswordDTO,
-  ): Promise<void> {
-    const { password, passwordConfirmation } = changePasswordDTO;
+  async changePassword(userId: string, changePasswordDTO: ChangePasswordDTO) {
+    try {
+      const { password, passwordConfirmation } = changePasswordDTO;
 
-    if (password == passwordConfirmation)
-      throw new UnprocessableEntityException('As senhas não conferem');
+      if (password !== passwordConfirmation) {
+        throw new HttpException('Senhas não confere', HttpStatus.CONFLICT);
+      }
 
-    await this.userService.changePassword(userId, password);
+      await this.userService.changePassword(userId, password);
+    } catch (error) {
+      if (error) throw error;
+      throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }
