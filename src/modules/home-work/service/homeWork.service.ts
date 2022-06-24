@@ -16,44 +16,37 @@ export class HomeWorkService {
   constructor(private prisma: PrismaService) {}
 
   async createHomeWork(createHomeWorkDTO: CreateHomeWorkDTO) {
-    try {
-      const data = createHomeWorkDTO;
+    const data = createHomeWorkDTO;
 
-      const discipline = await this.prisma.discipline.findUnique({
-        where: {
-          id: data.disciplineId,
-        },
-      });
+    const discipline = await this.prisma.discipline.findUnique({
+      where: {
+        id: data.disciplineId,
+      },
+    });
 
-      if (!discipline) {
-        throw new HttpException(
-          'Erro. Disciplina não encontrada.',
-          HttpStatus.NOT_FOUND,
-        );
-      }
+    if (!discipline) {
+      throw new HttpException(
+        'Erro. Disciplina não encontrada.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
 
-      const createdHomeWork = await this.prisma.homeWork.create({
-        data,
-      });
+    const createdHomeWork = await this.prisma.homeWork.create({
+      data,
+    });
 
-      if (!createdHomeWork) {
-        throw new HttpException(
-          'Não foi possível criar a avaliação, por favor tente novamente.',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-
-      return {
-        data: createdHomeWork,
-        status: HttpStatus.CREATED,
-        message: `${data.type} criada com sucesso.`,
-      };
-    } catch (error) {
-      return new HttpException(
-        'Not able to create a home-work',
+    if (!createdHomeWork) {
+      throw new HttpException(
+        'Não foi possível criar a avaliação, por favor tente novamente.',
         HttpStatus.BAD_REQUEST,
       );
     }
+
+    return {
+      data: createdHomeWork,
+      status: HttpStatus.CREATED,
+      message: `${data.type} criada com sucesso.`,
+    };
   }
 
   async createTest(createTestDTO: CreateTestDTO) {
