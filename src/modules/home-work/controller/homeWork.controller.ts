@@ -43,4 +43,16 @@ export class HomeWorkController {
       searchHomeWorksByTeacher,
     );
   }
+
+  @Get('/teacher/activities')
+  findActivitiesForTeacher(
+    @User() user,
+    @Query() searchHomeWorksByTeacher: SearchHomeWorksByTeacherDTO,
+  ) {
+    const teacherId = user.id;
+    return this.homeWorkService.listactivitiesByTeacher(
+      teacherId,
+      searchHomeWorksByTeacher,
+    );
+  }
 }
