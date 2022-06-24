@@ -394,8 +394,10 @@ export class HomeWorkService {
       const aux = await this.prisma.$queryRaw<
         IHomeWorksByTeacher[]
       >`SELECT hw.id, hw.name, hw."isOpen", hw."type", hw."dueDate", hw.description, ds."name" as disciplineName, cs.name as className, (select count(*) from "Student" s
-      where "classId" = cs.id) as qtdStudents, (select count(distinct ed."studentId") from "EvaluativeDelivery" ed where ed."homeWorkId" = hw.id and ed."owner"::text = 'Estudante' and hw."type"::text = 'Atividade' and ed.stage in ('Enviada', 'Avaliada')) as qtdSubmissions FROM "HomeWork" hw, "Discipline" ds, "Class" cs
+      where "classId" = cs.id) as qtdStudents, (select count(distinct ed."studentId") from "EvaluativeDelivery" ed where ed."homeWorkId" = hw.id and ed."owner"::text = 'Professor' and hw."type"::text = 'Atividade' and ed.stage in ('Enviada', 'Avaliada')) as qtdSubmissions FROM "HomeWork" hw, "Discipline" ds, "Class" cs
       WHERE hw."disciplineId" = ds.id AND ds."classId" = cs.id and ds."teacherId" = ${teacher.id}`;
+
+      console.log(aux);
 
       const formattedData = aux.map((homeWork) => {
         const data = {
@@ -470,22 +472,120 @@ export class HomeWorkService {
     return this.prisma.homeWork.findMany();
   }
 
-  async getHomeWork(homeWorkId: string) {
+  async getDetailsOfHomework(homeWorkId: string) {
     const homeWork = await this.prisma.homeWork.findUnique({
       where: {
         id: homeWorkId,
       },
+      select: {
+        discipline: {
+          select: {
+            class: {
+              select: {
+                students: {
+                  select: {
+                    id: true,
+                    enrollment: true,
+                    user: {
+                      select: {
+                        avatar: true,
+                        name: true,
+                      },
+                    },
+                  },
+                },
+                name: true,
+              },
+            },
+            name: true,
+          },
+        },
+        type: true,
+        isOpen: true,
+        dueDate: true,
+        description: true,
+        name: true,
+        evaluativeDelivery: {
+          where: {
+            homeWorkId,
+            owner: 'student',
+            stage: {
+              in: ['sent', 'evaluated'],
+            },
+          },
+          select: {
+            rate: true,
+            student: {
+              select: {
+                id: true,
+                enrollment: true,
+                user: {
+                  select: {
+                    avatar: true,
+                    name: true,
+                  },
+                },
+              },
+            },
+          },
+          take: 1,
+          orderBy: {
+            createdAt: 'desc',
+          },
+        },
+      },
     });
 
-    if (!homeWork) {
+    const formattedStudents = homeWork.discipline.class.students.map(
+      (student) => {
+        const data = {
+          id: student.id,
+          enrollment: student.enrollment,
+          name: student.user.name,
+          avatar: student.user.avatar,
+        };
+        return data;
+      },
+    );
+
+    const formattedEvaluativeDelivery = homeWork.evaluativeDelivery.map(
+      (evaluetive) => {
+        const data = {
+          id: evaluetive.student.id,
+          enrollment: evaluetive.student.enrollment,
+          name: evaluetive.student.user.name,
+          avatar: evaluetive.student.user.avatar,
+          rate: evaluetive.rate,
+        };
+        return data;
+      },
+    );
+
+    const formattedData = {
+      name: homeWork.name,
+      description: homeWork.description,
+      type: homeWork.type,
+      isOpen: homeWork.isOpen,
+      dueDate: homeWork.dueDate,
+      disciplineName: homeWork.discipline.name,
+      className: homeWork.discipline.class.name,
+      students: formattedStudents,
+      qtdStudents: homeWork.discipline.class.students.length,
+      submissions: formattedEvaluativeDelivery,
+      pendingSubmissions:
+        homeWork.discipline.class.students.length -
+        homeWork.evaluativeDelivery.length,
+    };
+
+    if (!formattedData) {
       throw new HttpException(
         'Erro. Homework não encontrada.',
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.NOT_FOUND,
       );
     }
 
     return {
-      data: homeWork,
+      data: formattedData,
       status: HttpStatus.OK,
       message: `Homework retornada com sucesso.`,
     };

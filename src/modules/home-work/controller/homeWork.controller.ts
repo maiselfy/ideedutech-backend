@@ -29,7 +29,7 @@ export class HomeWorkController {
 
   @Get('/:homeWorkId')
   findHomeWorkById(@Param('homeWorkId') homeWorkId: string) {
-    return this.homeWorkService.getHomeWork(homeWorkId);
+    return this.homeWorkService.getDetailsOfHomework(homeWorkId);
   }
 
   @Get('/teacher/homeworks')
