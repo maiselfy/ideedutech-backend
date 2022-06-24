@@ -1,11 +1,10 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-
 import { PrismaService } from '../../prisma/prisma.service';
-
 import * as bcrypt from 'bcrypt';
 import { StudentService } from 'src/modules/student/services/student.service';
 import { MailerService } from '@nestjs-modules/mailer';
 import { threadId } from 'worker_threads';
+import { S3Service } from '../../../utils/bucket-s3';
 @Injectable()
 export class UserService {
   constructor(
@@ -210,6 +209,38 @@ export class UserService {
         recoverToken: recoverToken,
       },
     });
+  }
+
+  async updateAvatar(userId, avatar) {
+    const s3Service = new S3Service();
+
+    const avatarSaved = await s3Service.uploadFile(avatar);
+    if (!avatarSaved) {
+      throw new Error('Failure saving avatar in bucket');
+    }
+    const { Location: url } = avatarSaved;
+
+    try {
+      let responseUpdateAvatar = await this.prisma.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          avatar: url,
+        },
+      });
+
+      if (!responseUpdateAvatar) {
+        throw new Error('Avatar update failure');
+      }
+      return {
+        status: HttpStatus.OK,
+        message: 'Avatar atualizado com sucesso.',
+      };
+    } catch (e) {
+      console.log(e);
+      throw new Error('Avatar update failure');
+    }
   }
 
   async update(id, updateInfoUser) {

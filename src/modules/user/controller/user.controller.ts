@@ -7,12 +7,17 @@ import {
   Delete,
   Param,
   Put,
+  UseInterceptors,
+  UploadedFile,
+  Patch,
 } from '@nestjs/common';
 import { UserService } from '../service/user.service';
 import { User as UserDecorator } from '../decorators/user.decorator';
 import { Public } from 'src/modules/auth/decorators/public.decorator';
 import CreateUserDTO from '../dtos/createUser.dto';
 import UpdateUserDTO from '../dtos/updateUser.dto';
+import { Express } from 'express';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('User')
 @Controller('user')
@@ -34,6 +39,16 @@ export class UserController {
   @Put(':id')
   update(@Param('id') id: string, @Body() updateInfoUser: UpdateUserDTO) {
     return this.userService.update(id, updateInfoUser);
+  }
+
+  @Public()
+  @Patch('upload/:userId')
+  @UseInterceptors(FileInterceptor('avatar'))
+  uploadFile(
+    @Param('userId') userId: string,
+    @UploadedFile() avatar: Express.Multer.File,
+  ) {
+    return this.userService.updateAvatar(userId, avatar);
   }
 
   @Public()

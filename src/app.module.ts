@@ -25,6 +25,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { mailerConfig } from './configs/mailer.config';
 import { EvaluativeDeliveryModule } from './modules/evaluative-delivery/evaluativeDelivery.module';
 import { LessonModule } from './modules/lesson/lesson.module';
+import { UploadModule } from './modules/upload/upload.module';
 
 ConfigModule.forRoot();
 
@@ -51,6 +52,7 @@ ConfigModule.forRoot();
     EvaluativeDeliveryModule,
     MailerModule.forRoot(mailerConfig),
     LessonModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [
