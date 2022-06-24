@@ -492,6 +492,32 @@ export class HomeWorkService {
                         name: true,
                       },
                     },
+                    EvaluativeDelivery: {
+                      where: {
+                        OR: [
+                          {
+                            homeWorkId,
+                            stage: {
+                              equals: 'evaluated',
+                            },
+                          },
+                          {
+                            homeWorkId,
+                            stage: {
+                              equals: 'sent',
+                            },
+                          },
+                        ],
+                      },
+                      select: {
+                        id: true,
+                        rate: true,
+                        studentId: true,
+                      },
+                      orderBy: {
+                        createdAt: 'desc',
+                      },
+                    },
                   },
                 },
                 name: true,
@@ -505,57 +531,28 @@ export class HomeWorkService {
         dueDate: true,
         description: true,
         name: true,
-        evaluativeDelivery: {
-          where: {
-            homeWorkId,
-            owner: 'student',
-            stage: {
-              in: ['sent', 'evaluated'],
-            },
-          },
-          select: {
-            rate: true,
-            student: {
-              select: {
-                id: true,
-                enrollment: true,
-                user: {
-                  select: {
-                    avatar: true,
-                    name: true,
-                  },
-                },
-              },
-            },
-          },
-          take: 1,
-          orderBy: {
-            createdAt: 'desc',
-          },
-        },
       },
     });
 
     const formattedStudents = homeWork.discipline.class.students.map(
       (student) => {
+        const studentId = student.id;
+
+        const submissionOfStudent = student.EvaluativeDelivery.find(
+          (submission) => {
+            return submission.studentId === studentId;
+          },
+        );
+
         const data = {
           id: student.id,
           enrollment: student.enrollment,
           name: student.user.name,
           avatar: student.user.avatar,
-        };
-        return data;
-      },
-    );
-
-    const formattedEvaluativeDelivery = homeWork.evaluativeDelivery.map(
-      (evaluetive) => {
-        const data = {
-          id: evaluetive.student.id,
-          enrollment: evaluetive.student.enrollment,
-          name: evaluetive.student.user.name,
-          avatar: evaluetive.student.user.avatar,
-          rate: evaluetive.rate,
+          submission: {
+            id: submissionOfStudent?.id,
+            rate: submissionOfStudent?.rate,
+          },
         };
         return data;
       },
@@ -571,10 +568,10 @@ export class HomeWorkService {
       className: homeWork.discipline.class.name,
       students: formattedStudents,
       qtdStudents: homeWork.discipline.class.students.length,
-      submissions: formattedEvaluativeDelivery,
-      pendingSubmissions:
-        homeWork.discipline.class.students.length -
-        homeWork.evaluativeDelivery.length,
+      //submissions: formattedEvaluativeDelivery,
+      // pendingSubmissions:
+      //   homeWork.discipline.class.students.length -
+      //   homeWork.evaluativeDelivery.length,
     };
 
     if (!formattedData) {
