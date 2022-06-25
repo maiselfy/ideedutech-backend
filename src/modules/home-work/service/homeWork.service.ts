@@ -346,7 +346,8 @@ export class HomeWorkService {
       from "Student" s where "classId" = cs.id) as qtdStudents, (select count(distinct ed."studentId") from public."EvaluativeDelivery" ed 
       where ed."homeWorkId" = hw.id and ed."owner" = 'Professor' and hw."type" = ${type} and ed.stage in ('Enviada', 'Avaliada')) as qtdSubmissions
       FROM "HomeWork" hw, "Discipline" ds, "Class" cs
-      WHERE hw."disciplineId" = ds.id AND ds."classId" = cs.id and hw."type" = ${type} and ds."teacherId" = ${teacher.id}`;
+      WHERE hw."disciplineId" = ds.id AND ds."classId" = cs.id and hw."type" = ${type} and ds."teacherId" = ${teacher.id} 
+      LIMIT ${qtdReturn} OFFSET(${pageReturn} - 1) * ${qtdReturn}`;
 
       const formattedData = aux.map((homeWork) => {
         const data = {
@@ -366,12 +367,15 @@ export class HomeWorkService {
         return data;
       });
 
+      const totalCount = formattedData.length;
+      const totalPages = Math.round(totalCount / qtdReturn);
+
       return {
         data: formattedData,
-        // totalCount,
-        // page: pageReturn ? pageReturn : 1,
-        // limit: qtdReturn,
-        // totalPages: totalPages > 0 ? totalPages : 1,
+        totalCount,
+        page: pageReturn ? pageReturn : 1,
+        limit: qtdReturn,
+        totalPages: totalPages > 0 ? totalPages : 1,
         status: HttpStatus.OK,
         message: 'Home Works Listadas com sucesso.',
       };
