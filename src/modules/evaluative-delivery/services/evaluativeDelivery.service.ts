@@ -126,6 +126,13 @@ export class EvaluativeDeliveryService {
         };
       }
     } else {
+      const evaluativeDeliveryExists =
+        await this.prisma.evaluativeDelivery.findFirst({
+          where: {
+            homeWorkId: data.homeWorkId,
+          },
+        });
+
       const updatedEvaluativeDelivery =
         await this.prisma.evaluativeDelivery.create({
           data: {

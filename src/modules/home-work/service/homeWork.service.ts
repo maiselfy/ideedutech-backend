@@ -325,57 +325,6 @@ export class HomeWorkService {
         orderByFormatted[orderBy] = sort ? sort : 'desc';
       }
 
-      // const homeWorks = await this.prisma.homeWork.findMany({
-
-      //   // where: {
-      //   //   discipline: {
-      //   //     teacherId: teacher.id,
-      //   //     id: disciplineId ? disciplineId : undefined,
-      //   //     classId: classId ? classId : undefined,
-      //   //   },
-      //   //   dueDate: {
-      //   //     gte: startDate ? startDate : undefined,
-      //   //     lte: endDate ? endDate : undefined,
-      //   //   },
-      //   //   type: type ? type : undefined,
-      //   //   isOpen: isOpen ? isOpen : undefined,
-      //   // },
-      //   select: {
-      //     id: true,
-      //     name: true,
-      //     isOpen: true,
-      //     type: true,
-      //     dueDate: true,
-      //     description: true,
-      //     discipline: {
-      //       select: {
-      //         name: true,
-      //         class: {
-      //           select: {
-      //             name: true,
-      //             _count: true,
-      //           },
-      //         },
-      //       },
-      //     },
-      //   },
-      //   // skip: skippedItemsReturn ? skippedItemsReturn : undefined,
-      //   // take: qtdReturn ? qtdReturn : undefined,
-      //   // orderBy: orderByFormatted
-      //   //   ? orderByFormatted
-      //   //   : {
-      //   //       createdAt: 'desc',
-      //   //     },
-      // });
-
-      // const teacherId = teacher.id ? teacher.id : '';
-      // const disciplineId = disciplineId ? disciplineId : '';
-      // const classId = classId ? classId : '';
-      // const startDate = startDate ? startDate : '';
-      // const endDate = endDate ? endDate : '';
-      // const type = type ? type : '';
-      // const isOpen = isOpen ? isOpen : '';
-
       interface IHomeWorksByTeacher {
         id: string;
         name: string;
@@ -393,11 +342,11 @@ export class HomeWorkService {
 
       const aux = await this.prisma.$queryRaw<
         IHomeWorksByTeacher[]
-      >`SELECT hw.id, hw.name, hw."isOpen", hw."type", hw."dueDate", hw.description, ds."name" as disciplineName, cs.name as className, (select count(*) from "Student" s
-      where "classId" = cs.id) as qtdStudents, (select count(distinct ed."studentId") from "EvaluativeDelivery" ed where ed."homeWorkId" = hw.id and ed."owner"::text = 'Professor' and hw."type"::text = 'Atividade' and ed.stage in ('Enviada', 'Avaliada')) as qtdSubmissions FROM "HomeWork" hw, "Discipline" ds, "Class" cs
-      WHERE hw."disciplineId" = ds.id AND ds."classId" = cs.id and ds."teacherId" = ${teacher.id}`;
-
-      console.log(aux);
+      >`SELECT hw.id, hw.name, hw."isOpen", hw."type", hw."dueDate", hw.description, ds."name" as disciplineName, cs.name as className, (select count(*) 
+      from "Student" s where "classId" = cs.id) as qtdStudents, (select count(distinct ed."studentId") from public."EvaluativeDelivery" ed 
+      where ed."homeWorkId" = hw.id and ed."owner" = 'Professor' and hw."type" = ${type} and ed.stage in ('Enviada', 'Avaliada')) as qtdSubmissions
+      FROM "HomeWork" hw, "Discipline" ds, "Class" cs
+      WHERE hw."disciplineId" = ds.id AND ds."classId" = cs.id and hw."type" = ${type} and ds."teacherId" = ${teacher.id}`;
 
       const formattedData = aux.map((homeWork) => {
         const data = {
@@ -416,43 +365,6 @@ export class HomeWorkService {
 
         return data;
       });
-
-      // const formattedData = Promise.allSettled(
-      //   homeWorks.map(async (homeWork) => {
-      //     const evaluativeDelivery =
-      //       await this.prisma.evaluativeDelivery.findMany({
-      //         distinct: ['studentId'],
-      //         where: {
-      //           homeWorkId: homeWork.id,
-      //           owner: 'student',
-      //           stage: {
-      //             in: ['sent', 'evaluated'],
-      //           },
-      //         },
-      //       });
-
-      //     const peddingSubmissions =
-      //       homeWork.discipline.class._count.students -
-      //       evaluativeDelivery.length;
-
-      //     const data = {
-      //       className: homeWork.discipline.class.name,
-      //       qtdStudents: homeWork.discipline.class._count.students,
-      //       disciplineName: homeWork.discipline.name,
-      //       id: homeWork.id,
-      //       name: homeWork.name,
-      //       isOpen: homeWork.isOpen,
-      //       type: homeWork.type,
-      //       dueDate: homeWork.dueDate,
-      //       peddingSubmissions,
-      //     };
-
-      //     return data;
-      //   }),
-      // );
-
-      // const totalCount = (await formattedData).length;
-      // const totalPages = Math.round(totalCount / qtdReturn);
 
       return {
         data: formattedData,
