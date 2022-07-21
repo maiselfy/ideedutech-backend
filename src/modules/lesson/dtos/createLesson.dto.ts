@@ -20,7 +20,7 @@ export class CreateLessonDTO {
   @ApiProperty()
   @IsOptional()
   @IsString()
-  classDate: Date;
+  classDate: string;
 
   @ApiProperty()
   @IsString()
