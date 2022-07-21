@@ -41,7 +41,7 @@ export class DisciplineService {
 
   async findAllDisciplinesOfStudent(studentId: string) {
     try {
-      const classId = await this.prisma.student.findFirst({
+      const classId = await this.prisma.student.findUnique({
         where: {
           id: studentId,
         },
@@ -50,13 +50,35 @@ export class DisciplineService {
         },
       });
 
-      const result = this.prisma.discipline.findMany({
+      const disciplinesOfStudent = await this.prisma.discipline.findMany({
         where: {
           classId: classId.classId,
         },
+        select: {
+          id: true,
+          name: true,
+          classId: true,
+          class: {
+            select: {
+              name: true,
+            },
+          },
+          topic: true,
+          teacher: {
+            select: {
+              user: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+        },
       });
 
-      return result;
+      console.log(disciplinesOfStudent);
+
+      //return result;
     } catch (error) {
       throw new HttpException('Failed!!!', HttpStatus.BAD_REQUEST);
     }
