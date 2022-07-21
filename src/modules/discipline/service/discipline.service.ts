@@ -39,6 +39,29 @@ export class DisciplineService {
     return this.prisma.discipline.findMany();
   }
 
+  async findAllDisciplinesOfStudent(studentId: string) {
+    try {
+      const classId = await this.prisma.student.findFirst({
+        where: {
+          id: studentId,
+        },
+        select: {
+          classId: true,
+        },
+      });
+
+      const result = this.prisma.discipline.findMany({
+        where: {
+          classId: classId.classId,
+        },
+      });
+
+      return result;
+    } catch (error) {
+      throw new HttpException('Failed!!!', HttpStatus.BAD_REQUEST);
+    }
+  }
+
   async findDisciplinesOfClassBySchool(
     { managerId, classId },
     paginationDTO: PaginationDTO,

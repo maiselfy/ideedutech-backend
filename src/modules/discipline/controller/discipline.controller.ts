@@ -64,4 +64,10 @@ export class DisciplineController {
       paginationDTO,
     );
   }
+
+  @Public()
+  @Get('student-disciplines/:studentId')
+  findAllDisciplinesOfStudent(@Param('studentId') studentId: string) {
+    return this.disciplineService.findAllDisciplinesOfStudent(studentId);
+  }
 }
