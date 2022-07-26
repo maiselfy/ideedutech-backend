@@ -87,4 +87,55 @@ export class ClassService {
       message: 'Turmas retornadas com sucesso.',
     };
   }
+
+  async findStudentsByClass(classId: string, paginationDTO: PaginationDTO) {
+    const [page, qtd, skippedItems] = Pagination(paginationDTO);
+
+    const studentsOfClass = await this.prisma.student.findMany({
+      where: {
+        classId,
+      },
+      select: {
+        id: true,
+        enrollment: true,
+        user: {
+          select: {
+            avatar: true,
+            name: true,
+          },
+        },
+      },
+      skip: skippedItems ? skippedItems : undefined,
+      take: qtd ? qtd : undefined,
+    });
+
+    const formattedStudents = studentsOfClass.map((student) => {
+      console.log(student);
+
+      const formattedData = {
+        ...student,
+        avatar: student.user.avatar,
+        name: student.user.name,
+      };
+
+      delete formattedData.user;
+
+      return formattedStudents;
+    });
+
+    console.log(formattedStudents);
+
+    const totalCount = formattedStudents.length;
+    const totalPages = Math.round(totalCount / qtd);
+
+    return {
+      data: formattedStudents,
+      totalCount,
+      page,
+      limit: qtd,
+      totalPages: totalPages > 0 ? totalPages : 1,
+      status: HttpStatus.OK,
+      message: 'Estudantes retornados com sucesso.',
+    };
+  }
 }

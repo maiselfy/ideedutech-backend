@@ -40,6 +40,15 @@ export class ClassController {
   }
 
   @ApiBearerAuth()
+  @Get('/students/:classId')
+  findStudentsByClass(
+    @Param('classId') classId: string,
+    @Query() paginationDTO: PaginationDTO,
+  ) {
+    return this.classService.findStudentsByClass(classId, paginationDTO);
+  }
+
+  @ApiBearerAuth()
   @Delete(':id')
   remove(@Param('id') classId: string) {
     return this.classService.remove(classId).catch((e) => {
