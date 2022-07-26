@@ -65,6 +65,67 @@ export class LessonService {
     };
   }
 
+  async detailOfLesson(lessonId: string) {
+    const lesson = await this.prisma.lesson.findFirst({
+      where: {
+        id: lessonId,
+      },
+      select: {
+        id: true,
+        classDate: true,
+        discipline: {
+          select: {
+            name: true,
+            class: {
+              select: {
+                name: true,
+                students: true,
+              },
+            },
+          },
+        },
+        RegisterClass: {
+          select: {
+            content: true,
+          },
+        },
+        notes: true,
+        LackOfClass: {
+          where: {
+            lessonId,
+          },
+          select: {
+            student: true,
+          },
+        },
+      },
+    });
+
+    if (!lesson) {
+      throw new HttpException(
+        'Erro. Aula não encontrada.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const formattedData = {
+      ...lesson,
+      discipline: lesson.discipline.name,
+      class: lesson.discipline.class.name,
+      lackOfClass: lesson.LackOfClass.map((lack) => {
+        return {
+          ...lack.student,
+          lack: true,
+        };
+      }),
+      students: lesson.discipline.class.students,
+    };
+
+    delete formattedData.discipline;
+
+    console.log(formattedData);
+  }
+
   // remove(id: number) {
   //   return `This action removes a #${id} lesson`;
   // }

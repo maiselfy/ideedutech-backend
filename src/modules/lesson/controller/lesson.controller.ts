@@ -25,10 +25,10 @@ export class LessonController {
   //   return this.lessonService.findAll();
   // }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.lessonService.findOne(+id);
-  // }
+  @Get(':id')
+  detailOfLesson(@Param('lessonId') lessonId: string) {
+    return this.lessonService.detailOfLesson(lessonId);
+  }
 
   @Put('/update/:lessonId')
   update(
