@@ -78,7 +78,7 @@ export class DisciplineService {
 
       console.log(disciplinesOfStudent);
 
-      //return result;
+      return disciplinesOfStudent;
     } catch (error) {
       throw new HttpException('Failed!!!', HttpStatus.BAD_REQUEST);
     }
