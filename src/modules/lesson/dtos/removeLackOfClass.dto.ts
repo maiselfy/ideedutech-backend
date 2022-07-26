@@ -14,5 +14,5 @@ export class RemoveLackOfClassDTO {
 
   @IsNotEmpty()
   @ApiProperty()
-  date: string;
+  lessonDate: string;
 }

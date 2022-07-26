@@ -99,30 +99,6 @@ export class LackOfClassService {
       );
     }
 
-    // const students = Promise.all(
-    //   data.studentId.map(async (student) => {
-    //     const validStudent = await this.prisma.student.findFirst({
-    //       where: {
-    //         class: {
-    //           students: {
-    //             some: {
-    //               id: student,
-    //             },
-    //           },
-    //         },
-    //       },
-    //     });
-
-    //     return validStudent?.id;
-    //   }),
-    // );
-
-    // const validStudentsWithoutNull = (await students).filter(function (i) {
-    //   return i;
-    // });
-
-    //console.log(validStudentsWithoutNull);
-
     const lacksOfClass = Promise.all(
       data.studentId.map(async (student) => {
         const existsLackForDay = await this.prisma.lackOfClass.findFirst({
@@ -201,33 +177,12 @@ export class LackOfClassService {
       );
     }
 
-    const studentInClass = await this.prisma.discipline.findFirst({
-      where: {
-        class: {
-          students: {
-            some: {
-              id: data.studentId,
-            },
-          },
-        },
-      },
-    });
-
-    if (!studentInClass) {
-      throw new HttpException(
-        'Erro. Estudante não encontrado para a disciplina correspondente.',
-        HttpStatus.NOT_FOUND,
-      );
-    }
-
-    const formattedDate = format(new Date(data.date), 'dd/MM/yyyy');
-
     const lackOfClass = await this.prisma.lackOfClass.findFirst({
       where: {
         studentId: data.studentId,
         lessonId: data.lessonId,
         lessonDate: {
-          equals: formattedDate,
+          equals: data.lessonDate,
         },
       },
     });
