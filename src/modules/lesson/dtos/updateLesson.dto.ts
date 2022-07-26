@@ -15,7 +15,7 @@ export class UpdateLessonDTO {
   @ApiProperty()
   @IsString()
   @IsOptional()
-  classDate: Date;
+  classDate: string;
 
   @ApiProperty()
   @IsString()

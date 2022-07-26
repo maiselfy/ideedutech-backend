@@ -349,7 +349,130 @@ export class HomeWorkService {
       WHERE hw."disciplineId" = ds.id AND ds."classId" = cs.id and hw."type" = ${type} and ds."teacherId" = ${teacher.id} 
       LIMIT ${qtdReturn} OFFSET(${pageReturn} - 1) * ${qtdReturn}`;
 
+      console.log(aux);
+
+      const query = await this.prisma.$queryRaw<
+        IHomeWorksByTeacher[]
+      >`Select hw.id, hw.name, hw."isOpen", hw."type", hw."dueDate", hw.description, d."name", c."name", (select count(*) 
+      from "Student" s where s."classId" = c.id) as qtdStudents, (select count(distinct ed."studentId") from public."EvaluativeDelivery" ed 
+      where ed."homeWorkId" = hw.id and ed."owner" = 'Professor' and ed.stage in ('Enviada', 'Avaliada')) as qtdSubmissions
+      from "HomeWork" hw 
+      inner join "Discipline" d 
+      on hw."disciplineId" = d.id 
+      inner join "Class" c 
+      on c.id  = d."classId" where c.id = ${classId} and d."teacherId" = ${teacher.id} and hw."type" = ${type} LIMIT ${qtdReturn} OFFSET(${pageReturn} - 1) * ${qtdReturn}`;
+
+      console.log(query);
+
       const formattedData = aux.map((homeWork) => {
+        const data = {
+          ...homeWork,
+          className: homeWork.classname,
+          disciplineName: homeWork.disciplinename,
+          qtdStudents: homeWork.qtdstudents,
+          peddingSubmissions:
+            Number(homeWork.qtdstudents) - Number(homeWork.qtdsubmissions),
+        };
+
+        delete data.qtdsubmissions;
+        delete data.qtdstudents;
+        delete data.disciplinename;
+        delete data.classname;
+
+        return data;
+      });
+
+      const totalCount = formattedData.length;
+      const totalPages = Math.round(totalCount / qtdReturn);
+
+      return {
+        data: formattedData,
+        totalCount,
+        page: pageReturn ? pageReturn : 1,
+        limit: qtdReturn,
+        totalPages: totalPages > 0 ? totalPages : 1,
+        status: HttpStatus.OK,
+        message: 'Home Works Listadas com sucesso.',
+      };
+    } catch (error) {
+      return new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async listHomeWorksByTeacherOnClass(
+    teacherId: string,
+    searchHomeWorksByTeacher: SearchHomeWorksByTeacherDTO,
+  ) {
+    try {
+      const teacher = await this.prisma.teacher.findFirst({
+        where: {
+          userId: teacherId,
+        },
+      });
+
+      if (!teacher) {
+        throw new HttpException(
+          'Erro. Este professor não existe ou não foi encontrado',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      const {
+        startDate,
+        endDate,
+        disciplineId,
+        classId,
+        type,
+        isOpen,
+        page,
+        qtd,
+        orderBy,
+        sort,
+      } = searchHomeWorksByTeacher;
+
+      const paginationDTO: PaginationDTO = {
+        page,
+        qtd,
+        orderBy,
+        sort,
+      };
+
+      const [pageReturn, qtdReturn, skippedItemsReturn] =
+        pagination(paginationDTO);
+
+      const orderByFormatted = {};
+
+      if (orderBy) {
+        orderByFormatted[orderBy] = sort ? sort : 'desc';
+      }
+
+      interface IHomeWorksByTeacher {
+        id: string;
+        name: string;
+        isOpen: boolean;
+        type: TypeHomeWork;
+        dueDate: Date;
+        description: string;
+        disciplinename: string;
+        classname: string;
+        disciplineName: string;
+        qtdstudents: number;
+        qtdsubmissions: number;
+        peddingsubmissions: number;
+      }
+
+      const query = await this.prisma.$queryRaw<
+        IHomeWorksByTeacher[]
+      >`Select hw.id, hw.name, hw."isOpen", hw."type", hw."dueDate", hw.description, d."name", c."name", (select count(*) 
+      from "Student" s where s."classId" = c.id) as qtdStudents, (select count(distinct ed."studentId") from public."EvaluativeDelivery" ed 
+      where ed."homeWorkId" = hw.id and ed."owner" = 'Professor' and ed.stage in ('Enviada', 'Avaliada')) as qtdSubmissions
+      from "HomeWork" hw 
+      inner join "Discipline" d 
+      on hw."disciplineId" = d.id 
+      inner join "Class" c 
+      on c.id  = d."classId" where c.id = ${classId} and d."teacherId" = ${teacher.id} and hw."type" = ${type} LIMIT ${qtdReturn} OFFSET(${pageReturn} - 1) * ${qtdReturn}`;
+
+      const formattedData = query.map((homeWork) => {
         const data = {
           ...homeWork,
           className: homeWork.classname,

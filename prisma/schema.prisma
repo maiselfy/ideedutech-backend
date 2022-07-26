@@ -55,12 +55,12 @@ model Student {
   status             Boolean
   enrollment         String
   classId            String
-  class              Class                @relation(fields: [classId], references: [id], onDelete: Cascade)
   entryForm          String
   reasonForTransfer  String?
   createdAt          DateTime             @default(now())
   updatedAt          DateTime             @updatedAt
   userId             String               @unique
+  class              Class                @relation(fields: [classId], references: [id], onDelete: Cascade)
   school             School               @relation(fields: [schoolId], references: [id])
   user               User                 @relation(fields: [userId], references: [id])
   EvaluativeDelivery EvaluativeDelivery[]
@@ -147,8 +147,6 @@ model HomeWork {
   name               String
   description        String
   disciplineId       String
-  discipline         Discipline           @relation(fields: [disciplineId], references: [id])
-  startDate          DateTime?
   dueDate            DateTime?
   isOpen             Boolean?
   attachement        String?
@@ -156,22 +154,24 @@ model HomeWork {
   createdAt          DateTime             @default(now())
   updatedAt          DateTime             @updatedAt
   weight             Float?               @default(1)
+  startDate          DateTime?
+  discipline         Discipline           @relation(fields: [disciplineId], references: [id])
   evaluativeDelivery EvaluativeDelivery[]
 }
 
 model EvaluativeDelivery {
   id          String           @id @default(uuid())
   studentId   String
-  student     Student          @relation(fields: [studentId], references: [id])
   homeWorkId  String
-  homeWork    HomeWork         @relation(fields: [homeWorkId], references: [id])
   dueDate     DateTime?
   attachement String?
   stage       EvaluationStage?
-  owner       OwnerAction
-  rate        Float?
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
+  owner       OwnerAction
+  rate        Float?
+  homeWork    HomeWork         @relation(fields: [homeWorkId], references: [id])
+  student     Student          @relation(fields: [studentId], references: [id])
 }
 
 model Period {
@@ -208,23 +208,24 @@ model RegisterClass {
   subContent  String?
   periodId    String?
   observation String
-  lessonId    String?
   contentId   String?
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
+  lessonId    String?
   Content     Content?          @relation(fields: [contentId], references: [id])
   Lesson      Lesson?           @relation(fields: [lessonId], references: [id])
   Period      Period?           @relation(fields: [periodId], references: [id])
 }
 
 model LackOfClass {
-  id        String   @id @default(uuid())
-  lessonId  String
-  studentId String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  lesson    Lesson   @relation(fields: [lessonId], references: [id])
-  student   Student  @relation(fields: [studentId], references: [id])
+  id         String   @id @default(uuid())
+  lessonId   String
+  studentId  String
+  lessonDate String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  lesson     Lesson   @relation(fields: [lessonId], references: [id])
+  student    Student  @relation(fields: [studentId], references: [id])
 }
 
 model Lesson {
@@ -232,10 +233,10 @@ model Lesson {
   name          String
   description   String
   disciplineId  String
-  notes         String?
-  classDate     DateTime?
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
+  classDate     String?
+  notes         String?
   discipline    Discipline      @relation(fields: [disciplineId], references: [id])
   LackOfClass   LackOfClass[]
   RegisterClass RegisterClass[]
