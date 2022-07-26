@@ -8,6 +8,9 @@ import {
 
 export class PaginationDTO {
   @IsOptional()
+  paginable?: boolean;
+
+  @IsOptional()
   @IsNumberString()
   page?: string;
 

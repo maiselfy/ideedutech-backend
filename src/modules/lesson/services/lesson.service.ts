@@ -22,22 +22,14 @@ export class LessonService {
       );
     }
 
-    console.log(
-      `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDay()}`,
-    );
-
-    // const createdLesson = await this.prisma.lesson.create({
-    //   data: {
-    //     ...data,
-    //     classDate: data.classDate ? data.classDate : new Date().toString(),
-    //     LackOfClass: undefined,
-    //   },
-    // });
-
-    //return createdLesson;
-
     const createdLesson = await this.prisma.lesson.create({
-      data,
+      data: {
+        ...data,
+        classDate: data.classDate
+          ? data.classDate
+          : new Date().toISOString().split('T')[0],
+        LackOfClass: undefined,
+      },
     });
 
     if (!createdLesson) {
@@ -65,7 +57,7 @@ export class LessonService {
   // update(id: number, updateLessonDto: UpdateLessonDto) {
   //   return `This action updates a #${id} lesson`;
   // }
-  
+
   async updateLesson(lessonId: string, updateLessonDTO: UpdateLessonDTO) {
     const data = updateLessonDTO;
 
