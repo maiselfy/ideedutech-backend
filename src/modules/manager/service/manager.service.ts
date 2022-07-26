@@ -28,7 +28,7 @@ export class ManagerService {
   ) {
     const [page, qtd, skippedItems] = pagination(paginationDTO);
 
-    const currentManager = this.findCurrentManager({ schoolId, managerId });
+    await this.findCurrentManager({ schoolId, managerId });
 
     const managers = await this.prisma.manager.findMany({
       select: { user: true },

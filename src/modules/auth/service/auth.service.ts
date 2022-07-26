@@ -17,20 +17,21 @@ import { UserToken } from '../models/UserToken';
 import { GenerateRefreshToken } from '../providers/generateRefreshToken.provider';
 import { GenerateToken } from '../providers/generateToken.provider';
 import { MailerService } from '@nestjs-modules/mailer';
-import { stringify } from 'querystring';
+import { StudentService } from 'src/modules/student/services/student.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private userService: UserService,
+    private studentService: StudentService,
     private generateRefreshToken: GenerateRefreshToken,
     private generateToken: GenerateToken,
     private mailerService: MailerService,
   ) {}
 
-  async login(email: string, password: string): Promise<UserToken> {
-    const user: User = await this.validateUser(email, password);
+  async login(login: string, password: string): Promise<UserToken> {
+    const user = await this.validateUser(login, password);
 
     if (!user) {
       throw new HttpException(
@@ -39,10 +40,10 @@ export class AuthService {
       );
     }
 
-    const accessToken = await this.generateToken.generateToken(user.id);
+    const accessToken = await this.generateToken.generateToken(user.userId);
 
     const refreshToken = await this.generateRefreshToken.generateRefreshToken(
-      user.id,
+      user.userId,
     );
 
     return {
@@ -51,44 +52,88 @@ export class AuthService {
     };
   }
 
-  private async validateUser(email: string, password: string) {
-    const user = await this.userService.findByEmail(email);
+  private async validateUser(login: string, password: string) {
+    const typeValue = login.indexOf('@') > -1;
 
-    if (!user) {
-      throw new UnauthorizedError(
-        'Não existe um usuário com esse email em nossa base de dados.',
+    if (!typeValue) {
+      const user = await this.studentService.findByEnrollment(login);
+
+      if (!user) {
+        throw new UnauthorizedError(
+          'Não existe um usuário com esse email em nossa base de dados.',
+        );
+      }
+
+      const isPasswordValid = await bcrypt.compare(
+        password,
+        user.user.password,
       );
+
+      if (!isPasswordValid) {
+        throw new UnauthorizedError(
+          'Senha incorreta, por favor, tente novamente.',
+        );
+      }
+
+      const userId = user.userId;
+
+      return {
+        userId,
+        password: undefined,
+      };
+    } else {
+      const user = await this.userService.findByEmail(login);
+      if (!user) {
+        throw new UnauthorizedError(
+          'Não existe um usuário com esse email em nossa base de dados.',
+        );
+      }
+
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+
+      if (!isPasswordValid) {
+        throw new UnauthorizedError(
+          'Senha incorreta, por favor, tente novamente.',
+        );
+      }
+
+      const userId = user.id;
+
+      return {
+        userId,
+        password: undefined,
+      };
     }
-
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-
-    if (!isPasswordValid) {
-      throw new UnauthorizedError(
-        'Senha incorreta, por favor, tente novamente.',
-      );
-    }
-
-    return {
-      ...user,
-      password: undefined,
-    };
   }
 
-  async sendRecoverPasswordEmail(email: string) {
+  generateRandomString() {
+    var randomString = '';
+    var strings =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    for (var i = 0; i < 6; i++) {
+      randomString += strings.charAt(
+        Math.floor(Math.random() * strings.length),
+      );
+    }
+    return randomString;
+  }
+
+  async sendRecoverPasswordEmail(sendRecoverPasswordDTO) {
+    const { email } = sendRecoverPasswordDTO;
     const user = await this.userService.findByEmail(email);
 
     if (!user) {
       throw new NotFoundException('Não há usuário cadastrado com esse email.');
     }
 
-    let recoverToken: string;
-    recoverToken = randomBytes(32).toString('hex');
+    let recoverToken: string = this.generateRandomString();
+
     await this.userService.updateRecoverToken(email, recoverToken);
 
     const mail = {
       to: user.email,
-      from: 'noreply@application.com',
-      subject: 'Recuperação de senha',
+      from: 'naoresponda@ideedutec.com.br',
+      subject: 'Solicitação de alteração de senha',
       template: 'recover-password',
       context: {
         token: recoverToken,
@@ -98,27 +143,45 @@ export class AuthService {
     await this.mailerService.sendMail(mail);
   }
 
-  async resetPassword(
-    recoverToken: string,
-    changePasswordDTO: ChangePasswordDTO,
-  ) {
+  async verifyToken(recoverToken: string) {
     const user = await this.userService.findByRecoverToken(recoverToken);
 
-    if (!user) throw new NotFoundException('token inválido');
+    if (!user) throw new NotFoundException('Token Inválido');
+  }
 
+  async resetPassword(token: string, changePasswordDTO: ChangePasswordDTO) {
     try {
+      const user = await this.userService.findByRecoverToken(token);
+
+      if (!user) {
+        throw new HttpException(
+          'Token Inválido para usuário',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      console.log('User: ', user);
+      console.log('Token: ', token);
+
       await this.changePassword(user.id, changePasswordDTO);
     } catch (error) {
-      throw error;
+      if (error) throw error;
+      throw new HttpException('Failed!!!', HttpStatus.BAD_REQUEST);
     }
   }
 
-  async changePassword(id: string, changePasswordDTO: ChangePasswordDTO) {
-    const { password, passwordConfirmation } = changePasswordDTO;
+  async changePassword(userId: string, changePasswordDTO: ChangePasswordDTO) {
+    try {
+      const { password, passwordConfirmation } = changePasswordDTO;
 
-    if (password != passwordConfirmation)
-      throw new UnprocessableEntityException('As senhas não conferem');
+      if (password !== passwordConfirmation) {
+        throw new HttpException('Senhas não confere', HttpStatus.CONFLICT);
+      }
 
-    await this.userService.changePassword(id, password);
+      await this.userService.changePassword(userId, password);
+    } catch (error) {
+      if (error) throw error;
+      throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }

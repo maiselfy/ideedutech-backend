@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { UnauthorizedInterceptor } from './interceptors/unauthorized.interceptor';
 import { setupSwagger } from './swagger';
+require('newrelic');
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

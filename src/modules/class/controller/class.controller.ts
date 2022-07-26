@@ -1,18 +1,17 @@
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CreateClassDTO } from '../dtos/create-class.dto';
+import { ClassService } from '../services/class.service';
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Put,
-  Param,
+  Controller,
   Delete,
-  Query,
+  Get,
   NotFoundException,
+  Post,
+  Param,
+  Query,
 } from '@nestjs/common';
 import { PaginationDTO } from 'src/models/PaginationDTO';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { ClassService } from '../services/class.service';
 import { User } from 'src/modules/user/decorators/user.decorator';
 
 @ApiTags('Class')
@@ -38,6 +37,15 @@ export class ClassController {
       { schoolId, managerId },
       paginationDTO,
     );
+  }
+
+  @ApiBearerAuth()
+  @Get('/students/:classId')
+  findStudentsByClass(
+    @Param('classId') classId: string,
+    @Query() paginationDTO: PaginationDTO,
+  ) {
+    return this.classService.findStudentsByClass(classId, paginationDTO);
   }
 
   @ApiBearerAuth()

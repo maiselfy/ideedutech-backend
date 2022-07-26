@@ -14,7 +14,7 @@ export class CreateLessonDTO {
   description: string;
 
   @ApiProperty()
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
   disciplineId: string;
 

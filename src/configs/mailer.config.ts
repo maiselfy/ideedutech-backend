@@ -12,13 +12,13 @@ export const mailerConfig: MailerOptions = {
     },
   },
   transport: `smtps://${process.env.USER_MAILER}:${process.env.PASS_MAILER}@smtp.gmail.com/pool=true`,
-  /* transport: {
+  /*  transport: {
     host: 'smtp.gmail.com',
     port: 465,
     secure: true,
     auth: {
-      user: process.env.USER_MAILER,
-      pass: process.env.PASS_MAILER,
+      user: 'fabriciopinheiro713@gmail.com',
+      pass: 'idealize2022F',
     },
     tls: {
       rejectUnauthorized: false,

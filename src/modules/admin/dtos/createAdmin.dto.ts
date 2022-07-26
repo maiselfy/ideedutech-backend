@@ -1,5 +1,5 @@
-import { IsEmpty, IsNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsEmpty, IsNotEmpty } from 'class-validator';
 export default class CreateAdminDTO {
   @ApiProperty({
     example: true,

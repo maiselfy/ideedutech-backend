@@ -5,12 +5,14 @@ import {
   Controller,
   HttpCode,
   HttpStatus,
+  NotFoundException,
   Param,
   Patch,
   Post,
 } from '@nestjs/common';
 import { AuthService } from '../service/auth.service';
 import { LoginRequestDTO } from '../dtos/LoginRequest.dto';
+import { SendRecoverPasswordDTO } from '../dtos/SendRecoverPassword.dto';
 import { Public } from '../decorators/public.decorator';
 
 @ApiTags('Authentication')
@@ -21,16 +23,28 @@ export class AuthController {
   @Public()
   @Post('/login')
   @HttpCode(HttpStatus.OK)
-  login(@Body() { email, password }: LoginRequestDTO) {
-    return this.authService.login(email, password);
+  login(@Body() { login, password }: LoginRequestDTO) {
+    return this.authService.login(login, password);
   }
 
   @Public()
   @Post('/send-recover-email')
-  async sendRecoverPasswordEmail(@Body('email') email: string) {
-    await this.authService.sendRecoverPasswordEmail(email);
+  async sendRecoverPasswordEmail(
+    @Body() sendRecoverPasswordDTO: SendRecoverPasswordDTO,
+  ) {
+    await this.authService.sendRecoverPasswordEmail(sendRecoverPasswordDTO);
     return {
       message: 'Foi enviado um email com instruções para resetar sua senha',
+    };
+  }
+
+  @Public()
+  @Post('/verify-token/:token')
+  async verifyToken(@Param('token') token: string) {
+    await this.authService.verifyToken(token);
+
+    return {
+      message: 'Token Válido',
     };
   }
 

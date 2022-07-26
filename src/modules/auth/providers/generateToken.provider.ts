@@ -31,6 +31,7 @@ export class GenerateToken {
       email: user.email,
       sub: user.id,
       type: user.type,
+      avatar: user.avatar,
     };
 
     const createdToken = this.jwtService.sign(payload);

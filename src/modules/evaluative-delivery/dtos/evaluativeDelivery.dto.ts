@@ -19,14 +19,8 @@ export default class CreateEvaluativeDeliveryDTO {
   @ApiProperty({
     example: 0,
   })
-  @IsOptional()
+  @IsNotEmpty()
   rate: number;
-
-  @ApiProperty({
-    example: '2022-04-25T11:54:43.892Z',
-  })
-  @IsOptional()
-  duaDate: Date;
 
   @ApiProperty({
     example: 'atv-431422.pdf',
@@ -35,14 +29,8 @@ export default class CreateEvaluativeDeliveryDTO {
   @IsOptional()
   attachement: string;
 
-  @ApiProperty({
-    example: 'pending',
-  })
-  @IsString()
-  @IsOptional()
   stage: EvaluationStage;
 
-  @IsNotEmpty()
   owner: OwnerAction;
 
   @IsEmpty()

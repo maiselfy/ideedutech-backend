@@ -12,6 +12,8 @@ import { Public } from 'src/security/decorators/public.decorator';
 import { CreateLessonDTO } from '../dtos/createLesson.dto';
 import { CreateManyLackLessonDTO } from '../dtos/createManyLackLesson.dto';
 import { LackOfClassService } from '../services/lackOfClass.service';
+import { CreateLessonDTO } from '../dtos/createLesson.dto';
+import { UpdateLessonDTO } from '../dtos/updateLesson.dto';
 import { LessonService } from '../services/lesson.service';
 
 @Controller('lesson')
@@ -20,6 +22,7 @@ export class LessonController {
     private readonly lessonService: LessonService,
     private lackOfClassService: LackOfClassService,
   ) {}
+  constructor(private readonly lessonService: LessonService) {}
 
   @Post()
   create(@Body() createLessonDTO: CreateLessonDTO) {
@@ -68,6 +71,20 @@ export class LessonController {
   // update(@Param('id') id: string, @Body() updateLessonDTO: UpdateLessonDTO) {
   //   return this.lessonService.update(+id, updateLessonDTO);
   // }
+  
+  @Get(':id')
+  detailOfLesson(@Param('lessonId') lessonId: string) {
+    return this.lessonService.detailOfLesson(lessonId);
+  }
+
+  @Put('/update/:lessonId')
+  update(
+    @Param('lessonId') lessonId: string,
+    @Body() updateLessonDTO: UpdateLessonDTO,
+  ) {
+    return this.lessonService.updateLesson(lessonId, updateLessonDTO);
+  }
+
 
   // @Delete(':id')
   // remove(@Param('id') id: string) {

@@ -62,7 +62,7 @@ export class TeacherService {
     { schoolId, managerId }: ListEntitiesForSchoolDTO,
     paginationDTO: PaginationDTO,
   ) {
-    const currentManager = await this.managerService.findCurrentManager({
+    await this.managerService.findCurrentManager({
       schoolId,
       managerId,
     });
@@ -70,7 +70,7 @@ export class TeacherService {
     const [page, qtd, skippedItems] = pagination(paginationDTO);
 
     const teachers = await this.prisma.teacher.findMany({
-      select: { user: true },
+      select: { user: true, id: true },
       where: {
         schools: {
           some: {
@@ -85,13 +85,14 @@ export class TeacherService {
     if (!teachers) {
       throw new HttpException(
         'Não existem professores cadastrados para esta escola.',
-        HttpStatus.BAD_GATEWAY,
+        HttpStatus.NOT_FOUND,
       );
     }
 
     const formattedTeachers = teachers.reduce((acc, manager) => {
       acc.push({
-        id: manager.user.id,
+        id: manager.id,
+        userId: manager.user.id,
         name: manager.user.name,
         email: manager.user.email,
         birthDate: manager.user.birthDate,
@@ -135,6 +136,157 @@ export class TeacherService {
       data: teacher,
       status: HttpStatus.OK,
       message: `Professor retornado com sucesso.`,
+    };
+  }
+
+  async findClassesByTeacherOnSchool(
+    teacherId: string,
+    paginationDTO: PaginationDTO,
+  ) {
+    const teacher = await this.prisma.teacher.findFirst({
+      where: {
+        userId: teacherId,
+      },
+    });
+
+    if (!teacher) {
+      throw new HttpException(
+        'Erro. Este professor não existe ou não foi encontrado',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const [page, qtd, skippedItems] = pagination(paginationDTO);
+
+    const classes = await this.prisma.class.findMany({
+      where: {
+        disciplines: {
+          some: {
+            teacherId: teacher.id,
+          },
+        },
+      },
+      include: {
+        _count: {
+          select: {
+            disciplines: true,
+            students: true,
+          },
+        },
+      },
+      skip: skippedItems ? skippedItems : undefined,
+      take: qtd ? qtd : undefined,
+    });
+
+    if (!classes) {
+      throw new HttpException(
+        'Não existem turmas para este professor, nessa escola.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const formattedClasses = classes.map((classOfSchool) => {
+      const formattedClass = {
+        ...classOfSchool,
+        qtdStudents: classOfSchool?._count?.students,
+        qtdDisciplines: classOfSchool?._count?.disciplines,
+      };
+
+      delete formattedClass._count;
+
+      return formattedClass;
+    });
+
+    const totalCount = formattedClasses.length;
+    const totalPages = Math.round(totalCount / qtd);
+
+    return {
+      data: formattedClasses,
+      totalCount: formattedClasses.length,
+      page: paginationDTO.page ? page : 1,
+      limit: 5,
+      totalPages: totalPages > 0 ? totalPages : 1,
+      status: HttpStatus.OK,
+      message: 'Turmas retornadas com sucesso.',
+    };
+  }
+
+  async findDisciplinesByTeacher(
+    teacherId: string,
+    paginationDTO: PaginationDTO,
+  ) {
+    const teacher = await this.prisma.teacher.findFirst({
+      where: {
+        userId: teacherId,
+      },
+    });
+
+    if (!teacher) {
+      throw new HttpException(
+        'Erro. Este professor não existe ou não foi encontrado',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const [page, qtd, skippedItems] = pagination(paginationDTO);
+
+    const disciplines = await this.prisma.discipline.findMany({
+      where: {
+        teacherId: teacher.id,
+      },
+      select: {
+        id: true,
+        name: true,
+        topic: true,
+        class: {
+          select: {
+            name: true,
+            school: {
+              select: {
+                name: true,
+              },
+            },
+            _count: {
+              select: {
+                students: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!disciplines) {
+      throw new HttpException(
+        'Este professor não possui disciplinas cadastradas.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const formattedDisciplines = disciplines.map((discipline) => {
+      const formattedData = {
+        id: discipline.id,
+        name: discipline.name,
+        topic: discipline.topic,
+        className: discipline.class.name,
+        school: discipline.class.school,
+        qtdStudents: discipline.class._count.students,
+      };
+
+      return formattedData;
+    });
+
+    const totalCount = formattedDisciplines.length;
+    const totalPages = Math.round(totalCount / qtd);
+
+    return {
+      data: formattedDisciplines,
+      totalCount: formattedDisciplines.length,
+      page: paginationDTO.page ? page : 1,
+      limit: 5,
+      totalPages: totalPages > 0 ? totalPages : 1,
+      status: HttpStatus.OK,
+      message: 'Disciplinas retornadas com sucesso.',
     };
   }
 
