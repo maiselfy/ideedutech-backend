@@ -11,12 +11,9 @@ export class LackOfClassService {
     private prisma: PrismaService,
     private lessonService: LessonService,
   ) {}
+
   async createMany(createManyLackLesson: CreateManyLackLessonDTO) {
     const data = createManyLackLesson.createLackOfClassDTO;
-
-    console.log(data);
-
-    // Verifica se o estudante pertence a turma.
 
     const validStudents: string[] = [];
 
@@ -36,24 +33,20 @@ export class LackOfClassService {
       if (studentInClass) validStudents.push(studentId);
     });
 
-    const createdLesson = await this.lessonService.create(
-      createManyLackLesson.createLessonDTO,
-    );
+    const createdLesson = await this.prisma.lesson.create({
+      data: createManyLackLesson.createLessonDTO,
+    });
 
     const { id } = createdLesson;
 
-    console.log(data.date);
-
     const formattedDate = format(new Date(data.date), 'dd/MM/yyyy');
-
-    console.log(formattedDate);
 
     const lacksOfClass = validStudents.map(async (student) => {
       const existsLackForDay = await this.prisma.lackOfClass.findFirst({
         where: {
           lessonId: data.lessonId,
           studentId: student,
-          date: {
+          lessonDate: {
             equals: formattedDate,
           },
         },
@@ -63,7 +56,7 @@ export class LackOfClassService {
         const lackOfClass = await this.prisma.lackOfClass.create({
           data: {
             ...data,
-            date: formattedDate,
+            lessonDate: formattedDate,
             lessonId: id,
             studentId: student,
           },
@@ -82,6 +75,85 @@ export class LackOfClassService {
       data: formattedData,
       status: HttpStatus.CREATED,
       message: 'Frequência para a aula cadastrada com sucesso.',
+    };
+  }
+
+  async updateLackOfLesson(
+    lessonId: string,
+    createManyLackLesson: CreateManyLackLessonDTO,
+  ) {
+    const data = createManyLackLesson.createLackOfClassDTO;
+
+    const validStudents: string[] = [];
+
+    data.studentId.forEach(async (studentId) => {
+      const studentInClass = await this.prisma.discipline.findFirst({
+        where: {
+          class: {
+            students: {
+              some: {
+                id: studentId,
+              },
+            },
+          },
+        },
+      });
+
+      if (studentInClass) validStudents.push(studentId);
+    });
+
+    const lesson = await this.prisma.lesson.findUnique({
+      where: {
+        id: lessonId,
+      },
+    });
+
+    if (!lesson) {
+      throw new HttpException(
+        'Erro. Aula não encontrada.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const { id } = lesson;
+
+    const formattedDate = format(new Date(data.date), 'dd/MM/yyyy');
+
+    const lacksOfClass = validStudents.map(async (student) => {
+      const existsLackForDay = await this.prisma.lackOfClass.findFirst({
+        where: {
+          lessonId: id,
+          studentId: student,
+          lessonDate: {
+            equals: formattedDate,
+          },
+        },
+      });
+
+      if (!existsLackForDay) {
+        const lackOfClass = await this.prisma.lackOfClass.update({
+          data: {
+            ...data,
+            studentId: student,
+          },
+          where: {
+            id,
+          },
+        });
+
+        return lackOfClass;
+      }
+    });
+
+    const formattedData = {
+      ...lesson,
+      ...lacksOfClass,
+    };
+
+    return {
+      data: formattedData,
+      status: HttpStatus.CREATED,
+      message: 'Frequência para a aula atualizada com sucesso.',
     };
   }
 
@@ -138,7 +210,7 @@ export class LackOfClassService {
       where: {
         studentId: data.studentId,
         lessonId: data.lessonId,
-        date: {
+        lessonDate: {
           equals: formattedDate,
         },
       },

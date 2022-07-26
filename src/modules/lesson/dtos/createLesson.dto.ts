@@ -20,7 +20,18 @@ export class CreateLessonDTO {
 
   @ApiProperty()
   @IsString()
+  @IsOptional()
+  notes: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
   LackOfClass: LackOfClass[];
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  classDate: string;
 
   @IsEmpty()
   createdAt: Date;

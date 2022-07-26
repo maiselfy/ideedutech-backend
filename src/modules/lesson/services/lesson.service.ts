@@ -22,11 +22,19 @@ export class LessonService {
       );
     }
 
-    const createdLesson = await this.prisma.lesson.create({
-      data,
-    });
+    console.log(
+      `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDay()}`,
+    );
 
-    return createdLesson;
+    // const createdLesson = await this.prisma.lesson.create({
+    //   data: {
+    //     ...data,
+    //     classDate: data.classDate ? data.classDate : new Date().toString(),
+    //     LackOfClass: undefined,
+    //   },
+    // });
+
+    //return createdLesson;
   }
 
   // findAll() {

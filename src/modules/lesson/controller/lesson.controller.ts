@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Put,
 } from '@nestjs/common';
 import { Public } from 'src/security/decorators/public.decorator';
 import { CreateLessonDTO } from '../dtos/createLesson.dto';
@@ -29,6 +30,18 @@ export class LessonController {
   @Post('/lackOfClass')
   createLackOfClass(@Body() createManyLackLessonDTO: CreateManyLackLessonDTO) {
     return this.lackOfClassService.createMany(createManyLackLessonDTO);
+  }
+
+  @Public()
+  @Put('/lackOfClass/:lessonId')
+  updateLackOfLesson(
+    @Param('lessonId') lessonId: string,
+    @Body() createManyLackLessonDTO: CreateManyLackLessonDTO,
+  ) {
+    return this.lackOfClassService.updateLackOfLesson(
+      lessonId,
+      createManyLackLessonDTO,
+    );
   }
 
   @Public()
