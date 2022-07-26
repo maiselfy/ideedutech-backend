@@ -9,6 +9,33 @@ export class LessonService {
   async create(createLessonDTO: CreateLessonDTO) {
     const data = createLessonDTO;
 
+    const discipline = await this.prisma.discipline.findUnique({
+      where: {
+        id: data.disciplineId,
+      },
+    });
+
+    if (!discipline) {
+      throw new HttpException(
+        'Erro. Disciplina não encontrada.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    console.log(
+      `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDay()}`,
+    );
+
+    // const createdLesson = await this.prisma.lesson.create({
+    //   data: {
+    //     ...data,
+    //     classDate: data.classDate ? data.classDate : new Date().toString(),
+    //     LackOfClass: undefined,
+    //   },
+    // });
+
+    //return createdLesson;
+
     const createdLesson = await this.prisma.lesson.create({
       data,
     });
@@ -35,6 +62,10 @@ export class LessonService {
   //   return `This action returns a #${id} lesson`;
   // }
 
+  // update(id: number, updateLessonDto: UpdateLessonDto) {
+  //   return `This action updates a #${id} lesson`;
+  // }
+  
   async updateLesson(lessonId: string, updateLessonDTO: UpdateLessonDTO) {
     const data = updateLessonDTO;
 

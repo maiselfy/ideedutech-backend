@@ -27,6 +27,7 @@ import { EvaluativeDeliveryModule } from './modules/evaluative-delivery/evaluati
 import { LessonModule } from './modules/lesson/lesson.module';
 import { UploadModule } from './modules/upload/upload.module';
 
+
 ConfigModule.forRoot();
 
 @Module({

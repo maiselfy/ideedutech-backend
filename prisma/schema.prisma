@@ -221,6 +221,8 @@ model LackOfClass {
   id         String   @id @default(uuid())
   lessonId   String
   studentId  String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
   lessonDate String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
@@ -330,4 +332,10 @@ enum EvaluationStage {
 enum OwnerAction {
   teacher  @map("Professor")
   student  @map("Estudante")
+}
+
+enum mood {
+  Atividade
+  Trabalho
+  Prova
 }
