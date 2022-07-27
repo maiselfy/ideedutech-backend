@@ -26,6 +26,7 @@ import { mailerConfig } from './configs/mailer.config';
 import { EvaluativeDeliveryModule } from './modules/evaluative-delivery/evaluativeDelivery.module';
 import { LessonModule } from './modules/lesson/lesson.module';
 import { UploadModule } from './modules/upload/upload.module';
+import { ScheduleModule } from './modules/schedule/schedule.module';
 
 ConfigModule.forRoot();
 
@@ -53,6 +54,7 @@ ConfigModule.forRoot();
     MailerModule.forRoot(mailerConfig),
     LessonModule,
     UploadModule,
+    ScheduleModule,
   ],
   controllers: [AppController],
   providers: [

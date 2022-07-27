@@ -27,6 +27,7 @@ import {
   User,
   WaitList,
   LackOfClass,
+  Schedule,
 } from '@prisma/client';
 
 //Definir tipos da minha aplicação.
@@ -51,6 +52,7 @@ export type AppSubjects = Subjects<{
   Address: Address;
   RegisterClass: RegisterClass;
   LackOfClass: LackOfClass;
+  Schedule: Schedule;
   all: 'all';
 }>;
 
