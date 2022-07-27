@@ -116,19 +116,20 @@ model School {
 }
 
 model Discipline {
-  id        String                @id @default(uuid())
-  name      String
-  teacherId String
-  createdAt DateTime              @default(now())
-  updatedAt DateTime              @updatedAt
-  classId   String
-  topic     String
-  class     Class                 @relation(fields: [classId], references: [id])
-  teacher   Teacher               @relation(fields: [teacherId], references: [id])
-  Content   Content[]
-  schedules DisciplineSchedules[]
-  homeWorks HomeWork[]
-  lessons   Lesson[]
+  id                  String                @id @default(uuid())
+  name                String
+  teacherId           String
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  classId             String
+  topic               String
+  class               Class                 @relation(fields: [classId], references: [id])
+  teacher             Teacher               @relation(fields: [teacherId], references: [id])
+  Content             Content[]
+  schedules           Schedule[]
+  homeWorks           HomeWork[]
+  lessons             Lesson[]
+  DisciplineSchedules DisciplineSchedules[]
 }
 
 model Class {
@@ -174,6 +175,19 @@ model EvaluativeDelivery {
   student     Student          @relation(fields: [studentId], references: [id])
 }
 
+model Schedule {
+  id           String     @id @default(uuid())
+  day          Day
+  disciplineId String
+  periodId     String
+  initialHour  String
+  finishHour   String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  discipline   Discipline @relation(fields: [disciplineId], references: [id])
+  period       Period     @relation(fields: [periodId], references: [id])
+}
+
 model Period {
   id                    String               @id @default(uuid())
   startOfPeriod         DateTime
@@ -182,11 +196,12 @@ model Period {
   updatedAt             DateTime             @updatedAt
   name                  String
   schoolId              String
-  disciplineSchedulesId String?
-  disciplineSchedules   DisciplineSchedules? @relation(fields: [disciplineSchedulesId], references: [id])
   school                School               @relation(fields: [schoolId], references: [id])
   contents              Content[]
   registerClass         RegisterClass[]
+  schedule              Schedule[]
+  DisciplineSchedules   DisciplineSchedules? @relation(fields: [disciplineSchedulesId], references: [id])
+  disciplineSchedulesId String?
 }
 
 model Content {
@@ -221,9 +236,9 @@ model LackOfClass {
   id         String   @id @default(uuid())
   lessonId   String
   studentId  String
+  lessonDate String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  lessonDate String?
   lesson     Lesson   @relation(fields: [lessonId], references: [id])
   student    Student  @relation(fields: [studentId], references: [id])
 }
@@ -331,5 +346,3 @@ enum OwnerAction {
   teacher  @map("Professor")
   student  @map("Estudante")
 }
-
-

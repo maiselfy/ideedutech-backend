@@ -9,16 +9,15 @@ export class PeriodService {
     try {
       const period = await this.prisma.period.create({
         data: {
-          name: createPeriodDto.name,
-          schoolId: createPeriodDto.schoolId,
-          startOfPeriod: createPeriodDto.startOfPeriod,
-          endOfPeriod: createPeriodDto.endOfPeriod,
+          ...createPeriodDto,
+          startOfPeriod: new Date(createPeriodDto.startOfPeriod),
+          endOfPeriod: new Date(createPeriodDto.endOfPeriod),
         },
       });
       return {
         data: period,
         status: HttpStatus.OK,
-        message: 'Perído com sucesso',
+        message: 'Perído criado com sucesso',
       };
     } catch (error) {
       return new HttpException(error, HttpStatus.BAD_REQUEST);

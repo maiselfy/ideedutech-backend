@@ -1,4 +1,4 @@
-import { IsDateString, IsNotEmpty, IsString } from 'class-validator';
+import { IsDateString, IsEmpty, IsNotEmpty, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 export class CreatePeriodDTO {
   @ApiProperty({
@@ -28,4 +28,10 @@ export class CreatePeriodDTO {
   @IsNotEmpty()
   @IsDateString()
   endOfPeriod: string;
+
+  @IsEmpty()
+  createdAt: Date;
+
+  @IsEmpty()
+  updatedAt: Date;
 }
