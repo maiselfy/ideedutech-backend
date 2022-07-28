@@ -262,4 +262,17 @@ export class StudentService {
     });
     return student;
   }
+
+  async findClassByStudentId(studentId) {
+    const classId = await this.prisma.student.findUnique({
+      where: {
+        id: studentId,
+      },
+      select: {
+        classId: true,
+      },
+    });
+
+    return classId;
+  }
 }

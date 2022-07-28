@@ -211,4 +211,49 @@ export class EvaluativeDeliveryService {
   async findAll() {
     return this.prisma.evaluativeDelivery.findMany();
   }
+
+  async findAllSubmissionOfStudent(studentId: string) {
+    const submissionOfStudent = await this.prisma.evaluativeDelivery.findMany({
+      where: {
+        studentId: studentId,
+        owner: 'student',
+      },
+      select: {
+        stage: true,
+        rate: true,
+        homeWork: {
+          select: {
+            type: true,
+            discipline: {
+              select: {
+                name: true,
+                teacher: {
+                  select: {
+                    user: {
+                      select: {
+                        id: true,
+                        name: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const resultMap = submissionOfStudent.map((submission) => {
+      return {
+        stage: submission.stage,
+        rate: submission.rate,
+        typeHomeWork: submission.homeWork.type,
+        discipline: submission.homeWork.discipline.name,
+        teacher: submission.homeWork.discipline.teacher.user.name,
+      };
+    });
+
+    return resultMap;
+  }
 }
