@@ -263,16 +263,43 @@ export class StudentService {
     return student;
   }
 
-  async findClassByStudentId(studentId) {
-    const classId = await this.prisma.student.findUnique({
-      where: {
-        id: studentId,
-      },
-      select: {
-        classId: true,
-      },
-    });
+  async findClassByStudentId(userId: string) {
+    try {
+      const studentId = await this.prisma.student.findFirst({
+        where: {
+          userId: userId,
+        },
+        select: {
+          id: true,
+        },
+      });
 
-    return classId;
+      if (!studentId) {
+        throw new HttpException(
+          'Estudante não encontrado.',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      const classId = await this.prisma.student.findUnique({
+        where: {
+          id: studentId.id,
+        },
+        select: {
+          classId: true,
+        },
+      });
+
+      if (!classId) {
+        throw new HttpException(
+          'Classe não encontrada para este estudante.',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      return classId;
+    } catch (error) {
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
   }
 }

@@ -42,42 +42,47 @@ export class DisciplineService {
   }
 
   async findAllDisciplinesByClassId(classId: string) {
-    const disciplines = await this.prisma.discipline.findMany({
-      where: {
-        classId: classId,
-      },
-      select: {
-        id: true,
-        name: true,
-        classId: true,
-        class: {
-          select: {
-            name: true,
-          },
+    try {
+      const disciplines = await this.prisma.discipline.findMany({
+        where: {
+          classId: classId,
         },
-        topic: true,
-        teacher: {
-          select: {
-            user: {
-              select: {
-                id: true,
-                name: true,
+        select: {
+          id: true,
+          name: true,
+          classId: true,
+          class: {
+            select: {
+              name: true,
+            },
+          },
+          topic: true,
+          teacher: {
+            select: {
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                },
               },
             },
           },
         },
-      },
-    });
-    return disciplines;
+      });
+      return disciplines;
+    } catch (error) {
+      if (error) throw error;
+      throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
-  async findAllDisciplinesOfStudent(studentId: string) {
+  async findAllDisciplinesOfStudent(userId: string) {
     try {
-      const classId = await this.studentService.findClassByStudentId(studentId);
+      const classId = await this.studentService.findClassByStudentId(userId);
 
       if (!classId) {
         throw new HttpException(
-          'Esta classe não existe.',
+          'Esta classe não existe para este estudante.',
           HttpStatus.NOT_FOUND,
         );
       }
@@ -107,6 +112,7 @@ export class DisciplineService {
 
       return resultMap;
     } catch (error) {
+      if (error) throw error;
       throw new HttpException('Failed!!!', HttpStatus.BAD_REQUEST);
     }
   }
