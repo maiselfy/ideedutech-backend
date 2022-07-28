@@ -26,7 +26,7 @@ export class DisciplineService {
         topic,
         teacher: { connect: { id: teacherId } },
         class: { connect: { id: classId } },
-        schedules: { createMany: { data: schedules || [] } },
+        //schedules: { createMany: { data: schedules || [] } },
       },
     });
 

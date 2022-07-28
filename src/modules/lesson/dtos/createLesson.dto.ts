@@ -1,3 +1,4 @@
+import { LackOfClass } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmpty, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
@@ -18,14 +19,19 @@ export class CreateLessonDTO {
   disciplineId: string;
 
   @ApiProperty()
-  @IsOptional()
-  @IsString()
-  classDate: string;
-
-  @ApiProperty()
   @IsString()
   @IsOptional()
   notes: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  LackOfClass: LackOfClass[];
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  classDate: string;
 
   @IsEmpty()
   createdAt: Date;
