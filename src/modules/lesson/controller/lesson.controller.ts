@@ -70,7 +70,7 @@ export class LessonController {
   //   return this.lessonService.update(+id, updateLessonDTO);
   // }
 
-  @Get(':id')
+  @Get(':lessonId')
   detailOfLesson(@Param('lessonId') lessonId: string) {
     return this.lessonService.detailOfLesson(lessonId);
   }
