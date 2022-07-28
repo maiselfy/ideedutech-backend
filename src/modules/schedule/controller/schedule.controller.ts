@@ -25,6 +25,11 @@ export class ScheduleController {
     return this.scheduleService.getSchedulesOfTeacher(user.id, date);
   }
 
+  @Get('/:scheduleId/lesson')
+  getLessonBySchedule(@Param('scheduleId') scheduleId: string) {
+    return this.scheduleService.getLessonBySchedule(scheduleId);
+  }
+
   // @Get(':id')
   // findOne(@Param('id') id: string) {
   //   return this.scheduleService.findOne(+id);

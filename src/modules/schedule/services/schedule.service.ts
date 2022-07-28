@@ -98,6 +98,7 @@ export class ScheduleService {
           day,
         },
         select: {
+          id: true,
           day: true,
           initialHour: true,
           finishHour: true,
@@ -107,6 +108,7 @@ export class ScheduleService {
               topic: true,
               class: {
                 select: {
+                  id: true,
                   name: true,
                 },
               },
@@ -116,12 +118,13 @@ export class ScheduleService {
       });
 
       const formattedData = schedules.map((schedule) => {
-        console.log(schedule);
         const newData = {
           ...schedule,
           discipline: schedule.discipline.name,
           topic: schedule.discipline.topic,
           class: schedule.discipline.class.name,
+          classId: schedule.discipline.class.id,
+          date: date,
         };
 
         return newData;
@@ -133,6 +136,31 @@ export class ScheduleService {
         message: 'Horários do professor retornados com sucesso',
       };
     }
+  }
+
+  async getLessonBySchedule(scheduleId: string) {
+    console.log(scheduleId);
+
+    const lesson = await this.prisma.lesson.findFirst({
+      where: {
+        discipline: {
+          schedules: {
+            some: {
+              id: scheduleId,
+            },
+          },
+        },
+      },
+    });
+
+    if (!lesson) {
+      throw new HttpException(
+        'Erro. Aula não encontrada.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    console.log(lesson);
   }
 
   // findAll() {
