@@ -65,7 +65,7 @@ export class LessonService {
   // update(id: number, updateLessonDto: UpdateLessonDto) {
   //   return `This action updates a #${id} lesson`;
   // }
-  
+
   async updateLesson(lessonId: string, updateLessonDTO: UpdateLessonDTO) {
     const data = updateLessonDTO;
 
@@ -110,7 +110,25 @@ export class LessonService {
             class: {
               select: {
                 name: true,
-                students: true,
+                students: {
+                  where: {
+                    LackOfClass: {
+                      every: {
+                        lessonId,
+                      },
+                    },
+                  },
+                  select: {
+                    id: true,
+                    user: {
+                      select: {
+                        name: true,
+                        avatar: true,
+                      },
+                    },
+                    enrollment: true,
+                  },
+                },
               },
             },
           },
@@ -126,7 +144,18 @@ export class LessonService {
             lessonId,
           },
           select: {
-            student: true,
+            student: {
+              select: {
+                id: true,
+                user: {
+                  select: {
+                    name: true,
+                    avatar: true,
+                  },
+                },
+                enrollment: true,
+              },
+            },
           },
         },
       },
@@ -145,16 +174,38 @@ export class LessonService {
       class: lesson.discipline.class.name,
       lackOfClass: lesson.LackOfClass.map((lack) => {
         return {
-          ...lack.student,
+          id: lack.student.id,
+          name: lack.student.user.name,
+          enrollment: lack.student.enrollment,
+          avatar: lack.student.user.avatar,
           lack: true,
         };
       }),
-      students: lesson.discipline.class.students,
+      students: lesson.discipline.class.students.map((student) => {
+        return {
+          id: student.id,
+          name: student.user.name,
+          enrollment: student.enrollment,
+          avatar: student.user.avatar,
+          lack: false,
+        };
+      }),
     };
 
-    delete formattedData.discipline;
+    const formattedStudents = formattedData.lackOfClass.concat(
+      formattedData.students,
+    );
+    formattedData.students = formattedStudents;
 
-    console.log(formattedData);
+    delete formattedData.discipline;
+    delete formattedData.lackOfClass;
+    delete formattedData.LackOfClass;
+
+    return {
+      data: formattedData,
+      status: HttpStatus.OK,
+      message: 'Aula retornada com sucesso.',
+    };
   }
 
   // remove(id: number) {
