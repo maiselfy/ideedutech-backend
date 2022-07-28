@@ -1,5 +1,5 @@
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { EvaluativeDeliveryService } from '../services/evaluativeDelivery.service';
 import CreateEvaluativeDeliveryDTO from '../dtos/evaluativeDelivery.dto';
 import SubmissionOfStudentDTO from '../dtos/submissionOfStudent.dto';
@@ -20,7 +20,7 @@ export class EvaluativeDeliveryController {
   }
 
   @ApiBearerAuth()
-  @Post('/submission')
+  @Post('submission')
   createSubmisison(@Body() submissionOfStudentDTO: SubmissionOfStudentDTO) {
     return this.evaluationDeliveryService.createForStudent(
       submissionOfStudentDTO,
@@ -31,5 +31,12 @@ export class EvaluativeDeliveryController {
   @Get()
   findAll() {
     return this.evaluationDeliveryService.findAll();
+  }
+
+  @Get('submission/:studentId')
+  findAllSubmissionFromDisciplinesOfStudent(
+    @Param('studentId') studentId: string,
+  ) {
+    return this.evaluationDeliveryService.findAllSubmissionOfStudent(studentId);
   }
 }

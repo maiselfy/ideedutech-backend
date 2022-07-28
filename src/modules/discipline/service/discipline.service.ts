@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PaginationDTO } from 'src/models/PaginationDTO';
 import { ManagerService } from 'src/modules/manager/service/manager.service';
+import { StudentService } from 'src/modules/student/services/student.service';
 import pagination from 'src/utils/pagination';
 import { PrismaService } from '../../prisma';
 import { CreateDisciplineDTO } from '../dtos/createDiscipline.dto';
@@ -10,6 +11,7 @@ export class DisciplineService {
   constructor(
     private prisma: PrismaService,
     private managerService: ManagerService,
+    private studentService: StudentService,
   ) {}
   async create({
     name,
@@ -37,6 +39,76 @@ export class DisciplineService {
 
   async findAll() {
     return this.prisma.discipline.findMany();
+  }
+
+  async findAllDisciplinesByClassId(classId: string) {
+    const disciplines = await this.prisma.discipline.findMany({
+      where: {
+        classId: classId,
+      },
+      select: {
+        id: true,
+        name: true,
+        classId: true,
+        class: {
+          select: {
+            name: true,
+          },
+        },
+        topic: true,
+        teacher: {
+          select: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    return disciplines;
+  }
+
+  async findAllDisciplinesOfStudent(studentId: string) {
+    try {
+      const classId = await this.studentService.findClassByStudentId(studentId);
+
+      if (!classId) {
+        throw new HttpException(
+          'Esta classe não existe.',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      const disciplinesOfStudent = await this.findAllDisciplinesByClassId(
+        classId.classId,
+      );
+
+      if (disciplinesOfStudent.length === 0) {
+        throw new HttpException(
+          'Nenhuma disciplina encontrada.',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      const resultMap = disciplinesOfStudent.map((discipline) => {
+        return {
+          id: discipline.id,
+          name: discipline.name,
+          classId: discipline.classId,
+          className: discipline.class.name,
+          topic: discipline.topic,
+          teacherId: discipline.teacher.user.id,
+          teacherName: discipline.teacher.user.name,
+        };
+      });
+
+      return resultMap;
+    } catch (error) {
+      throw new HttpException('Failed!!!', HttpStatus.BAD_REQUEST);
+    }
   }
 
   async findDisciplinesOfClassBySchool(
