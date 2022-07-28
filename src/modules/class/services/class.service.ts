@@ -88,9 +88,7 @@ export class ClassService {
     };
   }
 
-  async findStudentsByClass(classId: string, paginationDTO: PaginationDTO) {
-    const [page, qtd, skippedItems] = Pagination(paginationDTO);
-
+  async findStudentsByClass(classId: string) {
     const studentsOfClass = await this.prisma.student.findMany({
       where: {
         classId,
@@ -105,8 +103,6 @@ export class ClassService {
           },
         },
       },
-      skip: skippedItems ? skippedItems : undefined,
-      take: qtd ? qtd : undefined,
     });
 
     const formattedStudents = studentsOfClass.map((student) => {
@@ -120,20 +116,11 @@ export class ClassService {
 
       delete formattedData.user;
 
-      return formattedStudents;
+      return formattedData;
     });
-
-    console.log(formattedStudents);
-
-    const totalCount = formattedStudents.length;
-    const totalPages = Math.round(totalCount / qtd);
 
     return {
       data: formattedStudents,
-      totalCount,
-      page,
-      limit: qtd,
-      totalPages: totalPages > 0 ? totalPages : 1,
       status: HttpStatus.OK,
       message: 'Estudantes retornados com sucesso.',
     };
