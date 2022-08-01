@@ -186,6 +186,7 @@ model Schedule {
   updatedAt    DateTime   @updatedAt
   discipline   Discipline @relation(fields: [disciplineId], references: [id])
   period       Period     @relation(fields: [periodId], references: [id])
+  lesson       Lesson[]
 }
 
 model Period {
@@ -247,12 +248,14 @@ model Lesson {
   id            String          @id @default(uuid())
   name          String
   description   String
+  scheduleId    String?
   disciplineId  String
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
   classDate     String?
   notes         String?
   discipline    Discipline      @relation(fields: [disciplineId], references: [id])
+  schedule      Schedule?       @relation(fields: [scheduleId], references: [id])
   LackOfClass   LackOfClass[]
   RegisterClass RegisterClass[]
 }
