@@ -88,12 +88,13 @@ export class LessonService {
     };
   }
 
-  async detailOfLesson(scheduleId: string) {
+  async detailOfLesson(scheduleId: string, date: string) {
     console.log(scheduleId);
 
     const lesson = await this.prisma.lesson.findFirst({
       where: {
         scheduleId,
+        classDate: date,
       },
       select: {
         id: true,
