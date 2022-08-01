@@ -44,19 +44,18 @@ export class ScheduleService {
       );
     }
 
-    const lesson = await this.prisma.lesson.findFirst({
-      where: {
-        id: data.lessonId,
-        disciplineId: discipline.id,
-      },
-    });
+    // const lesson = await this.prisma.lesson.findFirst({
+    //   where: {
+    //     disciplineId: discipline.id,
+    //   },
+    // });
 
-    if (!lesson) {
-      throw new HttpException(
-        'Erro. Aula não encontrada.',
-        HttpStatus.NOT_FOUND,
-      );
-    }
+    // if (!lesson) {
+    //   throw new HttpException(
+    //     'Erro. Aula não encontrada.',
+    //     HttpStatus.NOT_FOUND,
+    //   );
+    // }
 
     const createdSchedule = await this.prisma.schedule.create({
       data,
