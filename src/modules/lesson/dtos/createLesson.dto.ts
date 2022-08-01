@@ -20,6 +20,10 @@ export class CreateLessonDTO {
 
   @ApiProperty()
   @IsString()
+  scheduleId: string;
+
+  @ApiProperty()
+  @IsString()
   @IsOptional()
   notes: string;
 

@@ -39,7 +39,7 @@ export class LackOfClassService {
 
     const { id } = createdLesson;
 
-    const formattedDate = format(new Date(data.date), 'dd/MM/yyyy');
+    const formattedDate = format(new Date(data.lessonDate), 'yyyy-MM-dd');
 
     const lacksOfClass = validStudents.map(async (student) => {
       const existsLackForDay = await this.prisma.lackOfClass.findFirst({
@@ -84,23 +84,28 @@ export class LackOfClassService {
   ) {
     const data = createManyLackLesson.createLackOfClassDTO;
 
-    const validStudents: string[] = [];
-
-    data.studentId.forEach(async (studentId) => {
-      const studentInClass = await this.prisma.discipline.findFirst({
-        where: {
-          class: {
-            students: {
-              some: {
-                id: studentId,
+    const validStudents = Promise.all(
+      data.studentId.map(async (studentId) => {
+        const studentInClass = await this.prisma.student.findFirst({
+          where: {
+            class: {
+              disciplines: {
+                some: {
+                  lessons: {
+                    some: {
+                      id: lessonId,
+                    },
+                  },
+                },
               },
             },
+            id: studentId,
           },
-        },
-      });
+        });
 
-      if (studentInClass) validStudents.push(studentId);
-    });
+        return studentInClass.id;
+      }),
+    );
 
     const lesson = await this.prisma.lesson.findUnique({
       where: {
@@ -117,37 +122,52 @@ export class LackOfClassService {
 
     const { id } = lesson;
 
-    const formattedDate = format(new Date(data.date), 'dd/MM/yyyy');
-
-    const lacksOfClass = validStudents.map(async (student) => {
-      const existsLackForDay = await this.prisma.lackOfClass.findFirst({
-        where: {
-          lessonId: id,
-          studentId: student,
-          lessonDate: {
-            equals: formattedDate,
-          },
-        },
-      });
-
-      if (!existsLackForDay) {
-        const lackOfClass = await this.prisma.lackOfClass.update({
-          data: {
-            ...data,
-            studentId: student,
-          },
+    const lacksOfClass = Promise.all(
+      (await validStudents).map(async (student) => {
+        console.log('student::', student);
+        const existsLack = await this.prisma.lackOfClass.findFirst({
           where: {
-            id,
+            lessonId: id,
+            studentId: student,
           },
         });
 
-        return lackOfClass;
-      }
+        if (!existsLack) {
+          const lackOfClass = await this.prisma.lackOfClass.create({
+            data: {
+              lessonId,
+              studentId: student,
+              lessonDate: data.lessonDate ? data.lessonDate : lesson.classDate,
+            },
+          });
+
+          return {
+            id: lackOfClass.id,
+            studentId: lackOfClass.studentId,
+            lessonDate: lackOfClass.lessonDate,
+          };
+        }
+
+        return {
+          id: existsLack.id,
+          studentId: existsLack.studentId,
+          lessonDate: existsLack.lessonDate,
+        };
+      }),
+    );
+
+    const formattedLackOfClass = (await lacksOfClass).filter(function (i) {
+      return i;
     });
 
     const formattedData = {
-      ...lesson,
-      ...lacksOfClass,
+      lesson: {
+        id: lesson.id,
+        name: lesson.name,
+        description: lesson.description,
+        notes: lesson.notes,
+      },
+      formattedLackOfClass,
     };
 
     return {

@@ -22,22 +22,14 @@ export class LessonService {
       );
     }
 
-    console.log(
-      `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDay()}`,
-    );
-
-    // const createdLesson = await this.prisma.lesson.create({
-    //   data: {
-    //     ...data,
-    //     classDate: data.classDate ? data.classDate : new Date().toString(),
-    //     LackOfClass: undefined,
-    //   },
-    // });
-
-    //return createdLesson;
-
     const createdLesson = await this.prisma.lesson.create({
-      data,
+      data: {
+        ...data,
+        classDate: data.classDate
+          ? data.classDate
+          : new Date().toISOString().split('T')[0],
+        LackOfClass: undefined,
+      },
     });
 
     if (!createdLesson) {
@@ -96,13 +88,17 @@ export class LessonService {
     };
   }
 
-  async detailOfLesson(lessonId: string) {
+  async detailOfLesson(scheduleId: string) {
+    console.log(scheduleId);
+
     const lesson = await this.prisma.lesson.findFirst({
       where: {
-        id: lessonId,
+        scheduleId,
       },
       select: {
         id: true,
+        name: true,
+        description: true,
         classDate: true,
         discipline: {
           select: {
@@ -111,13 +107,6 @@ export class LessonService {
               select: {
                 name: true,
                 students: {
-                  where: {
-                    LackOfClass: {
-                      every: {
-                        lessonId,
-                      },
-                    },
-                  },
                   select: {
                     id: true,
                     user: {
@@ -141,7 +130,9 @@ export class LessonService {
         notes: true,
         LackOfClass: {
           where: {
-            lessonId,
+            lesson: {
+              scheduleId,
+            },
           },
           select: {
             student: {
@@ -192,9 +183,14 @@ export class LessonService {
       }),
     };
 
+    console.log(formattedData.students);
+    console.log('-------------------------');
+    console.log(formattedData.lackOfClass);
+
     const formattedStudents = formattedData.lackOfClass.concat(
       formattedData.students,
     );
+
     formattedData.students = formattedStudents;
 
     delete formattedData.discipline;
