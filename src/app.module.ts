@@ -27,6 +27,7 @@ import { EvaluativeDeliveryModule } from './modules/evaluative-delivery/evaluati
 import { LessonModule } from './modules/lesson/lesson.module';
 import { UploadModule } from './modules/upload/upload.module';
 import { ScheduleModule } from './modules/schedule/schedule.module';
+import { GradebookModule } from './modules/gradebook/gradebook.module';
 
 ConfigModule.forRoot();
 
@@ -55,6 +56,7 @@ ConfigModule.forRoot();
     LessonModule,
     UploadModule,
     ScheduleModule,
+    GradebookModule,
   ],
   controllers: [AppController],
   providers: [

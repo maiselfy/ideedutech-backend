@@ -65,6 +65,7 @@ model Student {
   user               User                 @relation(fields: [userId], references: [id])
   EvaluativeDelivery EvaluativeDelivery[]
   LackOfClass        LackOfClass[]
+  gradebook          Gradebook[]
 }
 
 model Manager {
@@ -130,6 +131,7 @@ model Discipline {
   homeWorks           HomeWork[]
   lessons             Lesson[]
   DisciplineSchedules DisciplineSchedules[]
+  gradebook           Gradebook[]
 }
 
 model Class {
@@ -173,6 +175,20 @@ model EvaluativeDelivery {
   rate        Float?
   homeWork    HomeWork         @relation(fields: [homeWorkId], references: [id])
   student     Student          @relation(fields: [studentId], references: [id])
+}
+
+model Gradebook {
+  id           String     @id @default(uuid())
+  studentId    String
+  disciplineId String
+  numberOfTerm Int
+  schoolTerm   String
+  mean         Float
+  approved     Boolean?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  student      Student    @relation(fields: [studentId], references: [id])
+  discipline   Discipline @relation(fields: [disciplineId], references: [id])
 }
 
 model Schedule {
@@ -348,4 +364,10 @@ enum EvaluationStage {
 enum OwnerAction {
   teacher  @map("Professor")
   student  @map("Estudante")
+}
+
+enum SchoolTerm {
+  twoMonths  @map("Bimestre")
+  quarter    @map("Trimestre")
+  semester   @map("Semestre")
 }
