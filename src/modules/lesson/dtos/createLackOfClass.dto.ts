@@ -14,7 +14,7 @@ export class CreateLackOfClassDTO {
 
   @IsNotEmpty()
   @ApiProperty()
-  date: string;
+  lessonDate: string;
 
   @IsEmpty()
   createdAt: Date;
