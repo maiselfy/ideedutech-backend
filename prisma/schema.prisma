@@ -336,9 +336,9 @@ enum TypeRegisterClass {
 
 enum Day {
   monday     @map("Segunda-Feira")
-  thursday   @map("Terça-Feira")
+  tuesday    @map("Terça-Feira")
   wednesday  @map("Quarta-Feira")
-  tuesday    @map("Quinta-Feira")
+  thursday   @map("Quinta-Feira")
   friday     @map("Sexta-Feira")
   saturday   @map("Sábado")
   sunday     @map("Domingo")
