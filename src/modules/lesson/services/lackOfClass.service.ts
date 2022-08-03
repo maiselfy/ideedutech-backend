@@ -15,66 +15,88 @@ export class LackOfClassService {
   async createMany(createManyLackLesson: CreateManyLackLessonDTO) {
     const data = createManyLackLesson.createLackOfClassDTO;
 
-    const validStudents: string[] = [];
-
-    data.studentId.forEach(async (studentId) => {
-      const studentInClass = await this.prisma.discipline.findFirst({
-        where: {
-          class: {
-            students: {
-              some: {
-                id: studentId,
-              },
-            },
-          },
-        },
-      });
-
-      if (studentInClass) validStudents.push(studentId);
-    });
-
     const createdLesson = await this.prisma.lesson.create({
       data: createManyLackLesson.createLessonDTO,
     });
 
     const { id } = createdLesson;
 
-    const formattedDate = format(new Date(data.lessonDate), 'yyyy-MM-dd');
-
-    const lacksOfClass = validStudents.map(async (student) => {
-      const existsLackForDay = await this.prisma.lackOfClass.findFirst({
-        where: {
-          lessonId: data.lessonId,
-          studentId: student,
-          lessonDate: {
-            equals: formattedDate,
+    const validStudents = Promise.all(
+      data.studentId.map(async (studentId) => {
+        const studentInClass = await this.prisma.student.findFirst({
+          where: {
+            class: {
+              disciplines: {
+                some: {
+                  lessons: {
+                    some: {
+                      id,
+                    },
+                  },
+                },
+              },
+            },
+            id: studentId,
           },
-        },
-      });
+        });
 
-      if (!existsLackForDay) {
-        const lackOfClass = await this.prisma.lackOfClass.create({
-          data: {
-            ...data,
-            lessonDate: formattedDate,
+        return studentInClass.id;
+      }),
+    );
+
+    const lacksOfClass = Promise.all(
+      (await validStudents).map(async (student) => {
+        const existsLack = await this.prisma.lackOfClass.findFirst({
+          where: {
             lessonId: id,
             studentId: student,
           },
         });
 
-        return lackOfClass;
-      }
+        if (!existsLack) {
+          const lackOfClass = await this.prisma.lackOfClass.create({
+            data: {
+              lessonId: id,
+              studentId: student,
+              lessonDate: data.lessonDate
+                ? data.lessonDate
+                : createdLesson.classDate,
+            },
+          });
+
+          return {
+            id: lackOfClass.id,
+            studentId: lackOfClass.studentId,
+            lessonDate: lackOfClass.lessonDate,
+          };
+        }
+
+        return {
+          id: existsLack.id,
+          studentId: existsLack.studentId,
+          lessonDate: existsLack.lessonDate,
+        };
+      }),
+    );
+
+    const formattedLackOfClass = (await lacksOfClass).filter(function (i) {
+      return i;
     });
 
     const formattedData = {
-      ...createdLesson,
-      ...lacksOfClass,
+      lesson: {
+        id: createdLesson.id,
+        name: createdLesson.name,
+        description: createdLesson.description,
+        notes: createdLesson.notes,
+      },
+      formattedLackOfClass,
     };
 
     return {
       data: formattedData,
       status: HttpStatus.CREATED,
-      message: 'Frequência para a aula cadastrada com sucesso.',
+      message: 'Frequência para a aula atualizada com sucesso.',
     };
   }
 

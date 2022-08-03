@@ -11,11 +11,6 @@ export class CreateScheduleDTO {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  lessonId: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
   disciplineId: string;
 
   @ApiProperty()

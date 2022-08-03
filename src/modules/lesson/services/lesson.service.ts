@@ -88,12 +88,11 @@ export class LessonService {
     };
   }
 
-  async detailOfLesson(scheduleId: string) {
-    console.log(scheduleId);
-
+  async detailOfLesson(scheduleId: string, date: string) {
     const lesson = await this.prisma.lesson.findFirst({
       where: {
         scheduleId,
+        classDate: date,
       },
       select: {
         id: true,
@@ -182,10 +181,6 @@ export class LessonService {
         };
       }),
     };
-
-    console.log(formattedData.students);
-    console.log('-------------------------');
-    console.log(formattedData.lackOfClass);
 
     const formattedStudents = formattedData.lackOfClass.concat(
       formattedData.students,
