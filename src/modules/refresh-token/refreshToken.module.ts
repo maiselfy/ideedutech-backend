@@ -8,6 +8,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { UserService } from '../user/service/user.service';
 import { StudentService } from '../student/services/student.service';
 import { ManagerService } from '../manager/service/manager.service';
+import { ClassService } from '../class/services/class.service';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { ManagerService } from '../manager/service/manager.service';
     UserService,
     StudentService,
     ManagerService,
+    ClassService,
   ],
 })
 export class RefreshTokenModule {}

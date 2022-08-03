@@ -125,4 +125,34 @@ export class ClassService {
       message: 'Estudantes retornados com sucesso.',
     };
   }
+
+  async findAllDisciplinesOfClass(classId: string, filters) {
+    const allActivitiesByDiscipline = await this.prisma.class.findFirst({
+      where: {
+        id: classId,
+      },
+      select: {
+        disciplines: {
+          select: {
+            id: true,
+            name: true,
+            homeWorks: {
+              where: {
+                ...filters,
+              },
+              select: {
+                name: true,
+                description: true,
+                dueDate: true,
+                isOpen: true,
+                evaluativeDelivery: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return allActivitiesByDiscipline;
+  }
 }

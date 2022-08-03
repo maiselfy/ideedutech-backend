@@ -7,12 +7,14 @@ import { PaginationDTO } from 'src/models/PaginationDTO';
 import ListEntitiesForSchoolDTO from '../dtos/listEntitiesForSchool.dto';
 
 import * as bcrypt from 'bcrypt';
+import { ClassService } from 'src/modules/class/services/class.service';
 
 @Injectable()
 export class StudentService {
   constructor(
     private prisma: PrismaService,
     private managerService: ManagerService,
+    private classService: ClassService,
   ) {}
 
   async create(createStudentDTO, managerId: string) {
@@ -261,6 +263,89 @@ export class StudentService {
       },
     });
     return student;
+  }
+
+  async findAllActivities(userId: string, filters) {
+    try {
+      const studentId = await this.findStudentIdByUserId(userId);
+
+      if (!studentId) {
+        throw new HttpException(
+          'Estudante não encontrado.',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      const classId = await this.prisma.student.findFirst({
+        where: {
+          id: studentId.id,
+        },
+        select: {
+          class: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+
+      if (!classId) {
+        throw new HttpException(
+          'Classe não encontrada para este estudante.',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      const allActivities = await this.classService.findAllDisciplinesOfClass(
+        classId.class.id,
+        filters,
+      );
+
+      const resultMap = allActivities.disciplines.map((discipline) => {
+        return {
+          disciplineId: discipline.id,
+          name: discipline.name,
+          HomeWorks: discipline.homeWorks.map((activities) => {
+            return {
+              name: activities.name,
+              description: activities.description,
+              dueDate: activities.dueDate,
+              isOpen: activities.isOpen,
+              status: this.checkSubmissionStatus(activities.evaluativeDelivery),
+            };
+          }),
+        };
+      });
+
+      return resultMap;
+    } catch (error) {
+      if (error) throw error;
+      throw new HttpException('Failed!!!', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  checkSubmissionStatus(submission) {
+    let activitySub = 'Submetida';
+    let activityPed = 'Pendente';
+
+    if (submission[0] != undefined) {
+      return activitySub;
+    } else {
+      return activityPed;
+    }
+  }
+
+  async findStudentIdByUserId(userId: string) {
+    const studentId = await this.prisma.student.findFirst({
+      where: {
+        userId: userId,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    return studentId;
   }
 
   async findClassByStudentId(userId: string) {

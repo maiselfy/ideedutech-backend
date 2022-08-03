@@ -54,4 +54,14 @@ export class StudentController {
   findStudentsByClassId(@Param('classId') classId: string) {
     return this.studentService.findStudentsByClassId(classId);
   }
+
+  @Public()
+  @Get('all-activities/:userId')
+  findAllActivitiesForTheStudent(
+    @Param('userId') userId: string,
+    @Query()
+    filters?: { disciplineId?: string; type?: string; createdAt?: string },
+  ) {
+    return this.studentService.findAllActivities(userId, filters);
+  }
 }

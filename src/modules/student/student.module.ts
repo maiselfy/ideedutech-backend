@@ -10,6 +10,7 @@ import { GenerateToken } from '../auth/providers/generateToken.provider';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { CaslAbilityFactory } from 'src/security/casl/casl-ability.factory';
 import { CaslAbilityService } from 'src/security/casl/services/casl.ability.service';
+import { ClassService } from '../class/services/class.service';
 
 @Module({
   imports: [JwtModule.register({})],
@@ -24,6 +25,7 @@ import { CaslAbilityService } from 'src/security/casl/services/casl.ability.serv
     GenerateToken,
     CaslAbilityFactory,
     CaslAbilityService,
+    ClassService,
   ],
 })
 export class StudentModule {}

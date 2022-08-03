@@ -8,6 +8,7 @@ import { RefreshTokenService } from '../refresh-token/services/refreshToken.serv
 import { GenerateRefreshToken } from '../auth/providers/generateRefreshToken.provider';
 import { GenerateToken } from '../auth/providers/generateToken.provider';
 import { JwtModule } from '@nestjs/jwt';
+import { ClassService } from '../class/services/class.service';
 
 @Module({
   imports: [JwtModule.register({})],
@@ -20,6 +21,7 @@ import { JwtModule } from '@nestjs/jwt';
     RefreshTokenService,
     GenerateRefreshToken,
     GenerateToken,
+    ClassService,
   ],
   exports: [UserService],
 })
