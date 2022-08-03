@@ -212,11 +212,14 @@ export class EvaluativeDeliveryService {
     return this.prisma.evaluativeDelivery.findMany();
   }
 
-  async findAllSubmissionOfStudent(studentId: string) {
+  async findAllSubmissionOfStudent(studentId: string, filters) {
     const submissionOfStudent = await this.prisma.evaluativeDelivery.findMany({
       where: {
         studentId: studentId,
         owner: 'student',
+        homeWork: {
+          ...filters,
+        },
       },
       select: {
         stage: true,
