@@ -22,22 +22,14 @@ export class LessonService {
       );
     }
 
-    console.log(
-      `${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDay()}`,
-    );
-
-    // const createdLesson = await this.prisma.lesson.create({
-    //   data: {
-    //     ...data,
-    //     classDate: data.classDate ? data.classDate : new Date().toString(),
-    //     LackOfClass: undefined,
-    //   },
-    // });
-
-    //return createdLesson;
-
     const createdLesson = await this.prisma.lesson.create({
-      data,
+      data: {
+        ...data,
+        classDate: data.classDate
+          ? data.classDate
+          : new Date().toISOString().split('T')[0],
+        LackOfClass: undefined,
+      },
     });
 
     if (!createdLesson) {
@@ -65,7 +57,7 @@ export class LessonService {
   // update(id: number, updateLessonDto: UpdateLessonDto) {
   //   return `This action updates a #${id} lesson`;
   // }
-  
+
   async updateLesson(lessonId: string, updateLessonDTO: UpdateLessonDTO) {
     const data = updateLessonDTO;
 
@@ -96,13 +88,17 @@ export class LessonService {
     };
   }
 
-  async detailOfLesson(lessonId: string) {
+  async detailOfLesson(scheduleId: string) {
+    console.log(scheduleId);
+
     const lesson = await this.prisma.lesson.findFirst({
       where: {
-        id: lessonId,
+        scheduleId,
       },
       select: {
         id: true,
+        name: true,
+        description: true,
         classDate: true,
         discipline: {
           select: {
@@ -110,7 +106,18 @@ export class LessonService {
             class: {
               select: {
                 name: true,
-                students: true,
+                students: {
+                  select: {
+                    id: true,
+                    user: {
+                      select: {
+                        name: true,
+                        avatar: true,
+                      },
+                    },
+                    enrollment: true,
+                  },
+                },
               },
             },
           },
@@ -123,10 +130,23 @@ export class LessonService {
         notes: true,
         LackOfClass: {
           where: {
-            lessonId,
+            lesson: {
+              scheduleId,
+            },
           },
           select: {
-            student: true,
+            student: {
+              select: {
+                id: true,
+                user: {
+                  select: {
+                    name: true,
+                    avatar: true,
+                  },
+                },
+                enrollment: true,
+              },
+            },
           },
         },
       },
@@ -145,16 +165,43 @@ export class LessonService {
       class: lesson.discipline.class.name,
       lackOfClass: lesson.LackOfClass.map((lack) => {
         return {
-          ...lack.student,
+          id: lack.student.id,
+          name: lack.student.user.name,
+          enrollment: lack.student.enrollment,
+          avatar: lack.student.user.avatar,
           lack: true,
         };
       }),
-      students: lesson.discipline.class.students,
+      students: lesson.discipline.class.students.map((student) => {
+        return {
+          id: student.id,
+          name: student.user.name,
+          enrollment: student.enrollment,
+          avatar: student.user.avatar,
+          lack: false,
+        };
+      }),
     };
 
-    delete formattedData.discipline;
+    console.log(formattedData.students);
+    console.log('-------------------------');
+    console.log(formattedData.lackOfClass);
 
-    console.log(formattedData);
+    const formattedStudents = formattedData.lackOfClass.concat(
+      formattedData.students,
+    );
+
+    formattedData.students = formattedStudents;
+
+    delete formattedData.discipline;
+    delete formattedData.lackOfClass;
+    delete formattedData.LackOfClass;
+
+    return {
+      data: formattedData,
+      status: HttpStatus.OK,
+      message: 'Aula retornada com sucesso.',
+    };
   }
 
   // remove(id: number) {
