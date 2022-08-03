@@ -176,6 +176,90 @@ export class ScheduleService {
     console.log(lesson);
   }
 
+  async getSchedulesOfStudent(studentId: string, date: string) {
+    const student = await this.prisma.student.findUnique({
+      where: {
+        userId: studentId,
+      },
+    });
+
+    if (!student) {
+      throw new HttpException(
+        'Erro. Estudante não encontrado.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const numberOfDay = new Date(date).getUTCDay();
+    const day = Days[numberOfDay];
+
+    if (
+      day === 'monday' ||
+      day === 'thursday' ||
+      day === 'wednesday' ||
+      day === 'tuesday' ||
+      day === 'friday' ||
+      day === 'saturday' ||
+      day === 'sunday'
+    ) {
+      const schedules = await this.prisma.schedule.findMany({
+        where: {
+          discipline: {
+            classId: student.classId,
+          },
+          day,
+        },
+        select: {
+          id: true,
+          day: true,
+          initialHour: true,
+          finishHour: true,
+          discipline: {
+            select: {
+              name: true,
+              topic: true,
+              class: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+              teacher: {
+                select: {
+                  user: {
+                    select: {
+                      name: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      const formattedData = schedules.map((schedule) => {
+        const newData = {
+          ...schedule,
+          discipline: schedule.discipline.name,
+          topic: schedule.discipline.topic,
+          class: schedule.discipline.class.name,
+          classId: schedule.discipline.class.id,
+          teacher: schedule.discipline.teacher.user.name,
+          date: date,
+        };
+
+        return newData;
+      });
+
+      return {
+        data: formattedData,
+        status: HttpStatus.OK,
+        message: 'Horários do aluno retornados com sucesso',
+      };
+    }
+  }
+
   // findAll() {
   //   return `This action returns all schedule`;
   // }
