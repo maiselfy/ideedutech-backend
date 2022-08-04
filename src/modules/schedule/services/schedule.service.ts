@@ -76,8 +76,6 @@ export class ScheduleService {
   }
 
   async getSchedulesOfTeacher(teacherId: string, date: string) {
-    console.log(teacherId);
-
     const teacher = await this.prisma.teacher.findUnique({
       where: {
         userId: teacherId,
@@ -117,6 +115,7 @@ export class ScheduleService {
           finishHour: true,
           discipline: {
             select: {
+              id: true,
               name: true,
               topic: true,
               class: {
@@ -134,6 +133,7 @@ export class ScheduleService {
         const newData = {
           ...schedule,
           discipline: schedule.discipline.name,
+          disciplineId: schedule.discipline.id,
           topic: schedule.discipline.topic,
           class: schedule.discipline.class.name,
           classId: schedule.discipline.class.id,
