@@ -123,7 +123,7 @@ export class LessonService {
         },
         RegisterClass: {
           select: {
-            content: true,
+            Content: true,
           },
         },
         notes: true,
