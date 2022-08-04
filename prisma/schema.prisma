@@ -225,28 +225,24 @@ model Content {
   id            String          @id @default(uuid())
   name          String
   subContent    String
-  periodId      String
+  periodId      String?
   disciplineId  String
   discipline    Discipline      @relation(fields: [disciplineId], references: [id])
-  Period        Period          @relation(fields: [periodId], references: [id])
+  Period        Period?         @relation(fields: [periodId], references: [id])
   registerClass RegisterClass[]
 }
 
 model RegisterClass {
-  id          String            @id @default(uuid())
-  classDate   DateTime
-  type        TypeRegisterClass
-  content     String?
-  subContent  String?
-  periodId    String?
-  observation String
-  contentId   String?
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
-  lessonId    String?
-  Content     Content?          @relation(fields: [contentId], references: [id])
-  Lesson      Lesson?           @relation(fields: [lessonId], references: [id])
-  Period      Period?           @relation(fields: [periodId], references: [id])
+  id        String             @id @default(uuid())
+  type      TypeRegisterClass?
+  periodId  String?
+  contentId String?
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+  lessonId  String?
+  Content   Content?           @relation(fields: [contentId], references: [id])
+  Lesson    Lesson?            @relation(fields: [lessonId], references: [id])
+  Period    Period?            @relation(fields: [periodId], references: [id])
 }
 
 model LackOfClass {
