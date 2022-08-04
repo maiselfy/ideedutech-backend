@@ -155,4 +155,160 @@ export class ClassService {
 
     return allActivitiesByDiscipline;
   }
+
+  async getClassesOfTeacher(teacherId: string, paginationDTO: PaginationDTO) {
+    const [page, qtd, skippedItems] = Pagination(paginationDTO);
+
+    const teacher = await this.prisma.teacher.findUnique({
+      where: {
+        userId: teacherId,
+      },
+    });
+
+    if (!teacher) {
+      throw new HttpException(
+        'Erro. Professor não encontrado.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const classesOfTeacher = await this.prisma.class.findMany({
+      where: {
+        disciplines: {
+          every: {
+            teacher: {
+              user: {
+                id: teacherId,
+              },
+            },
+          },
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        school: {
+          select: {
+            name: true,
+          },
+        },
+        disciplines: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        _count: {
+          select: {
+            students: true,
+            disciplines: true,
+          },
+        },
+      },
+      skip: skippedItems ? skippedItems : undefined,
+      take: qtd ? qtd : undefined,
+    });
+
+    const formattedClasses = classesOfTeacher.map((classOfTeacher) => {
+      const newData = {
+        ...classOfTeacher,
+        school: classOfTeacher.school.name,
+        qtdStudents: classOfTeacher._count.students,
+        disciplines: classOfTeacher.disciplines.map((discipline) => {
+          return {
+            id: discipline.id,
+            name: discipline.name,
+          };
+        }),
+        qtdDisciplines: classOfTeacher._count.disciplines,
+      };
+
+      delete newData._count;
+
+      return newData;
+    });
+
+    const totalCount = formattedClasses.length;
+    const totalPages = Math.round(totalCount / qtd);
+
+    return {
+      data: formattedClasses,
+      totalCount,
+      page,
+      limit: qtd,
+      totalPages: totalPages > 0 ? totalPages : 1,
+      status: HttpStatus.OK,
+      message: 'Turmas retornadas com sucesso.',
+    };
+  }
+
+  async detailOfClass(classId: string) {
+    const classDetail = await this.prisma.class.findUnique({
+      where: {
+        id: classId,
+      },
+      select: {
+        id: true,
+        name: true,
+        school: {
+          select: {
+            name: true,
+          },
+        },
+        disciplines: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        students: {
+          select: {
+            id: true,
+            enrollment: true,
+            user: {
+              select: {
+                name: true,
+                avatar: true,
+              },
+            },
+          },
+        },
+        _count: {
+          select: {
+            students: true,
+            disciplines: true,
+          },
+        },
+      },
+    });
+
+    const formattedClassDetail = {
+      ...classDetail,
+      school: classDetail.school.name,
+      students: classDetail.students.map((student) => {
+        return {
+          id: student.id,
+          enrollment: student.enrollment,
+          name: student.user.name,
+          avatar: student.user.avatar,
+        };
+      }),
+      qtdStudents: classDetail._count.students,
+      disciplines: classDetail.disciplines.map((discipline) => {
+        return {
+          id: discipline.id,
+          name: discipline.name,
+        };
+      }),
+      qtdDisciplines: classDetail._count.disciplines,
+    };
+
+    delete formattedClassDetail._count;
+
+    return {
+      data: formattedClassDetail,
+      status: HttpStatus.OK,
+      message: 'Turma retornada com sucesso.',
+    };
+  }
 }

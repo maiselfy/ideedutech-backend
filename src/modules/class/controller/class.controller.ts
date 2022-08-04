@@ -46,6 +46,18 @@ export class ClassController {
   }
 
   @ApiBearerAuth()
+  @Get('/classes')
+  findClassesOfTeacher(@User() user, @Query() paginationDTO: PaginationDTO) {
+    return this.classService.getClassesOfTeacher(user.id, paginationDTO);
+  }
+
+  @ApiBearerAuth()
+  @Get('/:classId')
+  detailOfClass(@Param('classId') classId: string) {
+    return this.classService.detailOfClass(classId);
+  }
+
+  @ApiBearerAuth()
   @Delete(':id')
   remove(@Param('id') classId: string) {
     return this.classService.remove(classId).catch((e) => {

@@ -387,4 +387,75 @@ export class StudentService {
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
     }
   }
+
+  async detailOfStudent(studentId: string) {
+    const student = await this.prisma.student.findUnique({
+      where: {
+        id: studentId,
+      },
+      select: {
+        id: true,
+        enrollment: true,
+        status: true,
+        entryForm: true,
+        reasonForTransfer: true,
+        class: {
+          select: {
+            id: true,
+            name: true,
+            _count: {
+              select: {
+                disciplines: true,
+              },
+            },
+          },
+        },
+        school: {
+          select: {
+            name: true,
+          },
+        },
+        user: {
+          select: {
+            name: true,
+            avatar: true,
+            birthDate: true,
+            email: true,
+            gender: true,
+            phone: true,
+          },
+        },
+      },
+    });
+
+    if (!student) {
+      throw new HttpException(
+        'Erro. Estudante não encontrado.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const formattedDetailOfStudent = {
+      ...student,
+      name: student.user.name,
+      birthDate: student.user.birthDate,
+      email: student.user.email,
+      gender: student.user.gender,
+      phone: student.user.phone,
+      class: student.class.name,
+      classId: student.class.id,
+      qtdDisciplines: student.class._count.disciplines,
+      schoolName: student.school.name,
+    };
+
+    delete formattedDetailOfStudent.class;
+    delete formattedDetailOfStudent.user;
+    delete formattedDetailOfStudent.school;
+
+    return {
+      data: formattedDetailOfStudent,
+      status: HttpStatus.OK,
+      message: 'Aluno retornado com sucesso.',
+    };
+  }
 }
