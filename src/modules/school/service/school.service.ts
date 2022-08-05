@@ -227,4 +227,45 @@ export class SchoolService {
       return new HttpException(error, HttpStatus.BAD_REQUEST);
     }
   }
+
+  async findAllPeriod(schoolId: string) {
+    const period = await this.prisma.school.findUnique({
+      where: {
+        id: schoolId,
+      },
+      select: {
+        Period: {
+          select: {
+            name: true,
+            startOfPeriod: true,
+            endOfPeriod: true,
+            schedule: {
+              distinct: ['disciplineId'],
+              select: {
+                discipline: {
+                  select: {
+                    name: true,
+                    homeWorks: {
+                      select: {
+                        name: true,
+                        description: true,
+                        evaluativeDelivery: {
+                          select: {
+                            rate: true,
+                            updatedAt: true,
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return period;
+  }
 }

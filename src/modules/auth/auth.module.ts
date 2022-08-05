@@ -13,6 +13,7 @@ import { GenerateToken } from './providers/generateToken.provider';
 import { StudentService } from '../student/services/student.service';
 import { ManagerService } from '../manager/service/manager.service';
 import { ClassService } from '../class/services/class.service';
+import { SchoolService } from '../school/service/school.service';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { ClassService } from '../class/services/class.service';
     StudentService,
     ManagerService,
     ClassService,
+    SchoolService,
   ],
 })
 export class AuthModule {}

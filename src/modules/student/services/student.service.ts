@@ -8,6 +8,7 @@ import ListEntitiesForSchoolDTO from '../dtos/listEntitiesForSchool.dto';
 
 import * as bcrypt from 'bcrypt';
 import { ClassService } from 'src/modules/class/services/class.service';
+import { SchoolService } from 'src/modules/school/service/school.service';
 
 @Injectable()
 export class StudentService {
@@ -15,6 +16,7 @@ export class StudentService {
     private prisma: PrismaService,
     private managerService: ManagerService,
     private classService: ClassService,
+    private schoolService: SchoolService,
   ) {}
 
   async create(createStudentDTO, managerId: string) {
@@ -361,7 +363,7 @@ export class StudentService {
 
       if (!studentId) {
         throw new HttpException(
-          'Estudante não encontrado.',
+          'Erro. Estudante não encontrado.',
           HttpStatus.NOT_FOUND,
         );
       }
@@ -383,6 +385,57 @@ export class StudentService {
       }
 
       return classId;
+    } catch (error) {
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async findAllNotesByPeriod(userId: string) {
+    try {
+      const studentId = await this.findStudentIdByUserId(userId);
+
+      if (!studentId) {
+        throw new HttpException(
+          'Estudante não encontrado.',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      const schoolId = await this.prisma.student.findUnique({
+        where: {
+          id: studentId.id,
+        },
+        select: {
+          schoolId: true,
+        },
+      });
+
+      const notesByPeriod = await this.schoolService.findAllPeriod(
+        schoolId.schoolId,
+      );
+
+      const resultMap = notesByPeriod.Period.map((period) => {
+        return {
+          name: period.name,
+          startOfPeriod: period.startOfPeriod,
+          endOfPeriod: period.endOfPeriod,
+          disciplineBySchedule: period.schedule.map((disciplineBySchedule) => {
+            return {
+              name: disciplineBySchedule.discipline.name,
+              homeWorks: disciplineBySchedule.discipline.homeWorks.map(
+                (homeWork) => {
+                  return {
+                    name: homeWork.name,
+                    description: homeWork.description,
+                  };
+                },
+              ),
+            };
+          }),
+        };
+      });
+
+      return notesByPeriod;
     } catch (error) {
       throw new HttpException(error, HttpStatus.BAD_REQUEST);
     }

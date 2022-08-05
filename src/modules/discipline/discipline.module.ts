@@ -5,6 +5,7 @@ import { PrismaService } from '../prisma';
 import { ManagerService } from '../manager/service/manager.service';
 import { StudentService } from '../student/services/student.service';
 import { ClassService } from '../class/services/class.service';
+import { SchoolService } from '../school/service/school.service';
 
 @Module({
   controllers: [DisciplineController],
@@ -14,6 +15,7 @@ import { ClassService } from '../class/services/class.service';
     ManagerService,
     StudentService,
     ClassService,
+    SchoolService,
   ],
 })
 export class DisciplineModule {}

@@ -11,6 +11,7 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { CaslAbilityFactory } from 'src/security/casl/casl-ability.factory';
 import { CaslAbilityService } from 'src/security/casl/services/casl.ability.service';
 import { ClassService } from '../class/services/class.service';
+import { SchoolService } from '../school/service/school.service';
 
 @Module({
   imports: [JwtModule.register({})],
@@ -26,6 +27,7 @@ import { ClassService } from '../class/services/class.service';
     CaslAbilityFactory,
     CaslAbilityService,
     ClassService,
+    SchoolService,
   ],
 })
 export class StudentModule {}

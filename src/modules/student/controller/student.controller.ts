@@ -69,4 +69,10 @@ export class StudentController {
   ) {
     return this.studentService.findAllActivities(userId, filters);
   }
+
+  @Public()
+  @Get('all-notes/:userId')
+  findAllNotesForTheStudentByPeriod(@Param('userId') userId: string) {
+    return this.studentService.findAllNotesByPeriod(userId);
+  }
 }

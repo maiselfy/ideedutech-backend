@@ -51,6 +51,7 @@ export class DisciplineService {
           id: true,
           name: true,
           classId: true,
+          schedules: true,
           class: {
             select: {
               name: true,
@@ -107,6 +108,13 @@ export class DisciplineService {
           topic: discipline.topic,
           teacherId: discipline.teacher.user.id,
           teacherName: discipline.teacher.user.name,
+          schedules: discipline.schedules.map((schedule) => {
+            return {
+              name: schedule.day,
+              initialHour: schedule.initialHour,
+              finishHour: schedule.finishHour,
+            };
+          }),
         };
       });
 
