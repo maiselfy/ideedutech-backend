@@ -160,9 +160,6 @@ export class AuthService {
         );
       }
 
-      console.log('User: ', user);
-      console.log('Token: ', token);
-
       await this.changePassword(user.id, changePasswordDTO);
     } catch (error) {
       if (error) throw error;

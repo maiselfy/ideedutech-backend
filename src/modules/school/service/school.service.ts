@@ -250,6 +250,7 @@ export class SchoolService {
                         name: true,
                         description: true,
                         evaluativeDelivery: {
+                          distinct: ['homeWorkId'],
                           select: {
                             rate: true,
                             updatedAt: true,

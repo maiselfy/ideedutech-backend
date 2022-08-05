@@ -427,6 +427,10 @@ export class StudentService {
                   return {
                     name: homeWork.name,
                     description: homeWork.description,
+                    rate: this.getTheActivityNote(homeWork.evaluativeDelivery),
+                    heldIn: this.getDayThatActivityWasPerformed(
+                      homeWork.evaluativeDelivery,
+                    ),
                   };
                 },
               ),
@@ -435,10 +439,42 @@ export class StudentService {
         };
       });
 
-      return notesByPeriod;
+      return resultMap;
     } catch (error) {
-      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+      console.log(error);
+      if (error) throw error;
+      throw new HttpException('Failed!', HttpStatus.BAD_REQUEST);
     }
+  }
+
+  getTheActivityNote(delivery) {
+    let note;
+    let semNota = '-';
+
+    if (delivery.length === 0) {
+      return semNota;
+    }
+
+    for (const item of delivery) {
+      note = item.rate;
+    }
+
+    return note;
+  }
+
+  getDayThatActivityWasPerformed(delivery) {
+    let data;
+    let semData = '-';
+
+    if (delivery.length === 0) {
+      return semData;
+    }
+
+    for (const item of delivery) {
+      data = item.updatedAt;
+    }
+
+    return data;
   }
 
   async detailOfStudent(studentId: string) {
