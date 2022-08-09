@@ -22,9 +22,13 @@ export class RegisterClassService {
       );
     }
 
-    const period = await this.prisma.period.findUnique({
+    const period = await this.prisma.period.findFirst({
       where: {
-        id: data.periodId,
+        schedule: {
+          every: {
+            id: lesson.scheduleId,
+          },
+        },
       },
     });
 
@@ -35,22 +39,81 @@ export class RegisterClassService {
       );
     }
 
-    const createdRegisterClass = await this.prisma.registerClass.create({
-      data,
-    });
+    if (!(data.content && data.subContent)) {
+      const content = await this.prisma.content.findUnique({
+        where: {
+          id: data.contentId,
+        },
+      });
 
-    if (!createdRegisterClass) {
-      throw new HttpException(
-        'Não foi possível criar o registro de aula, por favor tente novamente.',
-        HttpStatus.BAD_REQUEST,
-      );
+      if (!content) {
+        throw new HttpException(
+          'Erro. Conteúdo não encontrado.',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      const createdRegisterClass = await this.prisma.registerClass.create({
+        data: {
+          type: 'planEducation',
+          periodId: period.id,
+          contentId: data.contentId,
+          lessonId: data.lessonId,
+        },
+      });
+
+      if (!createdRegisterClass) {
+        throw new HttpException(
+          'Não foi possível criar o registro de aula, por favor tente novamente.',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      return {
+        data: createdRegisterClass,
+        status: HttpStatus.CREATED,
+        message: 'Registro de aula cadastrado com sucesso',
+      };
+    } else {
+      const createdRegisterClass = await this.prisma.registerClass.create({
+        data: {
+          type: 'loose',
+          Period: {
+            connect: {
+              id: period.id,
+            },
+          },
+          Lesson: {
+            connect: {
+              id: data.lessonId,
+            },
+          },
+          Content: {
+            create: {
+              name: data.content,
+              disciplineId: lesson.disciplineId,
+              subContent: data.subContent,
+            },
+          },
+        },
+        include: {
+          Content: true,
+        },
+      });
+
+      if (!createdRegisterClass) {
+        throw new HttpException(
+          'Não foi possível criar o registro de aula, por favor tente novamente.',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      return {
+        data: createdRegisterClass,
+        status: HttpStatus.CREATED,
+        message: 'Registro de aula avulso cadastrado com sucesso',
+      };
     }
-
-    return {
-      data: createdRegisterClass,
-      status: HttpStatus.CREATED,
-      message: 'Registro de aula cadastrado com sucesso',
-    };
   }
 
   async getClassRegistersOfDiscipline(disciplineId: string) {
