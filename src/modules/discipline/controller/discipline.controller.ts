@@ -66,8 +66,8 @@ export class DisciplineController {
   }
 
   @ApiBearerAuth()
-  @Get('student-disciplines/:userId')
-  findAllDisciplinesOfStudent(@Param('userId') userId: string) {
-    return this.disciplineService.findAllDisciplinesOfStudent(userId);
+  @Get('student/disciplines')
+  findAllDisciplinesOfStudent(@User() user) {
+    return this.disciplineService.findAllDisciplinesOfStudent(user.id);
   }
 }

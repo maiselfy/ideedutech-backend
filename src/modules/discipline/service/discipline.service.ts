@@ -3,7 +3,7 @@ import { PaginationDTO } from 'src/models/PaginationDTO';
 import { ManagerService } from 'src/modules/manager/service/manager.service';
 import { StudentService } from 'src/modules/student/services/student.service';
 import pagination from 'src/utils/pagination';
-import { PrismaService } from '../../prisma';
+import { Discipline, PrismaService } from '../../prisma';
 import { CreateDisciplineDTO } from '../dtos/createDiscipline.dto';
 
 @Injectable()
@@ -78,39 +78,112 @@ export class DisciplineService {
 
   async findAllDisciplinesOfStudent(userId: string) {
     try {
-      const classId = await this.studentService.findClassByStudentId(userId);
-
-      if (!classId) {
-        throw new HttpException(
-          'Esta classe não existe para este estudante.',
-          HttpStatus.NOT_FOUND,
-        );
-      }
-
-      const disciplinesOfStudent = await this.findAllDisciplinesByClassId(
-        classId.classId,
-      );
-
-      if (disciplinesOfStudent.length === 0) {
-        throw new HttpException(
-          'Nenhuma disciplina encontrada.',
-          HttpStatus.NOT_FOUND,
-        );
-      }
-
-      const resultMap = disciplinesOfStudent.map((discipline) => {
-        return {
-          id: discipline.id,
-          name: discipline.name,
-          classId: discipline.classId,
-          className: discipline.class.name,
-          topic: discipline.topic,
-          teacherId: discipline.teacher.user.id,
-          teacherName: discipline.teacher.user.name,
-        };
+      const student = await this.prisma.student.findUnique({
+        where: {
+          userId,
+        },
       });
 
-      return resultMap;
+      if (!student) {
+        throw new HttpException(
+          'Erro. Estudante não encontrado.',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      // const disciplinesOfStudent = await this.prisma.discipline.findMany({
+      //   where: {
+      //     classId: student.classId,
+      //   },
+      //   select: {
+      //     id: true,
+      //     name: true,
+      //     topic: true,
+      //     classId: true,
+      //     class: {
+      //       select: {
+      //         name: true,
+      //       },
+      //     },
+      //     teacher: {
+      //       select: {
+      //         user: {
+      //           select: {
+      //             id: true,
+      //             name: true,
+      //           },
+      //         },
+      //       },
+      //     },
+      //     schedules: {
+      //       select: {
+      //         day: true,
+      //         initialHour: true,
+      //         finishHour: true,
+      //         period: {
+      //           select: {
+      //             id: true,
+      //             name: true,
+      //           },
+      //         },
+      //       },
+      //     },
+      //   },
+      // });
+
+      const disciplinesOfStudent = await this.prisma.$queryRaw<
+        any[]
+      >`select d.id, d."name", d.topic, c."name" as className, u."name" as teacherName, s."day", s."initialHour", s."finishHour", p."name" as periodName from public."Discipline" d inner join "Teacher" t on d."teacherId" = t.id inner join "User" u on u.id  = t."userId" inner join "Class" c on d."classId" = c.id inner join "Schedule" s on d.id = s."disciplineId" inner join "Period" p on s."periodId" = p.id where c.id = ${student.classId}`;
+
+      const formattedData = disciplinesOfStudent.map((discipline) => {
+        const newData = {
+          ...discipline,
+          schedules: [
+            {
+              day: discipline.day,
+              initialHour: discipline.initialHour,
+              finishHour: discipline.finishHour,
+              period: discipline.periodname,
+            },
+          ],
+        };
+
+        delete newData.day;
+        delete newData.initialHour;
+        delete newData.finishHour;
+        delete newData.periodname;
+
+        return newData;
+
+        // const newData = {
+        //   id: discipline.id,
+        //   name: discipline.name,
+        //   classId: discipline.classId,
+        //   className: discipline.class.name,
+        //   topic: discipline.topic,
+        //   teacherId: discipline.teacher.user.id,
+        //   teacherName: discipline.teacher.user.name,
+        //   schedules: [
+        //     ...discipline.schedules.map((schedule) => {
+        //       return {
+        //         day: schedule.day,
+        //         initialHour: schedule.initialHour,
+        //         finishHour: schedule.finishHour,
+        //         periodId: schedule.period.id,
+        //         period: schedule.period.name,
+        //       };
+        //     }),
+        //   ],
+        // };
+
+        // return newData;
+      });
+
+      return {
+        data: formattedData,
+        status: HttpStatus.CREATED,
+        message: 'Disciplinas da turma retornadas com sucesso.',
+      };
     } catch (error) {
       if (error) throw error;
       throw new HttpException('Failed!!!', HttpStatus.BAD_REQUEST);
