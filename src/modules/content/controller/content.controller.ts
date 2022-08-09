@@ -15,16 +15,22 @@ export class ContentController {
     return this.contentService.create(createContentDTO);
   }
 
+  // @ApiBearerAuth()
+  // @Public()
+  // @Get('/:periodId/:disciplineId')
+  // findAllContentsPeriodByDisciplineId(
+  //   @Param('disciplineId') disciplineId: string,
+  //   @Param('periodId') periodId: string,
+  // ) {
+  //   return this.contentService.findAllContentsPeriodByDisciplineId(
+  //     disciplineId,
+  //     periodId,
+  //   );
+  // }
+
   @ApiBearerAuth()
-  @Public()
-  @Get('/:periodId/:disciplineId')
-  findAllContentsPeriodByDisciplineId(
-    @Param('disciplineId') disciplineId: string,
-    @Param('periodId') periodId: string,
-  ) {
-    return this.contentService.findAllContentsPeriodByDisciplineId(
-      disciplineId,
-      periodId,
-    );
+  @Get('/discipline/:disciplineId')
+  findContentsByDiscipline(@Param('disciplineId') disciplineId: string) {
+    return this.contentService.findContentsByDiscipline(disciplineId);
   }
 }
