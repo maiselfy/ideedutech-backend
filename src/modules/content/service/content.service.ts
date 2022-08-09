@@ -1,5 +1,5 @@
 import { PrismaService } from 'src/modules/prisma';
-import { Injectable, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpStatus, HttpException } from '@nestjs/common';
 import CreateContentDTO from '../dtos/createContent.dto';
 
 @Injectable()
@@ -55,6 +55,54 @@ export class ContentService {
       data: period,
       status: HttpStatus.OK,
       message: 'Conteúdos para a disciplina retornado com sucesso.',
+    };
+  }
+
+  async findContentsByDiscipline(disciplineId: string) {
+    const discipline = await this.prisma.discipline.findUnique({
+      where: {
+        id: disciplineId,
+      },
+    });
+
+    if (!discipline) {
+      throw new HttpException(
+        'Erro. Disciplina não encontrada.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const contents = await this.prisma.content.findMany({
+      where: {
+        disciplineId,
+      },
+      select: {
+        id: true,
+        name: true,
+        subContent: true,
+        discipline: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+
+    const formattedData = contents.map((content) => {
+      const newData = {
+        ...content,
+        disciplineName: content.discipline.name,
+      };
+
+      delete newData.discipline;
+
+      return newData;
+    });
+
+    return {
+      data: formattedData,
+      status: HttpStatus.OK,
+      message: 'Conteúdos para a disciplina retornados com sucesso.',
     };
   }
 }
