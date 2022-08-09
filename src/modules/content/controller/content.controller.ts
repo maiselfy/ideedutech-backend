@@ -29,7 +29,7 @@ export class ContentController {
   }
 
   @ApiBearerAuth()
-  @Get('/discipline/:disciplineId')
+  @Get('/discipline/contents/:disciplineId')
   findContentsByDiscipline(@Param('disciplineId') disciplineId: string) {
     return this.contentService.findContentsByDiscipline(disciplineId);
   }
