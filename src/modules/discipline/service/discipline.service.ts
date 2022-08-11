@@ -3,7 +3,7 @@ import { PaginationDTO } from 'src/models/PaginationDTO';
 import { ManagerService } from 'src/modules/manager/service/manager.service';
 import { StudentService } from 'src/modules/student/services/student.service';
 import pagination from 'src/utils/pagination';
-import { PrismaService } from '../../prisma';
+import { Discipline, PrismaService } from '../../prisma';
 import { CreateDisciplineDTO } from '../dtos/createDiscipline.dto';
 
 @Injectable()
@@ -116,9 +116,43 @@ export class DisciplineService {
             };
           }),
         };
+
+        /*  delete newData.day;
+        delete newData.initialHour;
+        delete newData.finishHour;
+        delete newData.periodname;
+
+        return newData; */
+
+        // const newData = {
+        //   id: discipline.id,
+        //   name: discipline.name,
+        //   classId: discipline.classId,
+        //   className: discipline.class.name,
+        //   topic: discipline.topic,
+        //   teacherId: discipline.teacher.user.id,
+        //   teacherName: discipline.teacher.user.name,
+        //   schedules: [
+        //     ...discipline.schedules.map((schedule) => {
+        //       return {
+        //         day: schedule.day,
+        //         initialHour: schedule.initialHour,
+        //         finishHour: schedule.finishHour,
+        //         periodId: schedule.period.id,
+        //         period: schedule.period.name,
+        //       };
+        //     }),
+        //   ],
+        // };
+
+        // return newData;
       });
 
-      return resultMap;
+      return {
+        data: resultMap,
+        status: HttpStatus.CREATED,
+        message: 'Disciplinas da turma retornadas com sucesso.',
+      };
     } catch (error) {
       if (error) throw error;
       throw new HttpException('Failed!!!', HttpStatus.BAD_REQUEST);

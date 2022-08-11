@@ -64,8 +64,8 @@ model Student {
   school             School               @relation(fields: [schoolId], references: [id])
   user               User                 @relation(fields: [userId], references: [id])
   EvaluativeDelivery EvaluativeDelivery[]
-  LackOfClass        LackOfClass[]
   gradebook          Gradebook[]
+  LackOfClass        LackOfClass[]
 }
 
 model Manager {
@@ -127,11 +127,11 @@ model Discipline {
   class               Class                 @relation(fields: [classId], references: [id])
   teacher             Teacher               @relation(fields: [teacherId], references: [id])
   Content             Content[]
-  schedules           Schedule[]
-  homeWorks           HomeWork[]
-  lessons             Lesson[]
   DisciplineSchedules DisciplineSchedules[]
   gradebook           Gradebook[]
+  homeWorks           HomeWork[]
+  lessons             Lesson[]
+  schedules           Schedule[]
 }
 
 model Class {
@@ -187,8 +187,8 @@ model Gradebook {
   approved     Boolean?
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
-  student      Student    @relation(fields: [studentId], references: [id])
   discipline   Discipline @relation(fields: [disciplineId], references: [id])
+  student      Student    @relation(fields: [studentId], references: [id])
 }
 
 model Schedule {
@@ -213,12 +213,12 @@ model Period {
   updatedAt             DateTime             @updatedAt
   name                  String
   schoolId              String
+  disciplineSchedulesId String?
+  DisciplineSchedules   DisciplineSchedules? @relation(fields: [disciplineSchedulesId], references: [id])
   school                School               @relation(fields: [schoolId], references: [id])
   contents              Content[]
   registerClass         RegisterClass[]
   schedule              Schedule[]
-  DisciplineSchedules   DisciplineSchedules? @relation(fields: [disciplineSchedulesId], references: [id])
-  disciplineSchedulesId String?
 }
 
 model Content {
@@ -249,9 +249,9 @@ model LackOfClass {
   id         String   @id @default(uuid())
   lessonId   String
   studentId  String
-  lessonDate String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+  lessonDate String?
   lesson     Lesson   @relation(fields: [lessonId], references: [id])
   student    Student  @relation(fields: [studentId], references: [id])
 }
@@ -260,12 +260,12 @@ model Lesson {
   id            String          @id @default(uuid())
   name          String
   description   String
-  scheduleId    String?
   disciplineId  String
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
   classDate     String?
   notes         String?
+  scheduleId    String?
   discipline    Discipline      @relation(fields: [disciplineId], references: [id])
   schedule      Schedule?       @relation(fields: [scheduleId], references: [id])
   LackOfClass   LackOfClass[]
@@ -302,68 +302,68 @@ model Address {
 }
 
 enum Gender {
-  male       @map("Masculino")
-  female     @map("Feminino")
-  notBinary  @map("Não Binário")
-  others     @map("Outros")
-  notInform  @map("Prefiro Não Informar")
+  male @map("Masculino")
+  female @map("Feminino")
+  notBinary @map("Não Binário")
+  others @map("Outros")
+  notInform @map("Prefiro Não Informar")
 }
 
 enum Role {
-  admin    @map("Administrador")
-  manager  @map("Gestor")
-  teacher  @map("Professor")
-  others   @map("Outros")
-  student  @map("Estudante")
+  admin @map("Administrador")
+  manager @map("Gestor")
+  teacher @map("Professor")
+  others @map("Outros")
+  student @map("Estudante")
 }
 
 enum TypeUser {
-  admin    @map("Administrador")
-  manager  @map("Gestor")
-  teacher  @map("Professor")
-  student  @map("Estudante")
-  others   @map("Outros")
+  admin @map("Administrador")
+  manager @map("Gestor")
+  teacher @map("Professor")
+  student @map("Estudante")
+  others @map("Outros")
 }
 
 enum TypeRegisterClass {
-  planEducation  @map("Plano de Ensino")
-  loose          @map("Avulso")
+  planEducation @map("Plano de Ensino")
+  loose @map("Avulso")
 }
 
 enum Day {
-  monday     @map("Segunda-Feira")
-  tuesday    @map("Terça-Feira")
-  wednesday  @map("Quarta-Feira")
-  thursday   @map("Quinta-Feira")
-  friday     @map("Sexta-Feira")
-  saturday   @map("Sábado")
-  sunday     @map("Domingo")
+  monday @map("Segunda-Feira")
+  tuesday @map("Terça-Feira")
+  wednesday @map("Quarta-Feira")
+  thursday @map("Quinta-Feira")
+  friday @map("Sexta-Feira")
+  saturday @map("Sábado")
+  sunday @map("Domingo")
 }
 
 enum TypeHomeWork {
-  activity  @map("Atividade")
-  exame     @map("Prova")
-  work      @map("Trabalho")
-  others    @map("Outros")
-  test      @map("Avaliação")
+  activity @map("Atividade")
+  exame @map("Prova")
+  work @map("Trabalho")
+  others @map("Outros")
+  test @map("Avaliação")
 }
 
 enum EvaluationStage {
-  sent       @map("Enviada")
-  overdue    @map("Atrasada")
-  pending    @map("Pendente")
-  evaluated  @map("Avaliada")
-  canceled   @map("Cancelada")
-  others     @map("Outros")
+  sent @map("Enviada")
+  overdue @map("Atrasada")
+  pending @map("Pendente")
+  evaluated @map("Avaliada")
+  canceled @map("Cancelada")
+  others @map("Outros")
 }
 
 enum OwnerAction {
-  teacher  @map("Professor")
-  student  @map("Estudante")
+  teacher @map("Professor")
+  student @map("Estudante")
 }
 
 enum SchoolTerm {
-  twoMonths  @map("Bimestre")
-  quarter    @map("Trimestre")
-  semester   @map("Semestre")
+  twoMonths @map("Bimestre")
+  quarter @map("Trimestre")
+  semester @map("Semestre")
 }
