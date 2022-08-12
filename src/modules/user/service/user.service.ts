@@ -44,17 +44,17 @@ export class UserService {
       },
     });
 
-    // const mail = {
-    //   to: createdUser.email,
-    //   from: 'noreply@application.com',
-    //   subject: 'Cadastro realizado com sucesso',
-    //   template: 'email-confirmation',
-    //   context: {
-    //     token: newData.confirmationToken,
-    //   },
-    // };
+    const mail = {
+      to: createdUser.email,
+      from: 'noreply@application.com',
+      subject: 'Cadastro realizado com sucesso',
+      template: 'email-confirmation',
+      context: {
+        token: newData.confirmationToken,
+      },
+    };
 
-    // await this.mailerService.sendMail(mail);
+    await this.mailerService.sendMail(mail);
 
     if (userExistsOnWaitlist.role === 'admin') {
       const createdAdmin = await this.prisma.admin.create({

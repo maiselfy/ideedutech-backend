@@ -1,5 +1,14 @@
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Query,
+  Delete,
+  Patch,
+} from '@nestjs/common';
 import { DisciplineService } from '../service/discipline.service';
 import { CreateDisciplineDTO } from '../dtos/createDiscipline.dto';
 import { PaginationDTO } from 'src/models/PaginationDTO';
@@ -69,5 +78,22 @@ export class DisciplineController {
   @Get('student/disciplines')
   findAllDisciplinesOfStudent(@User() user) {
     return this.disciplineService.findAllDisciplinesOfStudent(user.id);
+  }
+
+  /* @ApiBearerAuth()
+  @Delete(':userId')
+  removeTeacherOfDiscipline(@Param('userId') userId: string) {
+    return this.disciplineService.removeTeacherOfDiscipline(userId);
+  } */
+
+  @Patch('update/teacher/:disciplineId')
+  updateTeacherOfDiscipline(
+    @Param('disciplineId') disciplineId: string,
+    @Body() updateDisciplineDto,
+  ) {
+    return this.disciplineService.updateTeacherOfDiscipline(
+      disciplineId,
+      updateDisciplineDto,
+    );
   }
 }

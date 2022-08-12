@@ -7,6 +7,7 @@ import {
   Param,
   Query,
   UseGuards,
+  Patch,
 } from '@nestjs/common';
 import { StudentService } from './../services/student.service';
 import { PaginationDTO } from 'src/models/PaginationDTO';
@@ -74,5 +75,16 @@ export class StudentController {
   @Get('all-notes/:userId')
   findAllNotesForTheStudentByPeriod(@Param('userId') userId: string) {
     return this.studentService.findAllNotesByPeriod(userId);
+  }
+
+  @Patch('update/class/:studentId')
+  updateClassOfStudent(
+    @Param('studentId') studentId: string,
+    @Body() updateStudentDto,
+  ) {
+    return this.studentService.updateClassOfStudent(
+      studentId,
+      updateStudentDto,
+    );
   }
 }

@@ -54,13 +54,13 @@ model Student {
   schoolId           String
   status             Boolean
   enrollment         String
-  classId            String
+  classId            String?
   entryForm          String
   reasonForTransfer  String?
   createdAt          DateTime             @default(now())
   updatedAt          DateTime             @updatedAt
   userId             String               @unique
-  class              Class                @relation(fields: [classId], references: [id], onDelete: Cascade)
+  class              Class?                @relation(fields: [classId], references: [id], onDelete: Cascade)
   school             School               @relation(fields: [schoolId], references: [id])
   user               User                 @relation(fields: [userId], references: [id])
   EvaluativeDelivery EvaluativeDelivery[]
@@ -119,13 +119,13 @@ model School {
 model Discipline {
   id                  String                @id @default(uuid())
   name                String
-  teacherId           String
+  teacherId           String?
   createdAt           DateTime              @default(now())
   updatedAt           DateTime              @updatedAt
   classId             String
   topic               String
   class               Class                 @relation(fields: [classId], references: [id])
-  teacher             Teacher               @relation(fields: [teacherId], references: [id])
+  teacher             Teacher?               @relation(fields: [teacherId], references: [id])
   Content             Content[]
   DisciplineSchedules DisciplineSchedules[]
   gradebook           Gradebook[]

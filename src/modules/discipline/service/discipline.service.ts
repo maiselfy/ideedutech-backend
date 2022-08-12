@@ -245,4 +245,38 @@ export class DisciplineService {
     });
     return classes;
   }
+
+  async updateTeacherOfDiscipline(disciplineId: string, updateDisciplineDto) {
+    try {
+      const { newTeacherId } = updateDisciplineDto;
+
+      if (!newTeacherId) {
+        await this.prisma.discipline.update({
+          where: {
+            id: disciplineId,
+          },
+          data: {
+            teacherId: null,
+          },
+        });
+      } else {
+        await this.prisma.discipline.update({
+          where: {
+            id: disciplineId,
+          },
+          data: {
+            teacherId: newTeacherId,
+          },
+        });
+      }
+
+      return {
+        status: HttpStatus.OK,
+        message: 'Disciplina atualizada com sucesso.',
+      };
+    } catch (error) {
+      if (error) throw error;
+      throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 }

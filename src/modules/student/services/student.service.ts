@@ -511,4 +511,38 @@ export class StudentService {
       message: 'Aluno retornado com sucesso.',
     };
   }
+
+  async updateClassOfStudent(studentId: string, updateStudentDto) {
+    try {
+      const { newClassId } = updateStudentDto;
+
+      if (!newClassId) {
+        await this.prisma.student.update({
+          where: {
+            id: studentId,
+          },
+          data: {
+            classId: null,
+          },
+        });
+      } else {
+        await this.prisma.student.update({
+          where: {
+            id: studentId,
+          },
+          data: {
+            classId: newClassId,
+          },
+        });
+      }
+
+      return {
+        status: HttpStatus.OK,
+        message: 'Estudante atualizado com sucesso.',
+      };
+    } catch (error) {
+      if (error) throw error;
+      throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 }
