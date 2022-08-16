@@ -12,7 +12,7 @@ import {
   Patch,
 } from '@nestjs/common';
 import { UserService } from '../service/user.service';
-import { User as UserDecorator } from '../decorators/user.decorator';
+import { User, User as UserDecorator } from '../decorators/user.decorator';
 import { Public } from 'src/modules/auth/decorators/public.decorator';
 import CreateUserDTO from '../dtos/createUser.dto';
 import UpdateUserDTO from '../dtos/updateUser.dto';
@@ -55,5 +55,10 @@ export class UserController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.userService.remove(id);
+  }
+
+  @Get('/mySchool')
+  getSchoolOfLoggedUser(@User() user) {
+    return this.userService.getSchoolOfLoggedUser(user.id);
   }
 }
