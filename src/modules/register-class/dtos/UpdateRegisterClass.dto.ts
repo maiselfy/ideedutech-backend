@@ -19,6 +19,10 @@ export default class UpdateRegisterClassDTO {
   @IsOptional()
   contentId?: string;
 
+  @IsString()
+  @IsOptional()
+  lessonId?: string;
+
   @IsEmpty()
   createdAt: Date;
 

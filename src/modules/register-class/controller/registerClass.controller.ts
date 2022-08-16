@@ -16,15 +16,9 @@ export class RegisterClassController {
   }
 
   @ApiBearerAuth()
-  @Put(':registerClassId')
-  update(
-    @Param() registerClassId: string,
-    @Body() updateRegisterClassDTO: UpdateRegisterClassDTO,
-  ) {
-    return this.registerClassService.update(
-      registerClassId,
-      updateRegisterClassDTO,
-    );
+  @Put()
+  update(@Body() updateRegisterClassDTO: UpdateRegisterClassDTO) {
+    return this.registerClassService.update(updateRegisterClassDTO);
   }
 
   @ApiBearerAuth()

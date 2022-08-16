@@ -117,15 +117,12 @@ export class RegisterClassService {
     }
   }
 
-  async update(
-    registerClassId: string,
-    updateRegisterClassDTO: UpdateRegisterClassDTO,
-  ) {
+  async update(updateRegisterClassDTO: UpdateRegisterClassDTO) {
     const data = updateRegisterClassDTO;
 
-    const registerClass = await this.prisma.registerClass.findUnique({
+    const registerClass = await this.prisma.registerClass.findFirst({
       where: {
-        id: registerClassId,
+        lessonId: data.lessonId,
       },
     });
 
