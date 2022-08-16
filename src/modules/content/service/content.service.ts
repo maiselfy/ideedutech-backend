@@ -105,4 +105,108 @@ export class ContentService {
       message: 'Conteúdos para a disciplina retornados com sucesso.',
     };
   }
+
+  async getSingleContents(disciplineId: string) {
+    const discipline = await this.prisma.discipline.findUnique({
+      where: {
+        id: disciplineId,
+      },
+    });
+
+    if (!discipline) {
+      throw new HttpException(
+        'Erro. Disciplina não encontrada.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const singleContents = await this.prisma.content.findMany({
+      where: {
+        registerClass: {
+          every: {
+            type: 'loose',
+          },
+        },
+        disciplineId,
+      },
+      select: {
+        id: true,
+        name: true,
+        subContent: true,
+        registerClass: {
+          select: {
+            Lesson: {
+              select: {
+                id: true,
+                name: true,
+                description: true,
+                notes: true,
+                classDate: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const formattedData = singleContents.map((content) => {
+      const newData = {
+        ...content,
+        lesson: content.registerClass.map((registerClass) => {
+          const lesson = {
+            id: registerClass.Lesson.id,
+            name: registerClass.Lesson.name,
+            description: registerClass.Lesson.description,
+            notes: registerClass.Lesson.notes,
+            classDate: registerClass.Lesson.classDate,
+          };
+
+          return lesson;
+        })[0],
+      };
+
+      delete newData.registerClass;
+
+      return newData;
+    });
+
+    return {
+      data: formattedData,
+      status: HttpStatus.OK,
+      message: 'Conteúdos avulsos para a disciplina retornados com sucesso.',
+    };
+  }
+
+  async deleteContent(contentId: string) {
+    const content = await this.prisma.content.findUnique({
+      where: {
+        id: contentId,
+      },
+    });
+
+    if (!content) {
+      throw new HttpException(
+        'Erro. Conteúdo não encontrado.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const deletedContent = await this.prisma.content.delete({
+      where: {
+        id: contentId,
+      },
+    });
+
+    if (!deletedContent) {
+      throw new HttpException(
+        'Erro. Não foi possível deletar o conteúdo.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    return {
+      status: HttpStatus.OK,
+      message: 'Conteúdo deletado com sucesso.',
+    };
+  }
 }
