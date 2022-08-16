@@ -152,10 +152,10 @@ export class LessonService {
     });
 
     if (!lesson) {
-      throw new HttpException(
-        'Erro. Aula não encontrada.',
-        HttpStatus.NOT_FOUND,
-      );
+      return {
+        data: {},
+        status: HttpStatus.NO_CONTENT,
+      };
     }
 
     const formattedData = {
@@ -186,7 +186,15 @@ export class LessonService {
       formattedData.students,
     );
 
-    formattedData.students = formattedStudents;
+    const setStudents = new Set();
+
+    const filterStudents = formattedStudents.filter((student) => {
+      const duplicatedPerson = setStudents.has(student.id);
+      setStudents.add(student.id);
+      return !duplicatedPerson;
+    });
+
+    formattedData.students = filterStudents;
 
     delete formattedData.discipline;
     delete formattedData.lackOfClass;
