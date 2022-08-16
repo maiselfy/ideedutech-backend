@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma';
 import CreateRegisterClassDTO from '../dtos/createRegisterClass.dto';
+import UpdateRegisterClassDTO from '../dtos/UpdateRegisterClass.dto';
 
 @Injectable()
 export class RegisterClassService {
@@ -112,6 +113,124 @@ export class RegisterClassService {
         data: createdRegisterClass,
         status: HttpStatus.CREATED,
         message: 'Registro de aula avulso cadastrado com sucesso',
+      };
+    }
+  }
+
+  async update(
+    registerClassId: string,
+    updateRegisterClassDTO: UpdateRegisterClassDTO,
+  ) {
+    const data = updateRegisterClassDTO;
+
+    const registerClass = await this.prisma.registerClass.findUnique({
+      where: {
+        id: registerClassId,
+      },
+    });
+
+    if (!registerClass) {
+      throw new HttpException(
+        'Erro. Registro de aula não encontrado.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const lesson = await this.prisma.lesson.findUnique({
+      where: {
+        id: registerClass.lessonId,
+      },
+    });
+
+    if (!lesson) {
+      throw new HttpException(
+        'Erro. Aula não encontrada.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const period = await this.prisma.period.findFirst({
+      where: {
+        schedule: {
+          every: {
+            id: lesson.scheduleId,
+          },
+        },
+      },
+    });
+
+    if (!period) {
+      throw new HttpException(
+        'Erro. Período não encontrado.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    if (!(data.content && data.subContent)) {
+      const content = await this.prisma.content.findUnique({
+        where: {
+          id: data.contentId,
+        },
+      });
+
+      if (!content) {
+        throw new HttpException(
+          'Erro. Conteúdo não encontrado.',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      const updatedRegisterClass = await this.prisma.registerClass.update({
+        data: {
+          contentId: data.contentId,
+        },
+        where: {
+          id: registerClass.id,
+        },
+      });
+
+      if (!updatedRegisterClass) {
+        throw new HttpException(
+          'Não foi possível atualizar o registro de aula, por favor tente novamente.',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      return {
+        data: updatedRegisterClass,
+        status: HttpStatus.CREATED,
+        message: 'Registro de aula atualizado com sucesso',
+      };
+    } else {
+      const updatedRegisterClass = await this.prisma.registerClass.update({
+        data: {
+          Content: {
+            create: {
+              name: data.content,
+              disciplineId: lesson.disciplineId,
+              subContent: data.subContent,
+            },
+          },
+        },
+        where: {
+          id: registerClass.id,
+        },
+        include: {
+          Content: true,
+        },
+      });
+
+      if (!updatedRegisterClass) {
+        throw new HttpException(
+          'Não foi possível atualizar o registro de aula, por favor tente novamente.',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      return {
+        data: updatedRegisterClass,
+        status: HttpStatus.CREATED,
+        message: 'Registro de aula avulso atualizado com sucesso',
       };
     }
   }

@@ -343,4 +343,29 @@ export class UserService {
       message: `User removed `,
     };
   }
+
+  async getSchoolOfLoggedUser(userId: string) {
+    const school = await this.prisma.school.findFirst({
+      where: {
+        teachers: {
+          some: {
+            userId: userId,
+          },
+        },
+      },
+    });
+
+    if (!school) {
+      throw new HttpException(
+        `Erro. Escola não encontrada.`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return {
+      data: school,
+      status: HttpStatus.OK,
+      message: 'Escola retornada com sucesso.',
+    };
+  }
 }
