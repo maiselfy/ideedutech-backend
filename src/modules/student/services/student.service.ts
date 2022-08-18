@@ -309,6 +309,7 @@ export class StudentService {
           name: discipline.name,
           HomeWorks: discipline.homeWorks.map((activities) => {
             return {
+              id: activities.id,
               name: activities.name,
               description: activities.description,
               dueDate: activities.dueDate,
