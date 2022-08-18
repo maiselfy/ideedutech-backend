@@ -141,6 +141,7 @@ export class ClassService {
                 ...filters,
               },
               select: {
+                id: true,
                 name: true,
                 description: true,
                 dueDate: true,
