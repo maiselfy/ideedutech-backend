@@ -1,11 +1,15 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma';
+import { StudentService } from 'src/modules/student/services/student.service';
 import CreateEvaluativeDeliveryDTO from '../dtos/evaluativeDelivery.dto';
 import SubmissionOfStudentDTO from '../dtos/submissionOfStudent.dto';
 
 @Injectable()
 export class EvaluativeDeliveryService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private studentService: StudentService,
+  ) {}
 
   async createForTeacher(
     createEvaluativeDeliveryDTO: CreateEvaluativeDeliveryDTO,
@@ -160,9 +164,13 @@ export class EvaluativeDeliveryService {
   async createForStudent(submissionOfStudentDTO: SubmissionOfStudentDTO) {
     const data = submissionOfStudentDTO;
 
+    const studentId = await this.studentService.findStudentIdByUserId(
+      submissionOfStudentDTO.userId,
+    );
+
     const studentExists = await this.prisma.student.findUnique({
       where: {
-        id: data.studentId,
+        id: studentId.id,
       },
     });
 
@@ -188,7 +196,9 @@ export class EvaluativeDeliveryService {
 
     const createdSubmission = await this.prisma.evaluativeDelivery.create({
       data: {
-        ...data,
+        studentId: studentId.id,
+        homeWorkId: submissionOfStudentDTO.homeWorkId,
+        attachement: submissionOfStudentDTO.attachement,
         owner: 'student',
         stage: 'sent',
       },
