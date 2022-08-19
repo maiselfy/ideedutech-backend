@@ -7,7 +7,7 @@ export default class SubmissionOfStudentDTO {
   })
   @IsString()
   @IsNotEmpty()
-  studentId: string;
+  userId: string;
 
   @ApiProperty({
     example: 'f594ae5d-e233-4478-b55c-04c534f26dae',
