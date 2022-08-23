@@ -80,12 +80,23 @@ export class LessonController {
     return this.lessonService.detailOfLesson(scheduleId, date);
   }
 
-  @Get('teacher/')
+  @Get('/teacher')
   lessonsOfTeacher(
     @User() user,
     findLessonsOfTeacher: FindLessonsOfTeacherDTO,
   ) {
     return this.lessonService.findLessonsOfTeacher(
+      user.id,
+      findLessonsOfTeacher,
+    );
+  }
+
+  @Get('/registerLessons')
+  registerClassesOfTeacher(
+    @User() user,
+    findLessonsOfTeacher: FindLessonsOfTeacherDTO,
+  ) {
+    return this.lessonService.findRegisterClassesOfTeacher(
       user.id,
       findLessonsOfTeacher,
     );
