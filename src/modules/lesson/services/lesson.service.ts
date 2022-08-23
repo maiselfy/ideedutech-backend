@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma';
 import { CreateLessonDTO } from '../dtos/createLesson.dto';
+import { FindLessonsOfTeacherDTO } from '../dtos/findLessonsOfTeacher.dto';
 import { UpdateLessonDTO } from '../dtos/updateLesson.dto';
 
 @Injectable()
@@ -204,6 +205,136 @@ export class LessonService {
       data: formattedData,
       status: HttpStatus.OK,
       message: 'Aula retornada com sucesso.',
+    };
+  }
+
+  async findLessonsOfTeacher(
+    userId: string,
+    findLessonsOfTeacher: FindLessonsOfTeacherDTO,
+  ) {
+    const data = findLessonsOfTeacher;
+    const teacher = await this.prisma.teacher.findUnique({
+      where: {
+        userId,
+      },
+    });
+
+    if (!teacher) {
+      throw new HttpException(
+        'Erro. Professor não encontrado.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const lessons = await this.prisma.lesson.findMany({
+      where: {
+        discipline: {
+          teacherId: teacher.id,
+          id: data?.disciplineId,
+        },
+        classDate: {
+          gte: data?.initialDate,
+          lte: data?.finalDate,
+        },
+      },
+      select: {
+        _count: {
+          select: {
+            LackOfClass: true,
+          },
+        },
+        classDate: true,
+        discipline: {
+          select: {
+            id: true,
+            name: true,
+            topic: true,
+            class: {
+              select: {
+                name: true,
+                school: {
+                  select: {
+                    name: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        schedule: {
+          select: {
+            initialHour: true,
+            finishHour: true,
+          },
+        },
+        LackOfClass: {
+          select: {
+            student: {
+              select: {
+                _count: true,
+                id: true,
+                enrollment: true,
+                user: {
+                  select: {
+                    name: true,
+                    avatar: true,
+                  },
+                },
+              },
+            },
+          },
+          where: {
+            lesson: {
+              discipline: {
+                teacherId: teacher.id,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!lessons[0]) {
+      return {
+        data: [],
+        status: HttpStatus.NO_CONTENT,
+        message: 'Não existem aulas registradas para esta disciplina.',
+      };
+    }
+
+    const formattedData = lessons.map((lesson) => {
+      const newData = {
+        numberOfAbsences: lesson._count.LackOfClass,
+        classDate: lesson.classDate,
+        initialHour: lesson.schedule?.initialHour,
+        finishHour: lesson.schedule?.finishHour,
+        lackOfClass: lesson.LackOfClass.map((lack) => {
+          const formattedLack = {
+            studentId: lack.student.id,
+            enrollment: lack.student.enrollment,
+            name: lack.student.user.name,
+            avatar: lack.student.user.avatar,
+          };
+
+          return formattedLack;
+        }),
+      };
+
+      return newData;
+    });
+
+    return {
+      data: {
+        disciplineId: lessons[0].discipline.id,
+        discipline: lessons[0].discipline.name,
+        topic: lessons[0].discipline.topic,
+        class: lessons[0].discipline.class.name,
+        school: lessons[0].discipline.class.school.name,
+        numberOfLessons: formattedData.length,
+        detailOfLessons: formattedData,
+      },
+      status: HttpStatus.OK,
+      message: 'Aulas retornadas com sucesso.',
     };
   }
 
