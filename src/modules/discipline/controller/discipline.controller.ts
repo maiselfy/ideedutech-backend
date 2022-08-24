@@ -38,6 +38,13 @@ export class DisciplineController {
     return this.disciplineService.findTeacherDisciplines(id);
   }
 
+  @Get('/lacks/:disciplineId')
+  absencesOfStudentsByDiscipline(@Param('disciplineId') disciplineId: string) {
+    return this.disciplineService.findAbsencesOfStudentByDiscipline(
+      disciplineId,
+    );
+  }
+
   // @Patch(':id')
   // update(
   //   @Param('id') id: string,
