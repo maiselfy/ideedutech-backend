@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Put,
+  Query,
 } from '@nestjs/common';
 import { Public } from 'src/security/decorators/public.decorator';
 import { CreateLessonDTO } from '../dtos/createLesson.dto';
@@ -14,6 +15,8 @@ import { CreateManyLackLessonDTO } from '../dtos/createManyLackLesson.dto';
 import { LackOfClassService } from '../services/lackOfClass.service';
 import { UpdateLessonDTO } from '../dtos/updateLesson.dto';
 import { LessonService } from '../services/lesson.service';
+import { User } from 'src/modules/user/decorators/user.decorator';
+import { FindLessonsOfTeacherDTO } from '../dtos/findLessonsOfTeacher.dto';
 
 @Controller('lesson')
 export class LessonController {
@@ -76,6 +79,28 @@ export class LessonController {
     @Param('date') date: string,
   ) {
     return this.lessonService.detailOfLesson(scheduleId, date);
+  }
+
+  @Get('/teacher')
+  lessonsOfTeacher(
+    @User() user,
+    @Query() findLessonsOfTeacher: FindLessonsOfTeacherDTO,
+  ) {
+    return this.lessonService.findLessonsOfTeacher(
+      user.id,
+      findLessonsOfTeacher,
+    );
+  }
+
+  @Get('/registerLessons')
+  registerClassesOfTeacher(
+    @User() user,
+    @Query() findLessonsOfTeacher: FindLessonsOfTeacherDTO,
+  ) {
+    return this.lessonService.findRegisterClassesOfTeacher(
+      user.id,
+      findLessonsOfTeacher,
+    );
   }
 
   @Put('/update/:lessonId')
