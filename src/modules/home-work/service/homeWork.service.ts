@@ -626,4 +626,6 @@ export class HomeWorkService {
       message: `Homework retornada com sucesso.`,
     };
   }
+
+  async listStudentSubmissionsByHomeWorkId() {}
 }

@@ -67,4 +67,10 @@ export class HomeWorkController {
       searchHomeWorksByTeacher,
     );
   }
+
+  @Get('/student/submissions')
+  findAllStudentSubmissionsByHomeWorkId(@User() user) {
+    console.log('USER: ', user);
+    return this.homeWorkService.listStudentSubmissionsByHomeWorkId();
+  }
 }
