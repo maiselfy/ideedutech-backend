@@ -3,9 +3,20 @@ import { Module } from '@nestjs/common';
 import { HomeWorkController } from './controller/homeWork.controller';
 import { PrismaService } from '../prisma';
 import { HomeWorkService } from './service/homeWork.service';
+import { StudentService } from '../student/services/student.service';
+import { ManagerService } from '../manager/service/manager.service';
+import { ClassService } from '../class/services/class.service';
+import { SchoolService } from '../school/service/school.service';
 
 @Module({
   controllers: [HomeWorkController],
-  providers: [HomeWorkService, PrismaService],
+  providers: [
+    HomeWorkService,
+    PrismaService,
+    StudentService,
+    ManagerService,
+    ClassService,
+    SchoolService,
+  ],
 })
 export class HomeWorkModule {}

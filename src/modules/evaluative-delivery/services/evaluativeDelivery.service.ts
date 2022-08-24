@@ -269,4 +269,152 @@ export class EvaluativeDeliveryService {
 
     return resultMap;
   }
+
+  async listStudentSubmissionsByHomeWorkId(userId: string, homeWorkId: string) {
+    try {
+      const studentId = await this.studentService.findStudentIdByUserId(userId);
+
+      if (studentId) {
+        const submissions = await this.listAllStudentSubmissions(
+          studentId.id,
+          homeWorkId,
+        );
+
+        return {
+          submissions: submissions,
+          status: HttpStatus.OK,
+          message: `Submissões retornadas com sucesso.`,
+        };
+      }
+
+      const allSubmissions = await this.listAllSubmissions(homeWorkId);
+
+      return {
+        submissions: allSubmissions,
+        status: HttpStatus.OK,
+        message: `Submissões retornadas com sucesso.`,
+      };
+    } catch (error) {
+      if (error) throw error;
+      throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async listAllStudentSubmissions(studentId: string, homeWorkId: string) {
+    try {
+      const allStudentSubmissions =
+        await this.prisma.evaluativeDelivery.findMany({
+          where: {
+            homeWorkId: homeWorkId,
+            studentId: studentId,
+          },
+          select: {
+            stage: true,
+            rate: true,
+            homeWork: {
+              select: {
+                type: true,
+                name: true,
+                description: true,
+                attachement: true,
+                discipline: {
+                  select: {
+                    name: true,
+                    teacher: {
+                      select: {
+                        user: {
+                          select: {
+                            id: true,
+                            name: true,
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        });
+
+      const resultMap = allStudentSubmissions.map((submission) => {
+        return {
+          discipline: submission.homeWork.discipline.name,
+          teacher: submission.homeWork.discipline.teacher.user.name,
+          stage: submission.stage,
+          rate: submission.rate,
+          homeWork: {
+            type: submission.homeWork.type,
+            name: submission.homeWork.name,
+            description: submission.homeWork.description,
+            attachement: submission.homeWork.attachement,
+          },
+        };
+      });
+
+      return resultMap;
+    } catch (error) {
+      if (error) throw error;
+      throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async listAllSubmissions(homeWorkId: string) {
+    try {
+      const allSubmissions = await this.prisma.evaluativeDelivery.findMany({
+        where: {
+          homeWorkId: homeWorkId,
+        },
+        select: {
+          stage: true,
+          rate: true,
+          homeWork: {
+            select: {
+              type: true,
+              name: true,
+              description: true,
+              attachement: true,
+              discipline: {
+                select: {
+                  name: true,
+                  teacher: {
+                    select: {
+                      user: {
+                        select: {
+                          id: true,
+                          name: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      const resultMap = allSubmissions.map((submission) => {
+        return {
+          discipline: submission.homeWork.discipline.name,
+          teacher: submission.homeWork.discipline.teacher.user.name,
+          stage: submission.stage,
+          rate: submission.rate,
+          homeWork: {
+            type: submission.homeWork.type,
+            name: submission.homeWork.name,
+            description: submission.homeWork.description,
+            attachement: submission.homeWork.attachement,
+          },
+        };
+      });
+
+      return resultMap;
+    } catch (error) {
+      if (error) throw error;
+      throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async updateAttachement(homeWorkid: string, url: string) {}
 }

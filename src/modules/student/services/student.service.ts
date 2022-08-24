@@ -314,6 +314,7 @@ export class StudentService {
               description: activities.description,
               dueDate: activities.dueDate,
               isOpen: activities.isOpen,
+              submission: activities.evaluativeDelivery,
               status: this.checkSubmissionStatus(activities.evaluativeDelivery),
             };
           }),

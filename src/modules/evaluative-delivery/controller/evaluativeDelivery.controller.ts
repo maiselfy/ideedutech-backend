@@ -1,8 +1,17 @@
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Query,
+  Patch,
+} from '@nestjs/common';
 import { EvaluativeDeliveryService } from '../services/evaluativeDelivery.service';
 import CreateEvaluativeDeliveryDTO from '../dtos/evaluativeDelivery.dto';
 import SubmissionOfStudentDTO from '../dtos/submissionOfStudent.dto';
+import { User } from 'src/modules/user/decorators/user.decorator';
 
 @ApiTags('EvaluativeDelivery')
 @Controller('evaluative-delivery')
@@ -33,6 +42,7 @@ export class EvaluativeDeliveryController {
     return this.evaluationDeliveryService.findAll();
   }
 
+  @ApiBearerAuth()
   @Get('submission/:studentId')
   findAllSubmissionFromDisciplinesOfStudent(
     @Param('studentId') studentId: string,
@@ -43,5 +53,22 @@ export class EvaluativeDeliveryController {
       studentId,
       filters,
     );
+  }
+
+  @ApiBearerAuth()
+  @Get('/student/submissions/:homeWorkId')
+  findAllStudentSubmissionsByHomeWorkId(
+    @User() user,
+    @Param('homeWorkId') homeWorkId: string,
+  ) {
+    return this.evaluationDeliveryService.listStudentSubmissionsByHomeWorkId(
+      user.id,
+      homeWorkId,
+    );
+  }
+
+  @Patch('/submission/attachement/:homeWorkid')
+  update(@Param('homeWorkid') homeWorkid: string, @Body() url) {
+    return this.evaluationDeliveryService.updateAttachement(homeWorkid, url);
   }
 }

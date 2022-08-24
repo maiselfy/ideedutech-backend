@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { PaginationDTO } from 'src/models/PaginationDTO';
 import { HomeWork, PrismaService, TypeHomeWork } from 'src/modules/prisma';
+import { StudentService } from 'src/modules/student/services/student.service';
 import pagination from 'src/utils/pagination';
 import CreateHomeWorkDTO from '../dtos/createHomeWork.dto';
 import CreateTestDTO from '../dtos/createTest.dto';
@@ -13,7 +14,10 @@ import { SearchHomeWorksByTeacherDTO } from '../dtos/searchHomeWorksByTeacher.dt
 
 @Injectable()
 export class HomeWorkService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private studentService: StudentService,
+  ) {}
 
   async createHomeWork(createHomeWorkDTO: CreateHomeWorkDTO) {
     const data = createHomeWorkDTO;
@@ -626,6 +630,4 @@ export class HomeWorkService {
       message: `Homework retornada com sucesso.`,
     };
   }
-
-  async listStudentSubmissionsByHomeWorkId() {}
 }
