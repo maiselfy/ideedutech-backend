@@ -20,6 +20,19 @@ enum Months {
   'Novembro' = 11,
   'Dezembro' = 12,
 }
+
+interface AbsenscesPerMonth {
+  month: string;
+  count: number;
+}
+
+interface AbsencesOfStudent {
+  id: string;
+  name: string;
+  avatar: string;
+  absences: AbsenscesPerMonth[];
+  totalAbsences: number;
+}
 @Injectable()
 export class DisciplineService {
   constructor(
@@ -263,21 +276,22 @@ export class DisciplineService {
       },
     });
 
-    const absencesOfStudent = [];
+    const absencesOfStudent: AbsencesOfStudent[] = [];
+
     for (const student of studentsOfDiscipline) {
-      const y = await this.prisma.$queryRaw<
-        any[]
+      const absencesPerMonth = await this.prisma.$queryRaw<
+        AbsenscesPerMonth[]
       >`    SELECT date_trunc('month', to_date(loc."lessonDate", 'YYYY-MM-DD')) as month, count(loc."studentId") as count
         FROM public."LackOfClass" loc where loc."studentId" = ${student.id}
         GROUP BY 1`;
+
+      let totalAbsences = 0;
 
       absencesOfStudent.push({
         id: student.id,
         name: student.user.name,
         avatar: student.user.avatar,
-        absences: y.map((absence) => {
-          console.log(absence);
-
+        absences: absencesPerMonth.map((absence) => {
           const month = parseInt(absence.month.split('-')[1]);
           const formattedMonth = Months[month];
 
@@ -288,6 +302,13 @@ export class DisciplineService {
 
           return newData;
         }),
+        totalAbsences:
+          absencesPerMonth.length > 0
+            ? absencesPerMonth.map((absence) => {
+                totalAbsences += absence.count ? absence.count : 0;
+                return totalAbsences;
+              })[absencesPerMonth.length - 1]
+            : 0,
       });
     }
 
