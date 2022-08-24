@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Put,
+  Query,
 } from '@nestjs/common';
 import { Public } from 'src/security/decorators/public.decorator';
 import { CreateLessonDTO } from '../dtos/createLesson.dto';
@@ -83,7 +84,7 @@ export class LessonController {
   @Get('/teacher')
   lessonsOfTeacher(
     @User() user,
-    findLessonsOfTeacher: FindLessonsOfTeacherDTO,
+    @Query() findLessonsOfTeacher: FindLessonsOfTeacherDTO,
   ) {
     return this.lessonService.findLessonsOfTeacher(
       user.id,
@@ -94,7 +95,7 @@ export class LessonController {
   @Get('/registerLessons')
   registerClassesOfTeacher(
     @User() user,
-    findLessonsOfTeacher: FindLessonsOfTeacherDTO,
+    @Query() findLessonsOfTeacher: FindLessonsOfTeacherDTO,
   ) {
     return this.lessonService.findRegisterClassesOfTeacher(
       user.id,
