@@ -67,8 +67,12 @@ export class EvaluativeDeliveryController {
     );
   }
 
-  @Patch('/submission/attachement/:homeWorkid')
-  update(@Param('homeWorkid') homeWorkid: string, @Body() url) {
-    return this.evaluationDeliveryService.updateAttachement(homeWorkid, url);
+  @Patch('/submission/attachement/:userId')
+  update(@Param('userId') userId: string, @Body() attachement) {
+    return this.evaluationDeliveryService.updateAttachement(
+      userId,
+      attachement.homeWorkId,
+      attachement.url,
+    );
   }
 }

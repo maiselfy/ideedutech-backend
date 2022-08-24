@@ -416,5 +416,27 @@ export class EvaluativeDeliveryService {
     }
   }
 
-  async updateAttachement(homeWorkid: string, url: string) {}
+  async updateAttachement(userId: string, homeWorkId, url) {
+    try {
+      const studentId = await this.studentService.findStudentIdByUserId(userId);
+
+      await this.prisma.evaluativeDelivery.updateMany({
+        where: {
+          studentId: studentId.id,
+          homeWorkId: homeWorkId,
+        },
+        data: {
+          attachement: url,
+        },
+      });
+
+      return {
+        status: HttpStatus.OK,
+        message: `Submissão atualizada com sucesso.`,
+      };
+    } catch (error) {
+      if (error) throw error;
+      throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 }
