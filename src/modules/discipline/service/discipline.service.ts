@@ -6,6 +6,33 @@ import pagination from 'src/utils/pagination';
 import { Discipline, PrismaService } from '../../prisma';
 import { CreateDisciplineDTO } from '../dtos/createDiscipline.dto';
 
+enum Months {
+  'Janeiro' = 1,
+  'Fevereiro' = 2,
+  'Março' = 3,
+  'Abril' = 4,
+  'Maio' = 5,
+  'Junho' = 6,
+  'Julho' = 7,
+  'Agosto' = 8,
+  'Setembro' = 9,
+  'Outubro' = 10,
+  'Novembro' = 11,
+  'Dezembro' = 12,
+}
+
+interface AbsenscesPerMonth {
+  month: string;
+  count: number;
+}
+
+interface AbsencesOfStudent {
+  id: string;
+  name: string;
+  avatar: string;
+  absences: AbsenscesPerMonth[];
+  totalAbsences: number;
+}
 @Injectable()
 export class DisciplineService {
   constructor(
@@ -211,6 +238,84 @@ export class DisciplineService {
       totalPages: totalPages > 0 ? totalPages : 1,
       status: HttpStatus.OK,
       message: 'Disciplinas retornadas com sucesso.',
+    };
+  }
+
+  async findAbsencesOfStudentByDiscipline(disciplineId: string) {
+    const discipline = await this.prisma.discipline.findUnique({
+      where: {
+        id: disciplineId,
+      },
+    });
+
+    if (!discipline) {
+      throw new HttpException(
+        'Erro. Professor não encontrado.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const studentsOfDiscipline = await this.prisma.student.findMany({
+      where: {
+        class: {
+          disciplines: {
+            some: {
+              id: discipline.id,
+            },
+          },
+        },
+      },
+      select: {
+        id: true,
+        user: {
+          select: {
+            avatar: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    const absencesOfStudent: AbsencesOfStudent[] = [];
+
+    for (const student of studentsOfDiscipline) {
+      const absencesPerMonth = await this.prisma.$queryRaw<
+        AbsenscesPerMonth[]
+      >`    SELECT date_trunc('month', to_date(loc."lessonDate", 'YYYY-MM-DD')) as month, count(loc."studentId") as count
+        FROM public."LackOfClass" loc where loc."studentId" = ${student.id}
+        GROUP BY 1`;
+
+      let totalAbsences = 0;
+
+      absencesOfStudent.push({
+        id: student.id,
+        name: student.user.name,
+        avatar: student.user.avatar,
+        absences: absencesPerMonth.map((absence) => {
+          const month = parseInt(absence.month.split('-')[1]);
+          const formattedMonth = Months[month];
+
+          const newData = {
+            month: formattedMonth,
+            count: absence.count ? absence.count : 0,
+          };
+
+          return newData;
+        }),
+        totalAbsences:
+          absencesPerMonth.length > 0
+            ? absencesPerMonth.map((absence) => {
+                totalAbsences += absence.count ? absence.count : 0;
+                return totalAbsences;
+              })[absencesPerMonth.length - 1]
+            : 0,
+      });
+    }
+
+    return {
+      data: absencesOfStudent,
+      status: HttpStatus.OK,
+      message: 'Relatório de frequência retornado com sucesso.',
     };
   }
 
