@@ -570,6 +570,7 @@ export class HomeWorkService {
         dueDate: true,
         description: true,
         name: true,
+        attachement: true,
       },
     });
 
@@ -606,6 +607,10 @@ export class HomeWorkService {
       disciplineName: homeWork.discipline.name,
       className: homeWork.discipline.class.name,
       students: formattedStudents,
+      attachment: {
+        name: homeWork.attachement.split('_')[1],
+        url: homeWork.attachement,
+      },
       qtdStudents: homeWork.discipline.class.students.length,
       //submissions: formattedEvaluativeDelivery,
       // pendingSubmissions:
