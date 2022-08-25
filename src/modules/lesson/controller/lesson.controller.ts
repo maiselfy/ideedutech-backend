@@ -17,6 +17,7 @@ import { UpdateLessonDTO } from '../dtos/updateLesson.dto';
 import { LessonService } from '../services/lesson.service';
 import { User } from 'src/modules/user/decorators/user.decorator';
 import { FindLessonsOfTeacherDTO } from '../dtos/findLessonsOfTeacher.dto';
+import { PaginationDTO } from 'src/models/PaginationDTO';
 
 @Controller('lesson')
 export class LessonController {
@@ -85,10 +86,12 @@ export class LessonController {
   lessonsOfTeacher(
     @User() user,
     @Query() findLessonsOfTeacher: FindLessonsOfTeacherDTO,
+    @Query() paginationDTO: PaginationDTO,
   ) {
     return this.lessonService.findLessonsOfTeacher(
       user.id,
       findLessonsOfTeacher,
+      paginationDTO,
     );
   }
 

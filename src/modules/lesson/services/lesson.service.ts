@@ -1,5 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { PaginationDTO } from 'src/models/PaginationDTO';
 import { PrismaService } from 'src/modules/prisma';
+import pagination from 'src/utils/pagination';
 import { CreateLessonDTO } from '../dtos/createLesson.dto';
 import { FindLessonsOfTeacherDTO } from '../dtos/findLessonsOfTeacher.dto';
 import { UpdateLessonDTO } from '../dtos/updateLesson.dto';
@@ -211,8 +213,10 @@ export class LessonService {
   async findLessonsOfTeacher(
     userId: string,
     findLessonsOfTeacher: FindLessonsOfTeacherDTO,
+    paginationDTO: PaginationDTO,
   ) {
     const data = findLessonsOfTeacher;
+
     const teacher = await this.prisma.teacher.findUnique({
       where: {
         userId,
@@ -226,6 +230,8 @@ export class LessonService {
       );
     }
 
+    const [page, qtd, skippedItems] = pagination(paginationDTO);
+
     const lessons = await this.prisma.lesson.findMany({
       where: {
         discipline: {
@@ -237,6 +243,7 @@ export class LessonService {
           lte: data?.finalDate,
         },
       },
+
       select: {
         _count: {
           select: {
@@ -283,16 +290,23 @@ export class LessonService {
               },
             },
           },
-          where: {
-            lesson: {
-              discipline: {
-                teacherId: teacher.id,
+        },
+        RegisterClass: {
+          select: {
+            Content: {
+              select: {
+                name: true,
+                subContent: true,
               },
             },
           },
         },
       },
+      skip: skippedItems ? skippedItems : undefined,
+      take: qtd ? qtd : undefined,
     });
+
+    console.log(lessons.length);
 
     if (!lessons[0]) {
       return {
@@ -318,10 +332,17 @@ export class LessonService {
 
           return formattedLack;
         }),
+        content: {
+          name: lesson.RegisterClass[0]?.Content?.name,
+          subContent: lesson.RegisterClass[0]?.Content?.subContent,
+        },
       };
 
       return newData;
     });
+
+    const totalCount = formattedData.length;
+    const totalPages = Math.round(totalCount / qtd);
 
     return {
       data: {
@@ -332,6 +353,10 @@ export class LessonService {
         numberOfLessons: formattedData.length,
         detailOfLessons: formattedData,
       },
+      totalCount,
+      page,
+      limit: qtd,
+      totalPages: totalPages > 0 ? totalPages : 1,
       status: HttpStatus.OK,
       message: 'Aulas retornadas com sucesso.',
     };
