@@ -86,12 +86,10 @@ export class LessonController {
   lessonsOfTeacher(
     @User() user,
     @Query() findLessonsOfTeacher: FindLessonsOfTeacherDTO,
-    @Query() paginationDTO: PaginationDTO,
   ) {
     return this.lessonService.findLessonsOfTeacher(
       user.id,
       findLessonsOfTeacher,
-      paginationDTO,
     );
   }
 
