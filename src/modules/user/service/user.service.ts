@@ -221,7 +221,7 @@ export class UserService {
     const { Location: url } = avatarSaved;
 
     try {
-      let responseUpdateAvatar = await this.prisma.user.update({
+      const responseUpdateAvatar = await this.prisma.user.update({
         where: {
           id: userId,
         },
@@ -234,6 +234,7 @@ export class UserService {
         throw new Error('Avatar update failure');
       }
       return {
+        data: responseUpdateAvatar.avatar,
         status: HttpStatus.OK,
         message: 'Avatar atualizado com sucesso.',
       };
