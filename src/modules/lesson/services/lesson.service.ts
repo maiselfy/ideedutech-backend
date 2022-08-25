@@ -213,7 +213,6 @@ export class LessonService {
   async findLessonsOfTeacher(
     userId: string,
     findLessonsOfTeacher: FindLessonsOfTeacherDTO,
-    paginationDTO: PaginationDTO,
   ) {
     const data = findLessonsOfTeacher;
 
@@ -230,8 +229,6 @@ export class LessonService {
       );
     }
 
-    const [page, qtd, skippedItems] = pagination(paginationDTO);
-
     const lessons = await this.prisma.lesson.findMany({
       where: {
         discipline: {
@@ -243,7 +240,9 @@ export class LessonService {
           lte: data?.finalDate,
         },
       },
-
+      orderBy: {
+        classDate: 'asc',
+      },
       select: {
         _count: {
           select: {
@@ -302,11 +301,7 @@ export class LessonService {
           },
         },
       },
-      skip: skippedItems ? skippedItems : undefined,
-      take: qtd ? qtd : undefined,
     });
-
-    console.log(lessons.length);
 
     if (!lessons[0]) {
       return {
@@ -341,9 +336,6 @@ export class LessonService {
       return newData;
     });
 
-    const totalCount = formattedData.length;
-    const totalPages = Math.round(totalCount / qtd);
-
     return {
       data: {
         discipline: lessons[0].discipline.name,
@@ -353,10 +345,6 @@ export class LessonService {
         numberOfLessons: formattedData.length,
         detailOfLessons: formattedData,
       },
-      totalCount,
-      page,
-      limit: qtd,
-      totalPages: totalPages > 0 ? totalPages : 1,
       status: HttpStatus.OK,
       message: 'Aulas retornadas com sucesso.',
     };
@@ -425,7 +413,6 @@ export class LessonService {
     });
 
     if (!lessons[0]) {
-      console.log('aqui');
       return {
         data: [],
         status: HttpStatus.NO_CONTENT,
