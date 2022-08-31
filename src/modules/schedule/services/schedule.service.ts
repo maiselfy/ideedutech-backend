@@ -9,7 +9,7 @@ enum Days {
   'tuesday' = 4,
   'friday' = 5,
   'saturday' = 6,
-  'sunday' = 7,
+  'sunday' = 0,
 }
 
 @Injectable()
@@ -84,7 +84,7 @@ export class ScheduleService {
 
     if (!teacher) {
       throw new HttpException(
-        'Erro. Professor não encontrada.',
+        'Erro. Professor não encontrado.',
         HttpStatus.NOT_FOUND,
       );
     }
@@ -128,6 +128,8 @@ export class ScheduleService {
           },
         },
       });
+
+      console.log('schedules', schedules);
 
       const formattedData = schedules.map((schedule) => {
         const newData = {
@@ -258,6 +260,44 @@ export class ScheduleService {
         message: 'Horários do aluno retornados com sucesso',
       };
     }
+  }
+
+  async getAvailableSchedules(teacherId: string, disciplineId: string) {
+    const teacher = await this.prisma.teacher.findUnique({
+      where: {
+        userId: teacherId,
+      },
+    });
+
+    if (!teacher) {
+      throw new HttpException(
+        'Erro. Professor não encontrado.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    //Horários disponíveis p/ o dia
+
+    const schedules = await this.prisma.schedule.findMany({
+      where: {
+        OR: {
+          disciplineId,
+        },
+        discipline: {
+          teacher: {
+            userId: teacherId,
+          },
+        },
+      },
+    });
+
+    // const availableSchedules = await this.prisma.schedule.findMany({
+    //   where: {
+    //     NOT: {
+    //       AND: [{}],
+    //     },
+    //   },
+    // });
   }
 
   // findAll() {
