@@ -615,10 +615,12 @@ export class HomeWorkService {
       disciplineName: homeWork.discipline.name,
       className: homeWork.discipline.class.name,
       students: formattedStudents,
-      attachment: {
-        name: homeWork.attachement.split('_')[1],
-        url: homeWork.attachement,
-      },
+      attachment: homeWork.attachement
+        ? {
+            name: homeWork.attachement.split('_')[1],
+            url: homeWork.attachement,
+          }
+        : null,
       qtdStudents: homeWork.discipline.class.students.length,
       createdAt: homeWork.createdAt,
       updatedAt: homeWork.updatedAt,
