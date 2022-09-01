@@ -44,35 +44,241 @@ export class ScheduleService {
       );
     }
 
-    // const lesson = await this.prisma.lesson.findFirst({
-    //   where: {
-    //     disciplineId: discipline.id,
-    //   },
-    // });
-
-    // if (!lesson) {
-    //   throw new HttpException(
-    //     'Erro. Aula não encontrada.',
-    //     HttpStatus.NOT_FOUND,
-    //   );
-    // }
-
-    const createdSchedule = await this.prisma.schedule.create({
-      data,
+    const existsSchedule = await this.prisma.schedule.findFirst({
+      where: {
+        OR: [
+          // Existe outra aula para essa disciplina, no mesmo dia e horário ?
+          {
+            disciplineId: data.disciplineId,
+            day: data.day,
+            periodId: data.periodId,
+            OR: [
+              // Aula ENTRE os horários.
+              {
+                AND: [
+                  {
+                    initialHour: {
+                      gt: data.initialHour,
+                    },
+                  },
+                  {
+                    finishHour: {
+                      lt: data.finishHour,
+                    },
+                  },
+                ],
+              },
+              // Aula inicia no momento que a outra acaba.
+              {
+                AND: [
+                  {
+                    initialHour: {
+                      equals: data.finishHour,
+                    },
+                  },
+                  {
+                    finishHour: {
+                      gt: data.finishHour,
+                    },
+                  },
+                ],
+              },
+              // Aula finaliza no momento que a outra começa
+              {
+                AND: [
+                  {
+                    finishHour: {
+                      equals: data.initialHour,
+                    },
+                  },
+                  {
+                    initialHour: {
+                      gt: data.initialHour,
+                    },
+                  },
+                ],
+              },
+              {
+                AND: [
+                  {
+                    initialHour: {
+                      equals: data.initialHour,
+                    },
+                  },
+                  {
+                    finishHour: {
+                      lt: data.finishHour,
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+          // O professor possuiu outra aula, no mesmo dia e horário ?
+          {
+            day: data.day,
+            periodId: data.periodId,
+            OR: [
+              // Aula ENTRE os horários.
+              {
+                AND: [
+                  {
+                    initialHour: {
+                      gt: data.initialHour,
+                    },
+                  },
+                  {
+                    finishHour: {
+                      lt: data.finishHour,
+                    },
+                  },
+                ],
+              },
+              // Aula inicia no momento que a outra acaba.
+              {
+                AND: [
+                  {
+                    initialHour: {
+                      equals: data.finishHour,
+                    },
+                  },
+                  {
+                    finishHour: {
+                      gt: data.finishHour,
+                    },
+                  },
+                ],
+              },
+              // Aula finaliza no momento que a outra começa
+              {
+                AND: [
+                  {
+                    finishHour: {
+                      equals: data.initialHour,
+                    },
+                  },
+                  {
+                    initialHour: {
+                      gt: data.initialHour,
+                    },
+                  },
+                ],
+              },
+              {
+                AND: [
+                  {
+                    initialHour: {
+                      equals: data.initialHour,
+                    },
+                  },
+                  {
+                    finishHour: {
+                      lt: data.finishHour,
+                    },
+                  },
+                ],
+              },
+            ],
+            discipline: {
+              teacherId: discipline.teacherId,
+            },
+          },
+          // A turma possui alguma disciplina com aula nesse dia e horário ?
+          {
+            day: data.day,
+            periodId: data.periodId,
+            discipline: {
+              classId: discipline.classId,
+            },
+            OR: [
+              // Aula ENTRE os horários.
+              {
+                AND: [
+                  {
+                    initialHour: {
+                      gt: data.initialHour,
+                    },
+                  },
+                  {
+                    finishHour: {
+                      lt: data.finishHour,
+                    },
+                  },
+                ],
+              },
+              // Aula inicia no momento que a outra acaba.
+              {
+                AND: [
+                  {
+                    initialHour: {
+                      equals: data.finishHour,
+                    },
+                  },
+                  {
+                    finishHour: {
+                      gt: data.finishHour,
+                    },
+                  },
+                ],
+              },
+              // Aula finaliza no momento que a outra começa
+              {
+                AND: [
+                  {
+                    finishHour: {
+                      equals: data.initialHour,
+                    },
+                  },
+                  {
+                    initialHour: {
+                      gt: data.initialHour,
+                    },
+                  },
+                ],
+              },
+              {
+                AND: [
+                  {
+                    initialHour: {
+                      equals: data.initialHour,
+                    },
+                  },
+                  {
+                    finishHour: {
+                      lt: data.finishHour,
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
     });
 
-    if (!createdSchedule) {
+    if (!existsSchedule) {
+      const createdSchedule = await this.prisma.schedule.create({
+        data,
+      });
+
+      if (!createdSchedule) {
+        throw new HttpException(
+          'Erro ao criar horário para esta disciplina. Por favor, tente novamente!',
+          HttpStatus.BAD_GATEWAY,
+        );
+      }
+
+      return {
+        data: createdSchedule,
+        status: HttpStatus.CREATED,
+        message: 'Horário para a disciplina cadastrado com sucesso.',
+      };
+    } else {
       throw new HttpException(
-        'Erro ao criar horário para esta disciplina. Por favor, tente novamente!',
-        HttpStatus.BAD_GATEWAY,
+        'Erro. Horário indisponível.',
+        HttpStatus.CONFLICT,
       );
     }
-
-    return {
-      data: createdSchedule,
-      status: HttpStatus.CREATED,
-      message: 'Horário para a disciplina cadastrado com sucesso.',
-    };
   }
 
   async getSchedulesOfTeacher(teacherId: string, date: string) {
