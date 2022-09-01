@@ -562,19 +562,41 @@ export class StudentService {
 
     const allReportCard = await this.prisma.reportCard.findMany({
       where: {
-        periodId: 'be5cc378-e76f-4295-81df-7534c36e571f',
+        studentId: studentId.id,
       },
       select: {
-        homeWork: {
+        period: {
           select: {
-            discipline: {
+            id: true,
+            name: true,
+          },
+        },
+        homeWork: {
+          include: {
+            discipline: true,
+            evaluativeDelivery: {
+              where: {
+                owner: 'teacher',
+              },
               select: {
-                name: true,
+                rate: true,
               },
             },
           },
         },
       },
     });
+
+    const resultMap = await allReportCard.map((period) => {
+      return {
+        periodId: period.period.id,
+        periodName: period.period.name,
+        disciplineId: period.homeWork.discipline.id,
+        disciplineName: period.homeWork.discipline.name,
+        rate: period.homeWork.evaluativeDelivery[0].rate,
+      };
+    });
+
+    return resultMap;
   }
 }

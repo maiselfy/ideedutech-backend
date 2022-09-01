@@ -88,9 +88,8 @@ export class StudentController {
     );
   }
 
-  @Public()
-  @Get('all-report-card/')
-  findAllNotesByReportCard(@User() user) {
-    return this.studentService.findAllNotesByReportCard(user.id);
+  @Get('all-report-card/:userId')
+  findAllNotesByReportCard(@Param('userId') userId: string) {
+    return this.studentService.findAllNotesByReportCard(userId);
   }
 }

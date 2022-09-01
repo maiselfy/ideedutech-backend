@@ -121,6 +121,11 @@ export class EvaluativeDeliveryService {
           );
         }
 
+        // Adicionar eveluative-delivery by teacher com nota, para o boletim
+        if (updatedEvaluativeDelivery.rate !== null) {
+          this.insertExameInReportCard(data.homeWorkId, data.studentId);
+        }
+
         return {
           data: updatedEvaluativeDelivery,
           status: HttpStatus.CREATED,
@@ -144,8 +149,10 @@ export class EvaluativeDeliveryService {
           },
         });
 
-      // Adicionar nota em boletim
-      this.insertExameInReportCard(data.homeWorkId, data.rate, data.studentId);
+      // Adicionar eveluative-delivery by teacher com nota, para o boletim
+      if (updatedEvaluativeDelivery.rate !== null) {
+        this.insertExameInReportCard(data.homeWorkId, data.studentId);
+      }
 
       if (!updatedEvaluativeDelivery) {
         throw new HttpException(
@@ -162,7 +169,7 @@ export class EvaluativeDeliveryService {
     }
   }
 
-  async insertExameInReportCard(homeWorkId, rate, studentId) {
+  async insertExameInReportCard(homeWorkId, studentId) {
     const homeWork = await this.prisma.homeWork.findFirst({
       where: {
         id: homeWorkId,
@@ -170,11 +177,6 @@ export class EvaluativeDeliveryService {
       select: {
         id: true,
         startDate: true,
-        discipline: {
-          select: {
-            name: true,
-          },
-        },
       },
     });
 
