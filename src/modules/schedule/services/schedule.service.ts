@@ -12,6 +12,13 @@ enum Days {
   'sunday' = 7,
 }
 
+interface ScheduleVerify {
+  scheduleId: string;
+  day: string;
+  initialHour: string;
+  finishHour: string;
+}
+
 @Injectable()
 export class ScheduleService {
   constructor(private prisma: PrismaService) {}
@@ -281,6 +288,405 @@ export class ScheduleService {
     }
   }
 
+  async getAvailableSchedules(teacherId: string, classId: string) {
+    const teacher = await this.prisma.teacher.findUnique({
+      where: {
+        userId: teacherId,
+      },
+    });
+
+    if (!teacher) {
+      throw new HttpException(
+        'Erro. Professor não encontrado.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const classExists = await this.prisma.class.findUnique({
+      where: {
+        id: classId,
+      },
+    });
+
+    if (!classExists) {
+      throw new HttpException(
+        'Erro. Turma não encontrada.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const numberOfToday = new Date().getUTCDay();
+    const day = Days[numberOfToday];
+
+    if (
+      day === 'monday' ||
+      day === 'thursday' ||
+      day === 'wednesday' ||
+      day === 'tuesday' ||
+      day === 'friday' ||
+      day === 'saturday' ||
+      day === 'sunday'
+    ) {
+      const schedulesOfWeek: ScheduleVerify[] = [
+        {
+          scheduleId: null,
+          day: 'monday',
+          initialHour: '07:00',
+          finishHour: '07:50',
+        },
+        {
+          scheduleId: null,
+          day: 'monday',
+          initialHour: '07:50',
+          finishHour: '08:40',
+        },
+        {
+          scheduleId: null,
+          day: 'monday',
+          initialHour: '08:40',
+          finishHour: '09:30',
+        },
+        {
+          scheduleId: null,
+          day: 'monday',
+          initialHour: '09:30',
+          finishHour: '10:20',
+        },
+        {
+          scheduleId: null,
+          day: 'monday',
+          initialHour: '10:20',
+          finishHour: '11:10',
+        },
+        {
+          scheduleId: null,
+          day: 'monday',
+          initialHour: '11:10',
+          finishHour: '12:00',
+        },
+        {
+          scheduleId: null,
+          day: 'monday',
+          initialHour: '13:30',
+          finishHour: '14:20',
+        },
+        {
+          scheduleId: null,
+          day: 'monday',
+          initialHour: '14:20',
+          finishHour: '15:10',
+        },
+        {
+          scheduleId: null,
+          day: 'monday',
+          initialHour: '15:10',
+          finishHour: '16:00',
+        },
+        {
+          scheduleId: null,
+          day: 'monday',
+          initialHour: '16:00',
+          finishHour: '16:50',
+        },
+        {
+          scheduleId: null,
+          day: 'thursday',
+          initialHour: '07:00',
+          finishHour: '07:50',
+        },
+        {
+          scheduleId: null,
+          day: 'thursday',
+          initialHour: '07:50',
+          finishHour: '08:40',
+        },
+        {
+          scheduleId: null,
+          day: 'thursday',
+          initialHour: '08:40',
+          finishHour: '09:30',
+        },
+        {
+          scheduleId: null,
+          day: 'thursday',
+          initialHour: '09:30',
+          finishHour: '10:20',
+        },
+        {
+          scheduleId: null,
+          day: 'thursday',
+          initialHour: '10:20',
+          finishHour: '11:10',
+        },
+        {
+          scheduleId: null,
+          day: 'thursday',
+          initialHour: '11:10',
+          finishHour: '12:00',
+        },
+        {
+          scheduleId: null,
+          day: 'thursday',
+          initialHour: '13:30',
+          finishHour: '14:20',
+        },
+        {
+          scheduleId: null,
+          day: 'thursday',
+          initialHour: '14:20',
+          finishHour: '15:10',
+        },
+        {
+          scheduleId: null,
+          day: 'thursday',
+          initialHour: '15:10',
+          finishHour: '16:00',
+        },
+        {
+          scheduleId: null,
+          day: 'thursday',
+          initialHour: '16:00',
+          finishHour: '16:50',
+        },
+        {
+          scheduleId: null,
+          day: 'wednesday',
+          initialHour: '07:00',
+          finishHour: '07:50',
+        },
+        {
+          scheduleId: null,
+          day: 'wednesday',
+          initialHour: '07:50',
+          finishHour: '08:40',
+        },
+        {
+          scheduleId: null,
+          day: 'wednesday',
+          initialHour: '08:40',
+          finishHour: '09:30',
+        },
+        {
+          scheduleId: null,
+          day: 'wednesday',
+          initialHour: '09:30',
+          finishHour: '10:20',
+        },
+        {
+          scheduleId: null,
+          day: 'wednesday',
+          initialHour: '10:20',
+          finishHour: '11:10',
+        },
+        {
+          scheduleId: null,
+          day: 'wednesday',
+          initialHour: '11:10',
+          finishHour: '12:00',
+        },
+        {
+          scheduleId: null,
+          day: 'wednesday',
+          initialHour: '13:30',
+          finishHour: '14:20',
+        },
+        {
+          scheduleId: null,
+          day: 'wednesday',
+          initialHour: '14:20',
+          finishHour: '15:10',
+        },
+        {
+          scheduleId: null,
+          day: 'wednesday',
+          initialHour: '15:10',
+          finishHour: '16:00',
+        },
+        {
+          scheduleId: null,
+          day: 'wednesday',
+          initialHour: '16:00',
+          finishHour: '16:50',
+        },
+        {
+          scheduleId: null,
+          day: 'tuesday',
+          initialHour: '07:00',
+          finishHour: '07:50',
+        },
+        {
+          scheduleId: null,
+          day: 'tuesday',
+          initialHour: '07:50',
+          finishHour: '08:40',
+        },
+        {
+          scheduleId: null,
+          day: 'tuesday',
+          initialHour: '08:40',
+          finishHour: '09:30',
+        },
+        {
+          scheduleId: null,
+          day: 'tuesday',
+          initialHour: '09:30',
+          finishHour: '10:20',
+        },
+        {
+          scheduleId: null,
+          day: 'tuesday',
+          initialHour: '10:20',
+          finishHour: '11:10',
+        },
+        {
+          scheduleId: null,
+          day: 'tuesday',
+          initialHour: '11:10',
+          finishHour: '12:00',
+        },
+        {
+          scheduleId: null,
+          day: 'tuesday',
+          initialHour: '13:30',
+          finishHour: '14:20',
+        },
+        {
+          scheduleId: null,
+          day: 'tuesday',
+          initialHour: '14:20',
+          finishHour: '15:10',
+        },
+        {
+          scheduleId: null,
+          day: 'tuesday',
+          initialHour: '15:10',
+          finishHour: '16:00',
+        },
+        {
+          scheduleId: null,
+          day: 'tuesday',
+          initialHour: '16:00',
+          finishHour: '16:50',
+        },
+        {
+          scheduleId: null,
+          day: 'friday',
+          initialHour: '07:00',
+          finishHour: '07:50',
+        },
+        {
+          scheduleId: null,
+          day: 'friday',
+          initialHour: '07:50',
+          finishHour: '08:40',
+        },
+        {
+          scheduleId: null,
+          day: 'friday',
+          initialHour: '08:40',
+          finishHour: '09:30',
+        },
+        {
+          scheduleId: null,
+          day: 'friday',
+          initialHour: '09:30',
+          finishHour: '10:20',
+        },
+        {
+          scheduleId: null,
+          day: 'friday',
+          initialHour: '10:20',
+          finishHour: '11:10',
+        },
+        {
+          scheduleId: null,
+          day: 'friday',
+          initialHour: '11:10',
+          finishHour: '12:00',
+        },
+        {
+          scheduleId: null,
+          day: 'friday',
+          initialHour: '13:30',
+          finishHour: '14:20',
+        },
+        {
+          scheduleId: null,
+          day: 'friday',
+          initialHour: '14:20',
+          finishHour: '15:10',
+        },
+        {
+          scheduleId: null,
+          day: 'friday',
+          initialHour: '15:10',
+          finishHour: '16:00',
+        },
+        {
+          scheduleId: null,
+          day: 'friday',
+          initialHour: '16:00',
+          finishHour: '16:50',
+        },
+      ];
+
+      const unavailableSchedules = await this.prisma.schedule.findMany({
+        where: {
+          OR: [
+            // O professor possuiu outra aula
+            {
+              discipline: {
+                teacherId: teacher.id,
+              },
+            },
+            // A turma possui alguma disciplina com aula ?
+            {
+              discipline: {
+                classId: classExists.id,
+              },
+            },
+          ],
+        },
+        select: {
+          id: true,
+          day: true,
+          initialHour: true,
+          finishHour: true,
+        },
+      });
+
+      schedulesOfWeek.some((freeSchedule, index) => {
+        const swapElement = unavailableSchedules.find(
+          (unavailableSchedule) =>
+            unavailableSchedule.day === freeSchedule.day &&
+            unavailableSchedule.initialHour === freeSchedule.initialHour &&
+            unavailableSchedule.finishHour === freeSchedule.finishHour,
+        );
+
+        if (swapElement) {
+          schedulesOfWeek[index] = {
+            day: swapElement.day,
+            initialHour: swapElement.initialHour,
+            finishHour: swapElement.finishHour,
+            scheduleId: swapElement.id,
+          };
+        }
+      });
+
+      const formattedData = schedulesOfWeek.reduce((acc, element) => {
+        const day = schedulesOfWeek.filter((y) => y.day === element.day);
+        acc[element.day] = day;
+        return acc;
+      }, {});
+
+      return {
+        data: formattedData,
+        status: HttpStatus.OK,
+        message: 'Horários retornados com sucesso',
+      };
+    }
+  }
+
   async getSchedulesOfTeacher(teacherId: string, date: string) {
     const teacher = await this.prisma.teacher.findUnique({
       where: {
@@ -290,7 +696,7 @@ export class ScheduleService {
 
     if (!teacher) {
       throw new HttpException(
-        'Erro. Professor não encontrada.',
+        'Erro. Professor não encontrado.',
         HttpStatus.NOT_FOUND,
       );
     }
