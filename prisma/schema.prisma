@@ -64,6 +64,7 @@ model Student {
   school             School               @relation(fields: [schoolId], references: [id])
   user               User                 @relation(fields: [userId], references: [id])
   EvaluativeDelivery EvaluativeDelivery[]
+  reportCard         ReportCard?
   gradebook          Gradebook[]
   LackOfClass        LackOfClass[]
 }
@@ -160,6 +161,7 @@ model HomeWork {
   startDate          DateTime?
   discipline         Discipline           @relation(fields: [disciplineId], references: [id])
   evaluativeDelivery EvaluativeDelivery[]
+  ReportCard         ReportCard[]
 }
 
 model EvaluativeDelivery {
@@ -219,8 +221,18 @@ model Period {
   contents              Content[]
   registerClass         RegisterClass[]
   schedule              Schedule[]
+  reportCard            ReportCard[]
 }
 
+model ReportCard {
+   id            String           @id @default(uuid())
+   homeWorkId    String
+   homeWork      HomeWork         @relation(fields: [homeWorkId], references: [id])
+   student       Student?          @relation(fields: [studentId], references: [id])
+   studentId     String?           @unique
+   periodId      String
+   period        Period          @relation(fields: [periodId], references: [id])
+}
 model Content {
   id            String          @id @default(uuid())
   name          String

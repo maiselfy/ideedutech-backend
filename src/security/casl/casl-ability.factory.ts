@@ -29,9 +29,10 @@ import {
   LackOfClass,
   Schedule,
   Gradebook,
+  ReportCard,
 } from '@prisma/client';
 
-//Definir tipos da minha aplicação.
+// Definir tipos da minha aplicação.
 
 export type AppSubjects = Subjects<{
   Admin: Admin;
@@ -55,6 +56,7 @@ export type AppSubjects = Subjects<{
   LackOfClass: LackOfClass;
   Schedule: Schedule;
   Gradebook: Gradebook;
+  ReportCard: ReportCard;
   all: 'all';
 }>;
 

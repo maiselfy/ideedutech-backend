@@ -78,8 +78,6 @@ export class EvaluativeDeliveryService {
           },
         });
 
-      console.log(evaluativeDeliveryExists);
-
       if (evaluativeDeliveryExists) {
         const updatedEvaluativeDelivery =
           await this.prisma.evaluativeDelivery.update({
@@ -146,6 +144,9 @@ export class EvaluativeDeliveryService {
           },
         });
 
+      // Adicionar nota em boletim
+      this.insertExameInReportCard(data.homeWorkId, data.rate, data.studentId);
+
       if (!updatedEvaluativeDelivery) {
         throw new HttpException(
           'Não foi possível criar a correção, por favor tente novamente.',
@@ -158,6 +159,41 @@ export class EvaluativeDeliveryService {
         status: HttpStatus.CREATED,
         message: 'Correção criada com sucesso.',
       };
+    }
+  }
+
+  async insertExameInReportCard(homeWorkId, rate, studentId) {
+    const homeWork = await this.prisma.homeWork.findFirst({
+      where: {
+        id: homeWorkId,
+      },
+      select: {
+        id: true,
+        startDate: true,
+        discipline: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+
+    const period = await this.prisma
+      .$queryRaw`SELECT * FROM "Period" WHERE ${homeWork.startDate} BETWEEN "startOfPeriod" AND "endOfPeriod"`;
+
+    const createdReportCard = await this.prisma.reportCard.create({
+      data: {
+        periodId: period[0].id,
+        homeWorkId: homeWorkId,
+        studentId: studentId,
+      },
+    });
+
+    if (!createdReportCard) {
+      throw new HttpException(
+        'Não foi possível criar a avaliação, por favor tente novamente.',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 

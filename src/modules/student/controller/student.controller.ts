@@ -87,4 +87,10 @@ export class StudentController {
       updateStudentDto,
     );
   }
+
+  @Public()
+  @Get('all-report-card/')
+  findAllNotesByReportCard(@User() user) {
+    return this.studentService.findAllNotesByReportCard(user.id);
+  }
 }

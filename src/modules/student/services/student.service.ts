@@ -9,6 +9,7 @@ import ListEntitiesForSchoolDTO from '../dtos/listEntitiesForSchool.dto';
 import * as bcrypt from 'bcrypt';
 import { ClassService } from 'src/modules/class/services/class.service';
 import { SchoolService } from 'src/modules/school/service/school.service';
+import { PeriodService } from 'src/modules/period/service/period.service';
 
 @Injectable()
 export class StudentService {
@@ -17,6 +18,7 @@ export class StudentService {
     private managerService: ManagerService,
     private classService: ClassService,
     private schoolService: SchoolService,
+    private periodService: PeriodService,
   ) {}
 
   async create(createStudentDTO, managerId: string) {
@@ -546,5 +548,33 @@ export class StudentService {
       if (error) throw error;
       throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
+
+  async findAllNotesByReportCard(userId) {
+    const studentId = await this.findStudentIdByUserId(userId);
+
+    if (!studentId) {
+      throw new HttpException(
+        'Estudante não encontrado.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const allReportCard = await this.prisma.reportCard.findMany({
+      where: {
+        periodId: 'be5cc378-e76f-4295-81df-7534c36e571f',
+      },
+      select: {
+        homeWork: {
+          select: {
+            discipline: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
   }
 }

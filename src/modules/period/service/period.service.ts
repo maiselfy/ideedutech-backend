@@ -14,6 +14,7 @@ export class PeriodService {
           endOfPeriod: new Date(createPeriodDto.endOfPeriod),
         },
       });
+
       return {
         data: period,
         status: HttpStatus.OK,

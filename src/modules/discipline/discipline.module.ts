@@ -6,6 +6,7 @@ import { ManagerService } from '../manager/service/manager.service';
 import { StudentService } from '../student/services/student.service';
 import { ClassService } from '../class/services/class.service';
 import { SchoolService } from '../school/service/school.service';
+import { PeriodService } from '../period/service/period.service';
 
 @Module({
   controllers: [DisciplineController],
@@ -16,6 +17,7 @@ import { SchoolService } from '../school/service/school.service';
     StudentService,
     ClassService,
     SchoolService,
+    PeriodService,
   ],
 })
 export class DisciplineModule {}
