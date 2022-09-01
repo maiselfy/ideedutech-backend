@@ -30,12 +30,12 @@ export class ScheduleController {
     return this.scheduleService.getSchedulesOfStudent(user.id, date);
   }
 
-  @Get('/lesson/availableSchedules/:classId')
+  @Get('/lesson/availableSchedules/:classId/:teacherId')
   getAvailableSchedulesForLesson(
-    @User() user,
     @Param('classId') classId: string,
+    @Param('teacherId') teacherId: string,
   ) {
-    return this.scheduleService.getAvailableSchedules(user.id, classId);
+    return this.scheduleService.getAvailableSchedules(classId, teacherId);
   }
 
   @Get('/:scheduleId/lesson')

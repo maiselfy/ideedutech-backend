@@ -288,10 +288,10 @@ export class ScheduleService {
     }
   }
 
-  async getAvailableSchedules(teacherId: string, classId: string) {
+  async getAvailableSchedules(classId: string, teacherId: string) {
     const teacher = await this.prisma.teacher.findUnique({
       where: {
-        userId: teacherId,
+        id: teacherId,
       },
     });
 
