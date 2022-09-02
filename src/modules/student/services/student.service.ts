@@ -551,52 +551,64 @@ export class StudentService {
   }
 
   async findAllNotesByReportCard(userId) {
-    const studentId = await this.findStudentIdByUserId(userId);
+    try {
+      const studentId = await this.findStudentIdByUserId(userId);
 
-    if (!studentId) {
-      throw new HttpException(
-        'Estudante não encontrado.',
-        HttpStatus.NOT_FOUND,
-      );
-    }
+      if (!studentId) {
+        throw new HttpException(
+          'Estudante não encontrado.',
+          HttpStatus.NOT_FOUND,
+        );
+      }
 
-    const allReportCard = await this.prisma.reportCard.findMany({
-      where: {
-        studentId: studentId.id,
-      },
-      select: {
-        period: {
-          select: {
-            id: true,
-            name: true,
-          },
+      const allReportCard = await this.prisma.reportCard.findMany({
+        where: {
+          studentId: studentId.id,
         },
-        homeWork: {
-          include: {
-            discipline: true,
-            evaluativeDelivery: {
-              where: {
-                owner: 'teacher',
-              },
-              select: {
-                rate: true,
+        select: {
+          period: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          homeWork: {
+            include: {
+              discipline: true,
+              evaluativeDelivery: {
+                where: {
+                  owner: 'teacher',
+                },
+                select: {
+                  rate: true,
+                },
               },
             },
           },
         },
-      },
-    });
+      });
 
-    const resultMap = await allReportCard.map((period) => {
-      return {
-        periodId: period.period.id,
-        periodName: period.period.name,
-        disciplineId: period.homeWork.discipline.id,
-        disciplineName: period.homeWork.discipline.name,
-        rate: period.homeWork.evaluativeDelivery[0].rate,
-      };
-    });
+      if (!allReportCard) {
+        throw new HttpException(
+          'Erro ao listar boletim de notas.',
+          HttpStatus.NOT_FOUND,
+        );
+      }
 
-    return resultMap;
+      const resultMap = await allReportCard.map((period) => {
+        return {
+          periodId: period.period.id,
+          periodName: period.period.name,
+          disciplineId: period.homeWork.discipline.id,
+          disciplineName: period.homeWork.discipline.name,
+          rate: period.homeWork.evaluativeDelivery[0].rate,
+        };
+      });
+
+      return resultMap;
+    } catch (error) {
+      if (error) throw error;
+      throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }
