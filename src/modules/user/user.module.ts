@@ -10,6 +10,7 @@ import { GenerateToken } from '../auth/providers/generateToken.provider';
 import { JwtModule } from '@nestjs/jwt';
 import { ClassService } from '../class/services/class.service';
 import { SchoolService } from '../school/service/school.service';
+import { PeriodService } from '../period/service/period.service';
 
 @Module({
   imports: [JwtModule.register({})],
@@ -24,6 +25,7 @@ import { SchoolService } from '../school/service/school.service';
     GenerateToken,
     ClassService,
     SchoolService,
+    PeriodService,
   ],
   exports: [UserService],
 })

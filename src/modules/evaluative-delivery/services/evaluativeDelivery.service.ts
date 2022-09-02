@@ -78,8 +78,6 @@ export class EvaluativeDeliveryService {
           },
         });
 
-      console.log(evaluativeDeliveryExists);
-
       if (evaluativeDeliveryExists) {
         const updatedEvaluativeDelivery =
           await this.prisma.evaluativeDelivery.update({
@@ -123,6 +121,11 @@ export class EvaluativeDeliveryService {
           );
         }
 
+        // Adicionar eveluative-delivery by teacher com nota, para o boletim
+        if (updatedEvaluativeDelivery.rate !== null) {
+          this.insertExameInReportCard(data.homeWorkId, data.studentId);
+        }
+
         return {
           data: updatedEvaluativeDelivery,
           status: HttpStatus.CREATED,
@@ -146,6 +149,11 @@ export class EvaluativeDeliveryService {
           },
         });
 
+      // Adicionar eveluative-delivery by teacher com nota, para o boletim
+      if (updatedEvaluativeDelivery.rate !== null) {
+        this.insertExameInReportCard(data.homeWorkId, data.studentId);
+      }
+
       if (!updatedEvaluativeDelivery) {
         throw new HttpException(
           'Não foi possível criar a correção, por favor tente novamente.',
@@ -158,6 +166,36 @@ export class EvaluativeDeliveryService {
         status: HttpStatus.CREATED,
         message: 'Correção criada com sucesso.',
       };
+    }
+  }
+
+  async insertExameInReportCard(homeWorkId, studentId) {
+    const homeWork = await this.prisma.homeWork.findFirst({
+      where: {
+        id: homeWorkId,
+      },
+      select: {
+        id: true,
+        startDate: true,
+      },
+    });
+
+    const period = await this.prisma
+      .$queryRaw`SELECT * FROM "Period" WHERE ${homeWork.startDate} BETWEEN "startOfPeriod" AND "endOfPeriod"`;
+
+    const createdReportCard = await this.prisma.reportCard.create({
+      data: {
+        periodId: period[0].id,
+        homeWorkId: homeWorkId,
+        studentId: studentId,
+      },
+    });
+
+    if (!createdReportCard) {
+      throw new HttpException(
+        'Não foi possível criar a avaliação, por favor tente novamente.',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 

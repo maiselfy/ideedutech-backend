@@ -9,6 +9,7 @@ import ListEntitiesForSchoolDTO from '../dtos/listEntitiesForSchool.dto';
 import * as bcrypt from 'bcrypt';
 import { ClassService } from 'src/modules/class/services/class.service';
 import { SchoolService } from 'src/modules/school/service/school.service';
+import { PeriodService } from 'src/modules/period/service/period.service';
 
 @Injectable()
 export class StudentService {
@@ -17,6 +18,7 @@ export class StudentService {
     private managerService: ManagerService,
     private classService: ClassService,
     private schoolService: SchoolService,
+    private periodService: PeriodService,
   ) {}
 
   async create(createStudentDTO, managerId: string) {
@@ -542,6 +544,103 @@ export class StudentService {
         status: HttpStatus.OK,
         message: 'Estudante atualizado com sucesso.',
       };
+    } catch (error) {
+      if (error) throw error;
+      throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async findAllNotesByReportCard(userId) {
+    try {
+      const studentId = await this.findStudentIdByUserId(userId);
+
+      if (!studentId) {
+        throw new HttpException(
+          'Estudante não encontrado.',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      const allReportCard = await this.prisma.reportCard.findMany({
+        where: {
+          studentId: studentId.id,
+        },
+        select: {
+          period: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          homeWork: {
+            include: {
+              discipline: true,
+              evaluativeDelivery: {
+                where: {
+                  owner: 'teacher',
+                },
+                select: {
+                  rate: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!allReportCard) {
+        return {
+          data: [],
+          status: HttpStatus.OK,
+          message: 'Boletim do estudante retornado com sucesso.',
+        };
+      }
+
+      const resultMap = await allReportCard.map((period) => {
+        return {
+          periodId: period.period.id,
+          periodName: period.period.name,
+          disciplineId: period.homeWork.discipline.id,
+          disciplineName: period.homeWork.discipline.name,
+          rate: period.homeWork.evaluativeDelivery[0].rate,
+        };
+      });
+
+      function groupBy(array, key) {
+        const arrayReduce = array.reduce(
+          (acc, item) => ({
+            ...acc,
+            [item[key]]: [...(acc[item[key]] ?? []), item],
+          }),
+          {},
+        );
+
+        const result = Object.keys(arrayReduce).map(function (key) {
+          return [key, arrayReduce[key]];
+        });
+
+        return result;
+      }
+
+      const groupByPeriod = groupBy(resultMap, 'periodId');
+
+      const data = groupByPeriod.map((valueOfPeriod) => {
+        const groupByDiscipline = valueOfPeriod.map(
+          (valueOfDiscipline, index) => {
+            if (index % 2 !== 0) {
+              return groupBy(valueOfDiscipline, 'disciplineId');
+            }
+          },
+        );
+
+        const formattedData = groupByDiscipline.filter(function (i) {
+          return i;
+        });
+
+        return formattedData[0];
+      });
+
+      return data;
     } catch (error) {
       if (error) throw error;
       throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);

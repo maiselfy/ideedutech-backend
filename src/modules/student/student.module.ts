@@ -1,3 +1,4 @@
+import { HomeWorkService } from '../home-work/service/homeWork.service';
 import { PrismaService } from 'src/modules/prisma';
 import { StudentService } from './services/student.service';
 import { StudentController } from './controller/student.controller';
@@ -12,6 +13,8 @@ import { CaslAbilityFactory } from 'src/security/casl/casl-ability.factory';
 import { CaslAbilityService } from 'src/security/casl/services/casl.ability.service';
 import { ClassService } from '../class/services/class.service';
 import { SchoolService } from '../school/service/school.service';
+import { PeriodService } from '../period/service/period.service';
+import { DisciplineService } from '../discipline/service/discipline.service';
 
 @Module({
   imports: [JwtModule.register({})],
@@ -28,6 +31,9 @@ import { SchoolService } from '../school/service/school.service';
     CaslAbilityService,
     ClassService,
     SchoolService,
+    PeriodService,
+    HomeWorkService,
+    DisciplineService,
   ],
 })
 export class StudentModule {}
