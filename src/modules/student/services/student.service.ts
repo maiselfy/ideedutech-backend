@@ -589,10 +589,11 @@ export class StudentService {
       });
 
       if (!allReportCard) {
-        throw new HttpException(
-          'Erro ao listar boletim de notas.',
-          HttpStatus.NOT_FOUND,
-        );
+        return {
+          data: [],
+          status: HttpStatus.OK,
+          message: 'Boletim do estudante retornado com sucesso.',
+        };
       }
 
       const resultMap = await allReportCard.map((period) => {
@@ -605,7 +606,41 @@ export class StudentService {
         };
       });
 
-      return resultMap;
+      function groupBy(array, key) {
+        const arrayReduce = array.reduce(
+          (acc, item) => ({
+            ...acc,
+            [item[key]]: [...(acc[item[key]] ?? []), item],
+          }),
+          {},
+        );
+
+        const result = Object.keys(arrayReduce).map(function (key) {
+          return [key, arrayReduce[key]];
+        });
+
+        return result;
+      }
+
+      const groupByPeriod = groupBy(resultMap, 'periodId');
+
+      const data = groupByPeriod.map((valueOfPeriod) => {
+        const groupByDiscipline = valueOfPeriod.map(
+          (valueOfDiscipline, index) => {
+            if (index % 2 !== 0) {
+              return groupBy(valueOfDiscipline, 'disciplineId');
+            }
+          },
+        );
+
+        const formattedData = groupByDiscipline.filter(function (i) {
+          return i;
+        });
+
+        return formattedData[0];
+      });
+
+      return data;
     } catch (error) {
       if (error) throw error;
       throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
