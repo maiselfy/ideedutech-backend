@@ -556,6 +556,7 @@ export class HomeWorkService {
                         id: true,
                         rate: true,
                         studentId: true,
+                        attachement: true,
                       },
                       orderBy: {
                         createdAt: 'desc',
@@ -575,6 +576,8 @@ export class HomeWorkService {
         description: true,
         name: true,
         attachement: true,
+        createdAt: true,
+        updatedAt: true,
       },
     });
 
@@ -595,6 +598,7 @@ export class HomeWorkService {
           avatar: student.user.avatar,
           submission: {
             id: submissionOfStudent?.id,
+            archive: submissionOfStudent?.attachement,
             rate: submissionOfStudent?.rate,
           },
         };
@@ -611,11 +615,15 @@ export class HomeWorkService {
       disciplineName: homeWork.discipline.name,
       className: homeWork.discipline.class.name,
       students: formattedStudents,
-      attachment: {
-        name: homeWork.attachement.split('_')[1],
-        url: homeWork.attachement,
-      },
+      attachment: homeWork.attachement
+        ? {
+            name: homeWork.attachement.split('_')[1],
+            url: homeWork.attachement,
+          }
+        : null,
       qtdStudents: homeWork.discipline.class.students.length,
+      createdAt: homeWork.createdAt,
+      updatedAt: homeWork.updatedAt,
       //submissions: formattedEvaluativeDelivery,
       // pendingSubmissions:
       //   homeWork.discipline.class.students.length -
