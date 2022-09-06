@@ -11,6 +11,12 @@ import { ClassService } from 'src/modules/class/services/class.service';
 import { SchoolService } from 'src/modules/school/service/school.service';
 import { PeriodService } from 'src/modules/period/service/period.service';
 
+interface ReportCard {
+  id: string;
+  discipline: string;
+  mean: string;
+}
+
 @Injectable()
 export class StudentService {
   constructor(
@@ -550,21 +556,61 @@ export class StudentService {
     }
   }
 
-  async findAllNotesByReportCard(userId) {
+  async findAllNotesByReportCard(userId: string) {
     try {
-      const studentId = await this.findStudentIdByUserId(userId);
+      const student = await this.prisma.student.findFirst({
+        where: {
+          userId,
+        },
+      });
 
-      if (!studentId) {
+      if (!student) {
         throw new HttpException(
           'Estudante não encontrado.',
           HttpStatus.NOT_FOUND,
         );
       }
 
-      const data = await this.prisma
-        .$queryRaw`select d.id as disciplineid, p.id as periodid, d."name" as disciplinename, p."name" as periodname, trunc(cast(AVG(ed.rate) as numeric), 3) as mean  from "EvaluativeDelivery" ed inner join "HomeWork" hw on ed."homeWorkId" =hw.id inner join "Discipline" d on hw."disciplineId" = d.id inner join "Class" c on d."classId" = c.id inner join "Period" p 
-      on p."schoolId" = c."schooldId" where ed."studentId" = ${studentId.id} and ed."owner" = 'Professor'::"OwnerAction" 
-      and ed.stage = 'Avaliada'::"EvaluationStage" group by d.id, p.id order by p."endOfPeriod"`;
+      const currentYear = new Date().getUTCFullYear();
+
+      const periods = await this.prisma.period.findMany({
+        where: {
+          schoolId: student.schoolId,
+          startOfPeriod: {
+            gte: new Date(currentYear, 0, 1),
+          },
+          endOfPeriod: {
+            lte: new Date(currentYear, 11, 31),
+          },
+        },
+      });
+
+      const rates = Promise.all(
+        periods.map(async (period) => {
+          const data = await this.prisma.$queryRaw<
+            ReportCard[]
+          >`select d.id as id, d."name" as discipline, AVG(ed.rate) as mean from public."EvaluativeDelivery" ed inner join "HomeWork" hw on ed."homeWorkId" =hw.id inner join "Discipline" d on hw."disciplineId" = d.id where ed."studentId" = ${student.id} and ed."owner" = 'Professor'::"OwnerAction" 
+        and ed.stage = 'Avaliada'::"EvaluationStage" and hw."dueDate"
+        between ${period.startOfPeriod} and ${period.endOfPeriod}
+        group by d.id`;
+
+          const newData = {
+            periodId: period.id,
+            periodName: period.name,
+            startOfPeriod: period.startOfPeriod,
+            endOfPeriod: period.endOfPeriod,
+            ...data,
+          };
+
+          return newData;
+        }),
+      );
+
+      return {
+        data: await rates,
+        status: HttpStatus.OK,
+        message: 'Médias do estudante retornadas com sucesso.',
+      };
 
       // const allReportCard = await this.prisma.reportCard.findMany({
       //   where: {
@@ -646,7 +692,7 @@ export class StudentService {
       // });
 
       // return data;
-      return data;
+      //return groupByPeriod;
     } catch (error) {
       if (error) throw error;
       throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
