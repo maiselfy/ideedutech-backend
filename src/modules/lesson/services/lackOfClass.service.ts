@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { format, parseISO } from 'date-fns';
 import { PrismaService } from 'src/modules/prisma';
 import { CreateManyLackLessonDTO } from '../dtos/createManyLackLesson.dto';
+import { CreateManyLessonDTO } from '../dtos/createManyLesson.dto';
 import { RemoveLackOfClassDTO } from '../dtos/removeLackOfClass.dto';
 import { LessonService } from './lesson.service';
 
@@ -196,6 +197,109 @@ export class LackOfClassService {
       data: formattedData,
       status: HttpStatus.CREATED,
       message: 'Frequência para a aula atualizada com sucesso.',
+    };
+  }
+
+  async createManyLessons(createManyLessonDTO: CreateManyLessonDTO[]) {
+    const data = createManyLessonDTO;
+
+    let validLessons = [];
+    let validStudents = [];
+
+    console.time('For');
+    for (const currentLesson of data) {
+      const lesson = await this.prisma.lesson.findUnique({
+        where: {
+          id: currentLesson.lessonId,
+        },
+      });
+
+      if (lesson) {
+        validLessons.push(currentLesson.lessonId);
+      }
+    }
+    console.timeEnd('For');
+
+    console.time('For aninhados');
+
+    for (const currentLesson of data) {
+      for (const student of currentLesson.students) {
+        const studentInClass = await this.prisma.student.findFirst({
+          where: {
+            class: {
+              disciplines: {
+                some: {
+                  lessons: {
+                    some: {
+                      id: {
+                        in: validLessons,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            id: student,
+          },
+        });
+
+        if (studentInClass) {
+          validStudents.push(student);
+        }
+      }
+    }
+
+    console.timeEnd('For aninhados');
+
+    console.time('Promises aninhadas');
+
+    const lackOfLessons = Promise.all(
+      data.map(async (lesson) => {
+        const lackOfLesson = Promise.all(
+          lesson.students.map(async (student) => {
+            const existsLack = await this.prisma.lackOfClass.findFirst({
+              where: {
+                lessonId: lesson.lessonId,
+                studentId: student,
+              },
+            });
+
+            if (existsLack) {
+              const updatedLack = await this.prisma.lackOfClass.update({
+                data: {
+                  lessonDate: lesson.lessonDate,
+                  studentId: student,
+                  lessonId: lesson.lessonId,
+                },
+                where: {
+                  id: existsLack.id,
+                },
+              });
+              return await updatedLack;
+            } else {
+              const createdLack = await this.prisma.lackOfClass.create({
+                data: {
+                  lessonDate: lesson.lessonDate,
+                  studentId: student,
+                  lessonId: lesson.lessonId,
+                },
+              });
+
+              return await createdLack;
+            }
+          }),
+        );
+
+        return await lackOfLesson;
+      }),
+    );
+
+    console.timeEnd('Promises aninhadas');
+
+    return {
+      data: await lackOfLessons,
+      status: HttpStatus.OK,
+      message: 'Frequência para as aulas atualizads com sucesso.',
     };
   }
 

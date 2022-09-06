@@ -18,6 +18,7 @@ import { LessonService } from '../services/lesson.service';
 import { User } from 'src/modules/user/decorators/user.decorator';
 import { FindLessonsOfTeacherDTO } from '../dtos/findLessonsOfTeacher.dto';
 import { PaginationDTO } from 'src/models/PaginationDTO';
+import { CreateManyLessonDTO } from '../dtos/createManyLesson.dto';
 
 @Controller('lesson')
 export class LessonController {
@@ -47,6 +48,12 @@ export class LessonController {
       lessonId,
       createManyLackLessonDTO,
     );
+  }
+
+  @Public()
+  @Put('/manyLackOfClass')
+  updateManyLackOfLessons(@Body() createManyLessonDTO: CreateManyLessonDTO[]) {
+    return this.lackOfClassService.createManyLessons(createManyLessonDTO);
   }
 
   @Public()
