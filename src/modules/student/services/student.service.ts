@@ -561,85 +561,91 @@ export class StudentService {
         );
       }
 
-      const allReportCard = await this.prisma.reportCard.findMany({
-        where: {
-          studentId: studentId.id,
-        },
-        select: {
-          period: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
-          homeWork: {
-            include: {
-              discipline: true,
-              evaluativeDelivery: {
-                where: {
-                  owner: 'teacher',
-                },
-                select: {
-                  rate: true,
-                },
-              },
-            },
-          },
-        },
-      });
+      const data = await this.prisma
+        .$queryRaw`select d.id as disciplineid, p.id as periodid, d."name" as disciplinename, p."name" as periodname, trunc(cast(AVG(ed.rate) as numeric), 3) as mean  from "EvaluativeDelivery" ed inner join "HomeWork" hw on ed."homeWorkId" =hw.id inner join "Discipline" d on hw."disciplineId" = d.id inner join "Class" c on d."classId" = c.id inner join "Period" p 
+      on p."schoolId" = c."schooldId" where ed."studentId" = ${studentId.id} and ed."owner" = 'Professor'::"OwnerAction" 
+      and ed.stage = 'Avaliada'::"EvaluationStage" group by d.id, p.id order by p."endOfPeriod"`;
 
-      if (!allReportCard) {
-        return {
-          data: [],
-          status: HttpStatus.OK,
-          message: 'Boletim do estudante retornado com sucesso.',
-        };
-      }
+      // const allReportCard = await this.prisma.reportCard.findMany({
+      //   where: {
+      //     studentId: studentId.id,
+      //   },
+      //   select: {
+      //     period: {
+      //       select: {
+      //         id: true,
+      //         name: true,
+      //       },
+      //     },
+      //     homeWork: {
+      //       include: {
+      //         discipline: true,
+      //         evaluativeDelivery: {
+      //           where: {
+      //             owner: 'teacher',
+      //           },
+      //           select: {
+      //             rate: true,
+      //           },
+      //         },
+      //       },
+      //     },
+      //   },
+      // });
 
-      const resultMap = await allReportCard.map((period) => {
-        return {
-          periodId: period.period.id,
-          periodName: period.period.name,
-          disciplineId: period.homeWork.discipline.id,
-          disciplineName: period.homeWork.discipline.name,
-          rate: period.homeWork.evaluativeDelivery[0].rate,
-        };
-      });
+      // if (!allReportCard) {
+      //   return {
+      //     data: [],
+      //     status: HttpStatus.OK,
+      //     message: 'Boletim do estudante retornado com sucesso.',
+      //   };
+      // }
 
-      function groupBy(array, key) {
-        const arrayReduce = array.reduce(
-          (acc, item) => ({
-            ...acc,
-            [item[key]]: [...(acc[item[key]] ?? []), item],
-          }),
-          {},
-        );
+      // const resultMap = await allReportCard.map((period) => {
+      //   return {
+      //     periodId: period.period.id,
+      //     periodName: period.period.name,
+      //     disciplineId: period.homeWork.discipline.id,
+      //     disciplineName: period.homeWork.discipline.name,
+      //     rate: period.homeWork.evaluativeDelivery[0].rate,
+      //   };
+      // });
 
-        const result = Object.keys(arrayReduce).map(function (key) {
-          return [key, arrayReduce[key]];
-        });
+      // function groupBy(array, key) {
+      //   const arrayReduce = array.reduce(
+      //     (acc, item) => ({
+      //       ...acc,
+      //       [item[key]]: [...(acc[item[key]] ?? []), item],
+      //     }),
+      //     {},
+      //   );
 
-        return result;
-      }
+      //   const result = Object.keys(arrayReduce).map(function (key) {
+      //     return [key, arrayReduce[key]];
+      //   });
 
-      const groupByPeriod = groupBy(resultMap, 'periodId');
+      //   return result;
+      // }
 
-      const data = groupByPeriod.map((valueOfPeriod) => {
-        const groupByDiscipline = valueOfPeriod.map(
-          (valueOfDiscipline, index) => {
-            if (index % 2 !== 0) {
-              return groupBy(valueOfDiscipline, 'disciplineId');
-            }
-          },
-        );
+      // const groupByPeriod = groupBy(resultMap, 'periodId');
 
-        const formattedData = groupByDiscipline.filter(function (i) {
-          return i;
-        });
+      // const data = groupByPeriod.map((valueOfPeriod) => {
+      //   const groupByDiscipline = valueOfPeriod.map(
+      //     (valueOfDiscipline, index) => {
+      //       if (index % 2 !== 0) {
+      //         return groupBy(valueOfDiscipline, 'disciplineId');
+      //       }
+      //     },
+      //   );
 
-        return formattedData[0];
-      });
+      //   const formattedData = groupByDiscipline.filter(function (i) {
+      //     return i;
+      //   });
 
+      //   return formattedData[0];
+      // });
+
+      // return data;
       return data;
     } catch (error) {
       if (error) throw error;
