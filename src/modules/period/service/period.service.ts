@@ -43,4 +43,65 @@ export class PeriodService {
       return { response };
     } catch (error) {}
   }
+
+  async deletePeriodById(periodId: string) {
+    try {
+      const deletedPeriod = await this.prisma.period.delete({
+        where: {
+          id: periodId,
+        },
+      });
+
+      if (!deletedPeriod) {
+        throw Error('Period not found');
+      }
+
+      return {
+        status: HttpStatus.OK,
+        message: 'Perído deletado com sucesso!',
+      };
+
+    } catch (error) {
+      if (error) throw error;
+      throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async updatePeriodById(periodId, data) {
+    try {
+      const updatePeriod = await this.prisma.period.findUnique({
+        where: {
+          id: periodId
+        }
+      });
+
+      if (!updatePeriod) {
+        throw Error('Period not found');
+      }
+
+      updatePeriod.name = data.name ? data.name : updatePeriod.name;
+      updatePeriod.startOfPeriod = data.startOfPeriod ? data.startOfPeriod : updatePeriod.startOfPeriod;
+      updatePeriod.endOfPeriod = data.endOfPeriod ? data.endOfPeriod : updatePeriod.endOfPeriod;
+
+      await this.prisma.period.update({
+        where: {
+          id: periodId
+        },
+        data: {
+          name: updatePeriod.name,
+          startOfPeriod: updatePeriod.startOfPeriod,
+          endOfPeriod: updatePeriod.endOfPeriod
+        }
+      })
+
+      return {
+        status: HttpStatus.OK,
+        message: 'Período atualizado com sucesso.',
+      };
+
+    } catch(error) {
+      if (error) throw error;
+      throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 }

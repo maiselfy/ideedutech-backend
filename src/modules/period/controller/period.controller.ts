@@ -1,5 +1,5 @@
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
 import { PeriodService } from '../service/period.service';
 import { CreatePeriodDTO } from '../dtos/create-period.dto';
 
@@ -22,5 +22,18 @@ export class PeriodController {
     @Param('schoolYear') schoolYear: string,
   ) {
     return this.periodService.findPeriodFromSchool(schoolId, schoolYear);
+  }
+
+  @Delete('/:periodId')
+  deletePeriod(@Param('periodId') periodId: string) {
+    return this.periodService.deletePeriodById(periodId)
+  }
+
+  @Put('/:periodId')
+  updatePeriod(
+    @Param('periodId') periodId: string,
+    @Body() data
+    ) {
+    return this.periodService.updatePeriodById(periodId, data)
   }
 }

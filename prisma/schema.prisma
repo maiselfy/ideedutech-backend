@@ -203,7 +203,7 @@ model Schedule {
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   discipline   Discipline @relation(fields: [disciplineId], references: [id])
-  period       Period     @relation(fields: [periodId], references: [id])
+  period       Period     @relation(fields: [periodId], references: [id], onDelete: Cascade)
   lesson       Lesson[]
 }
 
@@ -215,9 +215,7 @@ model Period {
   updatedAt             DateTime             @updatedAt
   name                  String
   schoolId              String
-  disciplineSchedulesId String?
-  DisciplineSchedules   DisciplineSchedules? @relation(fields: [disciplineSchedulesId], references: [id])
-  school                School               @relation(fields: [schoolId], references: [id])
+  school                School               @relation(fields: [schoolId], references: [id], onDelete: Cascade)
   contents              Content[]
   registerClass         RegisterClass[]
   schedule              Schedule[]
@@ -293,7 +291,6 @@ model DisciplineSchedules {
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   discipline   Discipline @relation(fields: [disciplineId], references: [id])
-  periods      Period[]
 }
 
 model Address {
