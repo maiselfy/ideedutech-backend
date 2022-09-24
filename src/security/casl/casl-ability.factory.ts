@@ -30,6 +30,7 @@ import {
   Schedule,
   Gradebook,
   ReportCard,
+  ReportAverage
 } from '@prisma/client';
 
 // Definir tipos da minha aplicação.
@@ -57,6 +58,7 @@ export type AppSubjects = Subjects<{
   Schedule: Schedule;
   Gradebook: Gradebook;
   ReportCard: ReportCard;
+  ReportAverage: ReportAverage;
   all: 'all';
 }>;
 

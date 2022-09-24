@@ -67,6 +67,7 @@ model Student {
   reportCard         ReportCard[]
   gradebook          Gradebook[]
   LackOfClass        LackOfClass[]
+  reportAverage      ReportAverage[]
 }
 
 model Manager {
@@ -133,6 +134,7 @@ model Discipline {
   homeWorks           HomeWork[]
   lessons             Lesson[]
   schedules           Schedule[]
+  reportAverage      ReportAverage[]
 }
 
 model Class {
@@ -220,6 +222,7 @@ model Period {
   registerClass         RegisterClass[]
   schedule              Schedule[]
   reportCard            ReportCard[]
+  reportAverage         ReportAverage[] 
 }
 
 model ReportCard {
@@ -230,6 +233,17 @@ model ReportCard {
    studentId     String          
    periodId      String
    period        Period          @relation(fields: [periodId], references: [id])
+}
+
+model ReportAverage {
+  id            String          @id @default(uuid())
+  rate          Float
+  discipline    Discipline      @relation(fields: [disciplineId], references: [id])
+  disciplineId  String
+  student       Student         @relation(fields: [studentId], references: [id])
+  studentId     String          
+  periodId      String
+  period        Period          @relation(fields: [periodId], references: [id])
 }
 model Content {
   id            String          @id @default(uuid())
