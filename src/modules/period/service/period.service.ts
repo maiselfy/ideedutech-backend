@@ -104,4 +104,27 @@ export class PeriodService {
       throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
+  async findAllPeriodsBySchoolId(schoolId){
+    try {
+
+      const allPeriods = await this.prisma.period.findMany({
+        where: {
+          schoolId: schoolId
+        },
+        select: {
+          id: true,
+          name: true,
+          startOfPeriod: true,
+          endOfPeriod: true
+        }
+      });
+
+      return allPeriods
+
+    } catch(error) {
+      if (error) throw error;
+      throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 }

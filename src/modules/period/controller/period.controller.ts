@@ -15,6 +15,12 @@ export class PeriodController {
   }
 
   @ApiBearerAuth()
+  @Get('/school/:schoolId')
+  findAllPeriodsBySchoolId(@Param('schoolId') schoolId: string) {
+    return this.periodService.findAllPeriodsBySchoolId(schoolId)
+  }
+
+  @ApiBearerAuth()
   @Get('/:schoolYear/school/:schoolId')
   findPeriodFromSchool(
     @Param('schoolId')

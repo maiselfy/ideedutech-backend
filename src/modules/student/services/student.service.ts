@@ -698,4 +698,64 @@ export class StudentService {
       throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
+  async findAllAveragesByStudent(userId){
+    try {
+      const studentId = await this.findStudentIdByUserId(userId);
+
+      if (!studentId) {
+        throw Error('Error listing media');
+      }
+
+      const averageOfStudent = await this.prisma.reportAverage.findMany({
+        where: {
+          studentId: studentId.id
+        },
+        select: {
+          rate: true,
+          discipline: {
+            select: {
+              id: true,
+              name: true
+            }
+          },
+          period: {
+            select: {
+              id: true,
+              name: true
+            }
+          },
+          student: {
+            select: {
+              user: {
+                select: {
+                  name: true
+                }
+              }
+            }
+          }
+        }
+      });
+
+      if (!averageOfStudent) {
+        throw Error('Average not found');
+      }
+
+      const resultMap = averageOfStudent.map((average) => {
+        return {
+          average: average.rate,
+          periodId: average.period.id,
+          period: average.period.name,
+          disciplineId: average.discipline.id,
+          discipline: average.discipline.name,
+        }
+      })
+
+      return resultMap
+
+    } catch (error) {
+      if (error) throw error;
+      throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 }

@@ -12,6 +12,27 @@ export class TeacherService {
     private managerService: ManagerService,
   ) {}
 
+  async createAverageForStudent(data){
+    try {
+
+      const averageByStudent = await this.prisma.reportAverage.create({
+        data: {
+          ...data
+        }
+      });
+
+      return {
+        data: averageByStudent,
+        status: HttpStatus.OK,
+        message: 'Média adicionada com sucesso.',
+      };
+
+    } catch(error) {
+      if (error) throw error;
+      throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   async findAllTeachersOnSchool(schoolId: string, userId: string) {
     try {
       const findSchool = await this.prisma.school.findFirst({
@@ -304,5 +325,101 @@ export class TeacherService {
     return {
       message: `Teacher ${deleteTeacher} removed `,
     };
+  }
+
+  async findAllAverageForStudentsByDisciplineId(disciplineId: string) {
+    try {
+      const averageForStudent = await this.prisma.reportAverage.findMany({
+        where: {
+          disciplineId: disciplineId
+        },
+        select: {
+          rate: true,
+          discipline: {
+            select: {
+              id: true,
+              name: true
+            }
+          },
+          period: {
+            select: {
+              id: true,
+              name: true
+            }
+          },
+          student: {
+            select: {
+              id: true,
+              user: {
+                select: {
+                  name: true
+                }
+              }
+            }
+          }
+        }
+      });
+
+      if (!averageForStudent) {
+        throw Error('Average not found');
+      }
+
+      const resultMap = averageForStudent.map((student) => {
+        return {
+          studentId: student.student.id,
+          name: student.student.user.name,
+          average: student.rate,
+          periodId: student.period.id,
+          period: student.period.name,
+          disciplineId: student.discipline.id,
+          discipline: student.discipline.name,
+        }
+      })
+
+      return resultMap;
+
+    } catch(error) {
+      if (error) throw error;
+      throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async updateAverageForStudent(data){
+    const { rate, studentId, disciplineId, periodId } = data;
+    try {
+
+      const reportAverage = await this.prisma.reportAverage.findFirst({
+          where: {
+            studentId: studentId,
+            disciplineId: disciplineId,
+            periodId: periodId
+          },
+          select: {
+            id: true
+          }
+      });
+
+      if (!reportAverage) {
+        throw Error('Average not found');
+      }
+
+      await this.prisma.reportAverage.update({
+        where: {
+          id: reportAverage.id
+        },
+        data: {
+          rate: rate
+        }
+      });
+
+      return {
+        status: HttpStatus.OK,
+        message: 'Média atualizada com sucesso.',
+      };
+
+    } catch(error) {
+      if (error) throw error;
+      throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }

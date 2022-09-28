@@ -1,4 +1,4 @@
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import {
   Controller,
   Get,
@@ -6,6 +6,9 @@ import {
   Delete,
   Query,
   NotFoundException,
+  Post,
+  Body,
+  Put,
 } from '@nestjs/common';
 import { Public } from 'src/modules/auth/decorators/public.decorator';
 import { PaginationDTO } from 'src/models/PaginationDTO';
@@ -16,6 +19,23 @@ import { TeacherService } from '../services/teacher.service';
 @Controller('teacher')
 export class TeacherController {
   constructor(private readonly teacherService: TeacherService) {}
+
+  @ApiBearerAuth()
+  @Post('/average-for-student')
+  create(@Body() data) {
+    return this.teacherService.createAverageForStudent(data);
+  }
+
+  @Put('average-for-student')
+  updateAverage(@Body() data) {
+    return this.teacherService.updateAverageForStudent(data)
+  }
+
+  @ApiBearerAuth()
+  @Get('/student-averages/:disciplineId')
+  findAllAverageForStudents(@Param('disciplineId') disciplineId: string) {
+    return this.teacherService.findAllAverageForStudentsByDisciplineId(disciplineId);
+  }
 
   @Get('/school/:schoolId')
   findAllTeachersOnSchool(@User() user, @Param('schoolId') schoolId: string) {

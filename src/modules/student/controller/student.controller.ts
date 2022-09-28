@@ -1,4 +1,4 @@
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import {
   Controller,
   Get,
@@ -91,5 +91,13 @@ export class StudentController {
   @Get('all-report-card/:userId')
   findAllNotesByReportCard(@Param('userId') userId: string) {
     return this.studentService.findAllNotesByReportCard(userId);
+  }
+
+  @ApiBearerAuth()
+  @Get('stu/averages')
+  findAllAverageByStudent(
+    @User() user,
+  ){
+    return this.studentService.findAllAveragesByStudent(user.id);
   }
 }
