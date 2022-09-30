@@ -31,12 +31,6 @@ export class TeacherController {
     return this.teacherService.updateAverageForStudent(data)
   }
 
-  @ApiBearerAuth()
-  @Get('/student-averages/:disciplineId')
-  findAllAverageForStudents(@Param('disciplineId') disciplineId: string) {
-    return this.teacherService.findAllAverageForStudentsByDisciplineId(disciplineId);
-  }
-
   @Get('/school/:schoolId')
   findAllTeachersOnSchool(@User() user, @Param('schoolId') schoolId: string) {
     return this.teacherService.findAllTeachersOnSchool(schoolId, user.id);

@@ -264,6 +264,7 @@ export class TeacherService {
             name: true,
             school: {
               select: {
+                id: true,
                 name: true,
               },
             },
@@ -290,6 +291,7 @@ export class TeacherService {
         name: discipline.name,
         topic: discipline.topic,
         className: discipline.class.name,
+        schoolId: discipline.class.school.id,
         school: discipline.class.school,
         qtdStudents: discipline.class._count.students,
       };
@@ -325,63 +327,6 @@ export class TeacherService {
     return {
       message: `Teacher ${deleteTeacher} removed `,
     };
-  }
-
-  async findAllAverageForStudentsByDisciplineId(disciplineId: string) {
-    try {
-      const averageForStudent = await this.prisma.reportAverage.findMany({
-        where: {
-          disciplineId: disciplineId
-        },
-        select: {
-          rate: true,
-          discipline: {
-            select: {
-              id: true,
-              name: true
-            }
-          },
-          period: {
-            select: {
-              id: true,
-              name: true
-            }
-          },
-          student: {
-            select: {
-              id: true,
-              user: {
-                select: {
-                  name: true
-                }
-              }
-            }
-          }
-        }
-      });
-
-      if (!averageForStudent) {
-        throw Error('Average not found');
-      }
-
-      const resultMap = averageForStudent.map((student) => {
-        return {
-          studentId: student.student.id,
-          name: student.student.user.name,
-          average: student.rate,
-          periodId: student.period.id,
-          period: student.period.name,
-          disciplineId: student.discipline.id,
-          discipline: student.discipline.name,
-        }
-      })
-
-      return resultMap;
-
-    } catch(error) {
-      if (error) throw error;
-      throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
-    }
   }
 
   async updateAverageForStudent(data){

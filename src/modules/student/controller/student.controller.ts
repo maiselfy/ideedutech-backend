@@ -95,9 +95,15 @@ export class StudentController {
 
   @ApiBearerAuth()
   @Get('stu/averages')
-  findAllAverageByStudent(
-    @User() user,
-  ){
-    return this.studentService.findAllAveragesByStudent(user.id);
+  findAllAverage(@User() user) {
+    return this.studentService.findAllStudentAverages(user.id);
+  }
+
+  @ApiBearerAuth()
+  @Get('/student-averages/:disciplineId')
+  findAllAverageForStudents(@Param('disciplineId') disciplineId: string) {
+    return this.studentService.findAllAverageForStudentsByDisciplineId(
+      disciplineId,
+    );
   }
 }
