@@ -788,7 +788,19 @@ export class StudentService {
 
   async findAllAverageForStudentsByDisciplineId(disciplineId: string) {
     try {
+      const classId = await this.prisma.discipline.findFirst({
+        where: {
+          id: disciplineId,
+        },
+        select: {
+          classId: true,
+        },
+      });
+
       const averageStudents = await this.prisma.student.findMany({
+        where: {
+          classId: classId.classId,
+        },
         select: {
           id: true,
           user: {
