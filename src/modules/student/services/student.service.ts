@@ -699,7 +699,7 @@ export class StudentService {
     }
   }
 
-  async findAllStudentAverages(userId) {
+  async findAllAveragesByStudent(userId) {
     try {
       const studentId = await this.findStudentIdByUserId(userId);
 
@@ -776,10 +776,33 @@ export class StudentService {
               name: true,
             },
           },
+          student: {
+            select: {
+              user: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
         },
       });
 
-      return averageByDiscipline;
+      if (!averageOfStudent) {
+        throw Error('Average not found');
+      }
+
+      const resultMap = averageOfStudent.map((average) => {
+        return {
+          average: average.rate,
+          periodId: average.period.id,
+          period: average.period.name,
+          disciplineId: average.discipline.id,
+          discipline: average.discipline.name,
+        };
+      });
+
+      return resultMap;
     } catch (error) {
       if (error) throw error;
       throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
