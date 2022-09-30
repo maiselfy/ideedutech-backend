@@ -845,4 +845,25 @@ export class StudentService {
       throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
+  async findSchoolOfLoggedUser(userId: string) {
+    const school = await this.prisma.school.findFirst({
+      where: {
+        students: {
+          some: {
+            userId: userId,
+          },
+        },
+      },
+    });
+
+    if (!school) {
+      throw new HttpException(
+        `Erro. Escola não encontrada`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return school;
+  }
 }
