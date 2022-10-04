@@ -127,7 +127,8 @@ export class ContentService {
             type: 'loose',
           },
         },
-        disciplineId,
+        disciplineId: discipline.id,
+        periodId: null,
       },
       select: {
         id: true,

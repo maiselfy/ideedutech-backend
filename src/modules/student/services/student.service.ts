@@ -761,6 +761,68 @@ export class StudentService {
     }
   }
 
+  async findAllStudentAverages(userId) {
+    try {
+      const studentId = await this.findStudentIdByUserId(userId);
+
+      if (!studentId) {
+        throw new HttpException(
+          'Estudante não encontrado.',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      const averagesByDiscipline = await this.prisma.reportAverage.findMany({
+        distinct: ['disciplineId'],
+        where: {
+          studentId: studentId.id,
+        },
+        select: {
+          discipline: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      });
+
+      let listOfMediaGradeByDiscipline = [];
+
+      for (const discipline of averagesByDiscipline) {
+        listOfMediaGradeByDiscipline.push({
+          disciplineId: discipline.discipline.id,
+          discipline: discipline.discipline.name,
+          notes: await this.findTheAveragesByDiscipline(
+            discipline.discipline.id,
+            studentId.id,
+          ),
+        });
+      }
+
+      const averagesByFormattedDiscipline = listOfMediaGradeByDiscipline.map(
+        (discipline) => {
+          return {
+            disciplineId: discipline.disciplineId,
+            discipline: discipline.discipline,
+            notes: discipline.notes.map((note) => {
+              return {
+                average: note.rate,
+                periodId: note.period.id,
+                period: note.period.name,
+              };
+            }),
+          };
+        },
+      );
+
+      return averagesByFormattedDiscipline;
+    } catch (error) {
+      if (error) throw error;
+      throw new HttpException('Failed!!!', HttpStatus.BAD_REQUEST);
+    }
+  }
+
   async findTheAveragesByDiscipline(disciplineId, studentId) {
     try {
       const averageByDiscipline = await this.prisma.reportAverage.findMany({
@@ -776,33 +838,10 @@ export class StudentService {
               name: true,
             },
           },
-          student: {
-            select: {
-              user: {
-                select: {
-                  name: true,
-                },
-              },
-            },
-          },
         },
       });
 
-      if (!averageOfStudent) {
-        throw Error('Average not found');
-      }
-
-      const resultMap = averageOfStudent.map((average) => {
-        return {
-          average: average.rate,
-          periodId: average.period.id,
-          period: average.period.name,
-          disciplineId: average.discipline.id,
-          discipline: average.discipline.name,
-        };
-      });
-
-      return resultMap;
+      return averageByDiscipline;
     } catch (error) {
       if (error) throw error;
       throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
