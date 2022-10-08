@@ -738,10 +738,13 @@ export class ScheduleService {
               },
             },
           },
+          lesson: {
+            where: {
+              classDate: date,
+            },
+          },
         },
       });
-
-      console.log('schedules', schedules);
 
       const formattedData = schedules.map((schedule) => {
         const newData = {
@@ -752,6 +755,7 @@ export class ScheduleService {
           class: schedule.discipline.class.name,
           classId: schedule.discipline.class.id,
           date: date,
+          lesson: schedule.lesson,
         };
 
         return newData;
