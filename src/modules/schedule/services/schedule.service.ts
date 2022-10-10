@@ -4,6 +4,7 @@ import {
   eachDayOfInterval,
   eachMinuteOfInterval,
   endOfWeek,
+  format,
   startOfWeek,
 } from 'date-fns';
 import { Day, PrismaService } from 'src/modules/prisma';
@@ -708,29 +709,308 @@ export class ScheduleService {
       );
     }
 
-    const days = eachDayOfInterval({
-      start: startOfWeek(new Date()),
-      end: endOfWeek(new Date()),
-    });
-
-    const hours = eachMinuteOfInterval(
+    const schedulesOfWeek: ScheduleVerify[] = [
       {
-        start: new Date().setHours(7, 0),
-        end: new Date().setHours(16, 50),
+        scheduleId: null,
+        day: 'monday',
+        initialHour: '07:00',
+        finishHour: '07:50',
       },
-      { step: 50 },
-    );
-
-    const formattedDate = days.map((day) => {
-      const dayFormatted = format(new Date(day), 'EEEEEE');
-      return hours.map((hour) => {
-        return {
-          day: dayFormatted,
-          initialHour: format(new Date(hour), 'HH:mm'),
-          finishHour: format(addMinutes(new Date(hour), 50), 'HH:mm'),
-        };
-      });
-    });
+      {
+        scheduleId: null,
+        day: 'monday',
+        initialHour: '07:50',
+        finishHour: '08:40',
+      },
+      {
+        scheduleId: null,
+        day: 'monday',
+        initialHour: '08:40',
+        finishHour: '09:30',
+      },
+      {
+        scheduleId: null,
+        day: 'monday',
+        initialHour: '09:30',
+        finishHour: '10:20',
+      },
+      {
+        scheduleId: null,
+        day: 'monday',
+        initialHour: '10:20',
+        finishHour: '11:10',
+      },
+      {
+        scheduleId: null,
+        day: 'monday',
+        initialHour: '11:10',
+        finishHour: '12:00',
+      },
+      {
+        scheduleId: null,
+        day: 'monday',
+        initialHour: '13:30',
+        finishHour: '14:20',
+      },
+      {
+        scheduleId: null,
+        day: 'monday',
+        initialHour: '14:20',
+        finishHour: '15:10',
+      },
+      {
+        scheduleId: null,
+        day: 'monday',
+        initialHour: '15:10',
+        finishHour: '16:00',
+      },
+      {
+        scheduleId: null,
+        day: 'monday',
+        initialHour: '16:00',
+        finishHour: '16:50',
+      },
+      {
+        scheduleId: null,
+        day: 'thursday',
+        initialHour: '07:00',
+        finishHour: '07:50',
+      },
+      {
+        scheduleId: null,
+        day: 'thursday',
+        initialHour: '07:50',
+        finishHour: '08:40',
+      },
+      {
+        scheduleId: null,
+        day: 'thursday',
+        initialHour: '08:40',
+        finishHour: '09:30',
+      },
+      {
+        scheduleId: null,
+        day: 'thursday',
+        initialHour: '09:30',
+        finishHour: '10:20',
+      },
+      {
+        scheduleId: null,
+        day: 'thursday',
+        initialHour: '10:20',
+        finishHour: '11:10',
+      },
+      {
+        scheduleId: null,
+        day: 'thursday',
+        initialHour: '11:10',
+        finishHour: '12:00',
+      },
+      {
+        scheduleId: null,
+        day: 'thursday',
+        initialHour: '13:30',
+        finishHour: '14:20',
+      },
+      {
+        scheduleId: null,
+        day: 'thursday',
+        initialHour: '14:20',
+        finishHour: '15:10',
+      },
+      {
+        scheduleId: null,
+        day: 'thursday',
+        initialHour: '15:10',
+        finishHour: '16:00',
+      },
+      {
+        scheduleId: null,
+        day: 'thursday',
+        initialHour: '16:00',
+        finishHour: '16:50',
+      },
+      {
+        scheduleId: null,
+        day: 'wednesday',
+        initialHour: '07:00',
+        finishHour: '07:50',
+      },
+      {
+        scheduleId: null,
+        day: 'wednesday',
+        initialHour: '07:50',
+        finishHour: '08:40',
+      },
+      {
+        scheduleId: null,
+        day: 'wednesday',
+        initialHour: '08:40',
+        finishHour: '09:30',
+      },
+      {
+        scheduleId: null,
+        day: 'wednesday',
+        initialHour: '09:30',
+        finishHour: '10:20',
+      },
+      {
+        scheduleId: null,
+        day: 'wednesday',
+        initialHour: '10:20',
+        finishHour: '11:10',
+      },
+      {
+        scheduleId: null,
+        day: 'wednesday',
+        initialHour: '11:10',
+        finishHour: '12:00',
+      },
+      {
+        scheduleId: null,
+        day: 'wednesday',
+        initialHour: '13:30',
+        finishHour: '14:20',
+      },
+      {
+        scheduleId: null,
+        day: 'wednesday',
+        initialHour: '14:20',
+        finishHour: '15:10',
+      },
+      {
+        scheduleId: null,
+        day: 'wednesday',
+        initialHour: '15:10',
+        finishHour: '16:00',
+      },
+      {
+        scheduleId: null,
+        day: 'wednesday',
+        initialHour: '16:00',
+        finishHour: '16:50',
+      },
+      {
+        scheduleId: null,
+        day: 'tuesday',
+        initialHour: '07:00',
+        finishHour: '07:50',
+      },
+      {
+        scheduleId: null,
+        day: 'tuesday',
+        initialHour: '07:50',
+        finishHour: '08:40',
+      },
+      {
+        scheduleId: null,
+        day: 'tuesday',
+        initialHour: '08:40',
+        finishHour: '09:30',
+      },
+      {
+        scheduleId: null,
+        day: 'tuesday',
+        initialHour: '09:30',
+        finishHour: '10:20',
+      },
+      {
+        scheduleId: null,
+        day: 'tuesday',
+        initialHour: '10:20',
+        finishHour: '11:10',
+      },
+      {
+        scheduleId: null,
+        day: 'tuesday',
+        initialHour: '11:10',
+        finishHour: '12:00',
+      },
+      {
+        scheduleId: null,
+        day: 'tuesday',
+        initialHour: '13:30',
+        finishHour: '14:20',
+      },
+      {
+        scheduleId: null,
+        day: 'tuesday',
+        initialHour: '14:20',
+        finishHour: '15:10',
+      },
+      {
+        scheduleId: null,
+        day: 'tuesday',
+        initialHour: '15:10',
+        finishHour: '16:00',
+      },
+      {
+        scheduleId: null,
+        day: 'tuesday',
+        initialHour: '16:00',
+        finishHour: '16:50',
+      },
+      {
+        scheduleId: null,
+        day: 'friday',
+        initialHour: '07:00',
+        finishHour: '07:50',
+      },
+      {
+        scheduleId: null,
+        day: 'friday',
+        initialHour: '07:50',
+        finishHour: '08:40',
+      },
+      {
+        scheduleId: null,
+        day: 'friday',
+        initialHour: '08:40',
+        finishHour: '09:30',
+      },
+      {
+        scheduleId: null,
+        day: 'friday',
+        initialHour: '09:30',
+        finishHour: '10:20',
+      },
+      {
+        scheduleId: null,
+        day: 'friday',
+        initialHour: '10:20',
+        finishHour: '11:10',
+      },
+      {
+        scheduleId: null,
+        day: 'friday',
+        initialHour: '11:10',
+        finishHour: '12:00',
+      },
+      {
+        scheduleId: null,
+        day: 'friday',
+        initialHour: '13:30',
+        finishHour: '14:20',
+      },
+      {
+        scheduleId: null,
+        day: 'friday',
+        initialHour: '14:20',
+        finishHour: '15:10',
+      },
+      {
+        scheduleId: null,
+        day: 'friday',
+        initialHour: '15:10',
+        finishHour: '16:00',
+      },
+      {
+        scheduleId: null,
+        day: 'friday',
+        initialHour: '16:00',
+        finishHour: '16:50',
+      },
+    ];
 
     const unavailableSchedules = await this.prisma.schedule.findMany({
       where: {
@@ -751,7 +1031,7 @@ export class ScheduleService {
       },
     });
 
-    formattedDate.some((freeSchedule, index) => {
+    schedulesOfWeek.some((freeSchedule, index) => {
       const swapElement = unavailableSchedules.find(
         (unavailableSchedule) =>
           unavailableSchedule.day === freeSchedule.day &&
@@ -760,7 +1040,7 @@ export class ScheduleService {
       );
 
       if (swapElement) {
-        formattedDate[index] = {
+        schedulesOfWeek[index] = {
           day: swapElement.day,
           initialHour: swapElement.initialHour,
           finishHour: swapElement.finishHour,
@@ -769,8 +1049,8 @@ export class ScheduleService {
       }
     });
 
-    const formattedData = formattedDate.reduce((acc, element) => {
-      const day = formattedDate.filter((y) => y.day === element.day);
+    const formattedData = schedulesOfWeek.reduce((acc, element) => {
+      const day = schedulesOfWeek.filter((y) => y.day === element.day);
       acc[element.day] = day;
       return acc;
     }, {});

@@ -38,7 +38,7 @@ export class ScheduleController {
     return this.scheduleService.getAvailableSchedules(classId, teacherId);
   }
 
-  @Get('/lesson/schedules/:classId/')
+  @Get('/:classId/')
   getSchedulesOfClass(@Param('classId') classId: string) {
     return this.scheduleService.getSchedulesOfClass(classId);
   }
