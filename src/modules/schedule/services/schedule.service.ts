@@ -1,4 +1,11 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  addMinutes,
+  eachDayOfInterval,
+  eachMinuteOfInterval,
+  endOfWeek,
+  startOfWeek,
+} from 'date-fns';
 import { Day, PrismaService } from 'src/modules/prisma';
 import { CreateScheduleDTO } from '../dtos/createSchedule.dto';
 
@@ -714,7 +721,7 @@ export class ScheduleService {
       { step: 50 },
     );
 
-    const formattedData = days.map((day) => {
+    const formattedDate = days.map((day) => {
       const dayFormatted = format(new Date(day), 'EEEEEE');
       return hours.map((hour) => {
         return {
@@ -725,55 +732,54 @@ export class ScheduleService {
       });
     });
 
-      const unavailableSchedules = await this.prisma.schedule.findMany({
-        where: {
-          OR: [
-            // A turma possui alguma disciplina com aula ?
-            {
-              discipline: {
-                classId: classExists.id,
-              },
+    const unavailableSchedules = await this.prisma.schedule.findMany({
+      where: {
+        OR: [
+          // A turma possui alguma disciplina com aula ?
+          {
+            discipline: {
+              classId: classExists.id,
             },
-          ],
-        },
-        select: {
-          id: true,
-          day: true,
-          initialHour: true,
-          finishHour: true,
-        },
-      });
+          },
+        ],
+      },
+      select: {
+        id: true,
+        day: true,
+        initialHour: true,
+        finishHour: true,
+      },
+    });
 
-      schedulesOfWeek.some((freeSchedule, index) => {
-        const swapElement = unavailableSchedules.find(
-          (unavailableSchedule) =>
-            unavailableSchedule.day === freeSchedule.day &&
-            unavailableSchedule.initialHour === freeSchedule.initialHour &&
-            unavailableSchedule.finishHour === freeSchedule.finishHour,
-        );
+    formattedDate.some((freeSchedule, index) => {
+      const swapElement = unavailableSchedules.find(
+        (unavailableSchedule) =>
+          unavailableSchedule.day === freeSchedule.day &&
+          unavailableSchedule.initialHour === freeSchedule.initialHour &&
+          unavailableSchedule.finishHour === freeSchedule.finishHour,
+      );
 
-        if (swapElement) {
-          schedulesOfWeek[index] = {
-            day: swapElement.day,
-            initialHour: swapElement.initialHour,
-            finishHour: swapElement.finishHour,
-            scheduleId: swapElement.id,
-          };
-        }
-      });
+      if (swapElement) {
+        formattedDate[index] = {
+          day: swapElement.day,
+          initialHour: swapElement.initialHour,
+          finishHour: swapElement.finishHour,
+          scheduleId: swapElement.id,
+        };
+      }
+    });
 
-      const formattedData = schedulesOfWeek.reduce((acc, element) => {
-        const day = schedulesOfWeek.filter((y) => y.day === element.day);
-        acc[element.day] = day;
-        return acc;
-      }, {});
+    const formattedData = formattedDate.reduce((acc, element) => {
+      const day = formattedDate.filter((y) => y.day === element.day);
+      acc[element.day] = day;
+      return acc;
+    }, {});
 
-      return {
-        data: formattedData,
-        status: HttpStatus.OK,
-        message: 'Horários retornados com sucesso',
-      };
-    }
+    return {
+      data: formattedData,
+      status: HttpStatus.OK,
+      message: 'Horários retornados com sucesso',
+    };
   }
 
   async getSchedulesOfTeacher(teacherId: string, date: string) {
