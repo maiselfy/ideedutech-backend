@@ -699,6 +699,68 @@ export class StudentService {
     }
   }
 
+  async findAllAveragesByStudent(userId) {
+    try {
+      const studentId = await this.findStudentIdByUserId(userId);
+
+      if (!studentId) {
+        throw new HttpException(
+          'Estudante não encontrado.',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      const averagesByDiscipline = await this.prisma.reportAverage.findMany({
+        distinct: ['disciplineId'],
+        where: {
+          studentId: studentId.id,
+        },
+        select: {
+          discipline: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      });
+
+      let listOfMediaGradeByDiscipline = [];
+
+      for (const discipline of averagesByDiscipline) {
+        listOfMediaGradeByDiscipline.push({
+          disciplineId: discipline.discipline.id,
+          discipline: discipline.discipline.name,
+          notes: await this.findTheAveragesByDiscipline(
+            discipline.discipline.id,
+            studentId.id,
+          ),
+        });
+      }
+
+      const averagesByFormattedDiscipline = listOfMediaGradeByDiscipline.map(
+        (discipline) => {
+          return {
+            disciplineId: discipline.disciplineId,
+            discipline: discipline.discipline,
+            notes: discipline.notes.map((note) => {
+              return {
+                average: note.rate,
+                periodId: note.period.id,
+                period: note.period.name,
+              };
+            }),
+          };
+        },
+      );
+
+      return averagesByFormattedDiscipline;
+    } catch (error) {
+      if (error) throw error;
+      throw new HttpException('Failed!!!', HttpStatus.BAD_REQUEST);
+    }
+  }
+
   async findAllStudentAverages(userId) {
     try {
       const studentId = await this.findStudentIdByUserId(userId);
@@ -788,7 +850,19 @@ export class StudentService {
 
   async findAllAverageForStudentsByDisciplineId(disciplineId: string) {
     try {
+      const classId = await this.prisma.discipline.findFirst({
+        where: {
+          id: disciplineId,
+        },
+        select: {
+          classId: true,
+        },
+      });
+
       const averageStudents = await this.prisma.student.findMany({
+        where: {
+          classId: classId.classId,
+        },
         select: {
           id: true,
           user: {
@@ -832,5 +906,26 @@ export class StudentService {
       if (error) throw error;
       throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
+
+  async findSchoolOfLoggedUser(userId: string) {
+    const school = await this.prisma.school.findFirst({
+      where: {
+        students: {
+          some: {
+            userId: userId,
+          },
+        },
+      },
+    });
+
+    if (!school) {
+      throw new HttpException(
+        `Erro. Escola não encontrada`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return school;
   }
 }

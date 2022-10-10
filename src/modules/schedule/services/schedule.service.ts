@@ -1,4 +1,11 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  addMinutes,
+  eachDayOfInterval,
+  eachMinuteOfInterval,
+  endOfWeek,
+  startOfWeek,
+} from 'date-fns';
 import { Day, PrismaService } from 'src/modules/prisma';
 import { CreateScheduleDTO } from '../dtos/createSchedule.dto';
 
@@ -687,6 +694,94 @@ export class ScheduleService {
     }
   }
 
+  async getSchedulesOfClass(classId: string) {
+    const classExists = await this.prisma.class.findUnique({
+      where: {
+        id: classId,
+      },
+    });
+
+    if (!classExists) {
+      throw new HttpException(
+        'Erro. Turma não encontrada.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const days = eachDayOfInterval({
+      start: startOfWeek(new Date()),
+      end: endOfWeek(new Date()),
+    });
+
+    const hours = eachMinuteOfInterval(
+      {
+        start: new Date().setHours(7, 0),
+        end: new Date().setHours(16, 50),
+      },
+      { step: 50 },
+    );
+
+    const formattedDate = days.map((day) => {
+      const dayFormatted = format(new Date(day), 'EEEEEE');
+      return hours.map((hour) => {
+        return {
+          day: dayFormatted,
+          initialHour: format(new Date(hour), 'HH:mm'),
+          finishHour: format(addMinutes(new Date(hour), 50), 'HH:mm'),
+        };
+      });
+    });
+
+    const unavailableSchedules = await this.prisma.schedule.findMany({
+      where: {
+        OR: [
+          // A turma possui alguma disciplina com aula ?
+          {
+            discipline: {
+              classId: classExists.id,
+            },
+          },
+        ],
+      },
+      select: {
+        id: true,
+        day: true,
+        initialHour: true,
+        finishHour: true,
+      },
+    });
+
+    formattedDate.some((freeSchedule, index) => {
+      const swapElement = unavailableSchedules.find(
+        (unavailableSchedule) =>
+          unavailableSchedule.day === freeSchedule.day &&
+          unavailableSchedule.initialHour === freeSchedule.initialHour &&
+          unavailableSchedule.finishHour === freeSchedule.finishHour,
+      );
+
+      if (swapElement) {
+        formattedDate[index] = {
+          day: swapElement.day,
+          initialHour: swapElement.initialHour,
+          finishHour: swapElement.finishHour,
+          scheduleId: swapElement.id,
+        };
+      }
+    });
+
+    const formattedData = formattedDate.reduce((acc, element) => {
+      const day = formattedDate.filter((y) => y.day === element.day);
+      acc[element.day] = day;
+      return acc;
+    }, {});
+
+    return {
+      data: formattedData,
+      status: HttpStatus.OK,
+      message: 'Horários retornados com sucesso',
+    };
+  }
+
   async getSchedulesOfTeacher(teacherId: string, date: string) {
     const teacher = await this.prisma.teacher.findUnique({
       where: {
@@ -738,10 +833,13 @@ export class ScheduleService {
               },
             },
           },
+          lesson: {
+            where: {
+              classDate: date,
+            },
+          },
         },
       });
-
-      console.log('schedules', schedules);
 
       const formattedData = schedules.map((schedule) => {
         const newData = {
@@ -752,6 +850,7 @@ export class ScheduleService {
           class: schedule.discipline.class.name,
           classId: schedule.discipline.class.id,
           date: date,
+          lesson: schedule.lesson,
         };
 
         return newData;

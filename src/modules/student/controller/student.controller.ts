@@ -106,4 +106,10 @@ export class StudentController {
       disciplineId,
     );
   }
+
+  @ApiBearerAuth()
+  @Get('student-info/school')
+  findAllBySchoolId(@User() user) {
+    return this.studentService.findSchoolOfLoggedUser(user.id);
+  }
 }
