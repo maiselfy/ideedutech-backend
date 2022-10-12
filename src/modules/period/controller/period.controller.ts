@@ -1,5 +1,13 @@
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  Put,
+} from '@nestjs/common';
 import { PeriodService } from '../service/period.service';
 import { CreatePeriodDTO } from '../dtos/create-period.dto';
 
@@ -14,10 +22,15 @@ export class PeriodController {
     return this.periodService.create(createPeriodDto);
   }
 
+  @Get('/:periodId')
+  getPeriod(@Param('periodId') periodId: string) {
+    return this.periodService.getPeriod(periodId);
+  }
+
   @ApiBearerAuth()
   @Get('/school/:schoolId')
   findAllPeriodsBySchoolId(@Param('schoolId') schoolId: string) {
-    return this.periodService.findAllPeriodsBySchoolId(schoolId)
+    return this.periodService.findAllPeriodsBySchoolId(schoolId);
   }
 
   @ApiBearerAuth()
@@ -32,14 +45,11 @@ export class PeriodController {
 
   @Delete('/:periodId')
   deletePeriod(@Param('periodId') periodId: string) {
-    return this.periodService.deletePeriodById(periodId)
+    return this.periodService.deletePeriodById(periodId);
   }
 
   @Put('/:periodId')
-  updatePeriod(
-    @Param('periodId') periodId: string,
-    @Body() data
-    ) {
-    return this.periodService.updatePeriodById(periodId, data)
+  updatePeriod(@Param('periodId') periodId: string, @Body() data) {
+    return this.periodService.updatePeriodById(periodId, data);
   }
 }
