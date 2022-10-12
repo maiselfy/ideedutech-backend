@@ -792,30 +792,30 @@ export class ScheduleService {
     };
   }
 
-  async deleteSchedulesOfDiscipline(disciplineId: string) {
+  async deleteSchedule(scheduleId: string) {
     try {
-      const disciplineExists = await this.prisma.discipline.findUnique({
+      const scheduleExists = await this.prisma.schedule.findUnique({
         where: {
-          id: disciplineId,
+          id: scheduleId,
         },
       });
 
-      if (!disciplineExists) {
+      if (!scheduleExists) {
         throw new HttpException(
-          'Erro. Disciplina não encontrada.',
+          'Erro. Horário não encontrado.',
           HttpStatus.NOT_FOUND,
         );
       }
 
-      await this.prisma.schedule.deleteMany({
+      await this.prisma.schedule.delete({
         where: {
-          disciplineId: disciplineExists.id,
+          id: scheduleExists.id,
         },
       });
 
       return {
         status: HttpStatus.OK,
-        message: 'Horários da disciplina removidos com sucesso',
+        message: 'Horárioremovido com sucesso',
       };
     } catch (error) {
       if (error) throw error;

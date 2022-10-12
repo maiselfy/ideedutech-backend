@@ -66,8 +66,8 @@ export class ScheduleController {
   //   return this.scheduleService.update(+id, updateScheduleDto);
   // }
 
-  @Delete('/discipline/:disciplineId')
-  deleteSchedules(@Param('disciplineId') disciplineId: string) {
-    return this.scheduleService.deleteSchedulesOfDiscipline(disciplineId);
+  @Delete(':scheduleId')
+  deleteSchedule(@Param('scheduleId') scheduleId: string) {
+    return this.scheduleService.deleteSchedule(scheduleId);
   }
 }
