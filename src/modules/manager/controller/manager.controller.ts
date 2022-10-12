@@ -1,5 +1,13 @@
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Query,
+  Delete,
+} from '@nestjs/common';
 import { PaginationDTO } from 'src/models/PaginationDTO';
 import { Public } from 'src/modules/auth/decorators/public.decorator';
 import { User } from 'src/modules/user/decorators/user.decorator';
@@ -46,8 +54,8 @@ export class ManagerController {
   //   return this.managerService.update(+id, updateManagerDto);
   // }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.managerService.remove(+id);
-  // }
+  @Delete(':managerId')
+  remove(@Param('managerId') managerId: string) {
+    return this.managerService.remove(managerId);
+  }
 }

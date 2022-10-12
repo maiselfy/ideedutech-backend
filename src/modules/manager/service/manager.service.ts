@@ -118,7 +118,34 @@ export class ManagerService {
   //   return `This action updates a #${id} manager`;
   // }
 
-  // remove(id: number) {
-  //   return `This action removes a #${id} manager`;
-  // }
+  async remove(managerId: string) {
+    try {
+      const managerExists = await this.prisma.manager.findUnique({
+        where: {
+          id: managerId,
+        },
+      });
+
+      if (!managerExists) {
+        throw new HttpException(
+          'Não foi possível remover. Gestor não encontrado.',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      await this.prisma.manager.delete({
+        where: {
+          id: managerExists.id,
+        },
+      });
+
+      return {
+        status: HttpStatus.OK,
+        message: 'Gestor removido com sucesso.',
+      };
+    } catch (error) {
+      if (error) throw error;
+      throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 }

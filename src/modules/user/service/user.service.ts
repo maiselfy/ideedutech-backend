@@ -329,20 +329,54 @@ export class UserService {
     }
   }
 
-  async remove(id: string) {
-    const deleteUser = await this.prisma.user.delete({
-      where: {
-        id: id,
-      },
-    });
+  async remove(userId: string) {
+    try {
+      const userExists = await this.prisma.user.findUnique({
+        where: {
+          id: userId,
+        },
+      });
 
-    if (!deleteUser) {
-      throw Error(`User not found `);
+      if (!userExists) {
+        throw new HttpException(
+          'Não foi possível remover. Usuário não encontrado.',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      await this.prisma.user.delete({
+        where: {
+          id: userExists.id,
+        },
+      });
+
+      let formattedType;
+      switch (userExists.type) {
+        case 'student':
+          formattedType = 'Estudante';
+          break;
+        case 'teacher':
+          formattedType = 'Professor';
+          break;
+        case 'admin':
+          formattedType = 'Administrador';
+          break;
+        case 'manager':
+          formattedType = 'Gestor';
+          break;
+        default:
+          formattedType = 'Usuário';
+          break;
+      }
+
+      return {
+        status: HttpStatus.OK,
+        message: `${formattedType} removido com sucesso.`,
+      };
+    } catch (error) {
+      if (error) throw error;
+      throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
-    return {
-      message: `User removed `,
-    };
   }
 
   async getSchoolOfLoggedUser(userId: string) {
