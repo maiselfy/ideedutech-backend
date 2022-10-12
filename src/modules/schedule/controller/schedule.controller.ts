@@ -43,6 +43,11 @@ export class ScheduleController {
     return this.scheduleService.getSchedulesOfClass(classId);
   }
 
+  @Get('/discipline/:disciplineId')
+  getSchedulesOfDiscipline(@Param('disciplineId') disciplineId: string) {
+    return this.scheduleService.getSchedulesOfDiscipline(disciplineId);
+  }
+
   @Get('/:scheduleId/lesson')
   getLessonBySchedule(@Param('scheduleId') scheduleId: string) {
     return this.scheduleService.getLessonBySchedule(scheduleId);
@@ -61,8 +66,8 @@ export class ScheduleController {
   //   return this.scheduleService.update(+id, updateScheduleDto);
   // }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.scheduleService.remove(+id);
-  // }
+  @Delete('/discipline/:disciplineId')
+  deleteSchedules(@Param('disciplineId') disciplineId: string) {
+    return this.scheduleService.deleteSchedulesOfDiscipline(disciplineId);
+  }
 }
