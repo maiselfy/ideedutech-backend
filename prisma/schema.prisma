@@ -25,7 +25,7 @@ model RefreshToken {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   expiresIn Int
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model User {
@@ -62,7 +62,7 @@ model Student {
   userId             String               @unique
   class              Class?                @relation(fields: [classId], references: [id], onDelete: Cascade)
   school             School               @relation(fields: [schoolId], references: [id])
-  user               User                 @relation(fields: [userId], references: [id])
+  user               User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   EvaluativeDelivery EvaluativeDelivery[]
   reportCard         ReportCard[]
   gradebook          Gradebook[]
@@ -76,7 +76,7 @@ model Manager {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   userId    String   @unique
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   schools   School[]
 }
 
@@ -86,7 +86,7 @@ model Admin {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   userId    String   @unique
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Teacher {
@@ -95,7 +95,7 @@ model Teacher {
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   userId      String       @unique
-  user        User         @relation(fields: [userId], references: [id])
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   disciplines Discipline[]
   schools     School[]
 }
@@ -321,7 +321,7 @@ model Address {
   schoolId     String?
   userId       String?
   school       School?  @relation(fields: [schoolId], references: [id])
-  user         User?    @relation(fields: [userId], references: [id])
+  user         User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum Gender {
