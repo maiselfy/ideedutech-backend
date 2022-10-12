@@ -52,9 +52,9 @@ export class UserController {
   }
 
   @Public()
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(id);
+  @Delete(':userId')
+  remove(@Param('userId') userId: string) {
+    return this.userService.remove(userId);
   }
 
   @Get('/mySchool')
