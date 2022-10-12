@@ -753,6 +753,76 @@ export class ScheduleService {
     }
   }
 
+  async getSchedulesOfDiscipline(disciplineId: string) {
+    const disciplineExists = await this.prisma.discipline.findUnique({
+      where: {
+        id: disciplineId,
+      },
+    });
+
+    if (!disciplineExists) {
+      throw new HttpException(
+        'Erro. Disciplina não encontrada.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const schedulesOfDiscipline = await this.prisma.schedule.findMany({
+      where: {
+        disciplineId: disciplineExists.id,
+      },
+      select: {
+        id: true,
+        day: true,
+        initialHour: true,
+        finishHour: true,
+        period: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    return {
+      data: schedulesOfDiscipline,
+      status: HttpStatus.OK,
+      message: 'Horários da disciplina retornados com sucesso',
+    };
+  }
+
+  async deleteSchedulesOfDiscipline(disciplineId: string) {
+    try {
+      const disciplineExists = await this.prisma.discipline.findUnique({
+        where: {
+          id: disciplineId,
+        },
+      });
+
+      if (!disciplineExists) {
+        throw new HttpException(
+          'Erro. Disciplina não encontrada.',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      await this.prisma.schedule.deleteMany({
+        where: {
+          disciplineId: disciplineExists.id,
+        },
+      });
+
+      return {
+        status: HttpStatus.OK,
+        message: 'Horários da disciplina removidos com sucesso',
+      };
+    } catch (error) {
+      if (error) throw error;
+      throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   async getSchedulesOfClass(classId: string) {
     const classExists = await this.prisma.class.findUnique({
       where: {
