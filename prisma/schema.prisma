@@ -178,7 +178,7 @@ model EvaluativeDelivery {
   owner       OwnerAction
   rate        Float?
   homeWork    HomeWork         @relation(fields: [homeWorkId], references: [id])
-  student     Student          @relation(fields: [studentId], references: [id])
+  student     Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
 }
 
 model Gradebook {
@@ -192,7 +192,7 @@ model Gradebook {
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   discipline   Discipline @relation(fields: [disciplineId], references: [id])
-  student      Student    @relation(fields: [studentId], references: [id])
+  student      Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
 }
 
 model Schedule {
@@ -229,7 +229,7 @@ model ReportCard {
   id         String   @id @default(uuid())
   homeWorkId String
   homeWork   HomeWork @relation(fields: [homeWorkId], references: [id])
-  student    Student  @relation(fields: [studentId], references: [id])
+  student    Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
   studentId  String
   periodId   String
   period     Period   @relation(fields: [periodId], references: [id], onDelete: Cascade)
@@ -240,7 +240,7 @@ model ReportAverage {
   rate         Float
   discipline   Discipline @relation(fields: [disciplineId], references: [id])
   disciplineId String
-  student      Student    @relation(fields: [studentId], references: [id])
+  student      Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
   studentId    String
   periodId     String
   period       Period     @relation(fields: [periodId], references: [id], onDelete: Cascade)
@@ -278,7 +278,7 @@ model LackOfClass {
   updatedAt  DateTime @updatedAt
   lessonDate String?
   lesson     Lesson   @relation(fields: [lessonId], references: [id])
-  student    Student  @relation(fields: [studentId], references: [id])
+  student    Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
 }
 
 model Lesson {

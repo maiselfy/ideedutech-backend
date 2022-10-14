@@ -130,6 +130,37 @@ export class StudentService {
     };
   }
 
+  async remove(studentId: string) {
+    try {
+      const studentExists = await this.prisma.student.findUnique({
+        where: {
+          id: studentId,
+        },
+      });
+
+      if (!studentExists) {
+        throw new HttpException(
+          'Não foi possível remover. Estudante não encontrado.',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      await this.prisma.student.delete({
+        where: {
+          id: studentExists.id,
+        },
+      });
+
+      return {
+        status: HttpStatus.OK,
+        message: 'Estudante removido com sucesso.',
+      };
+    } catch (error) {
+      if (error) throw error;
+      throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   async submitEvaluativeDelivery() {}
 
   async findBySchool({ schoolId, managerId }: ListEntitiesForSchoolDTO) {

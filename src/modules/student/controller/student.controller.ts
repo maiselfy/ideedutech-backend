@@ -8,6 +8,7 @@ import {
   Query,
   UseGuards,
   Patch,
+  Delete,
 } from '@nestjs/common';
 import { StudentService } from './../services/student.service';
 import { PaginationDTO } from 'src/models/PaginationDTO';
@@ -26,6 +27,11 @@ export class StudentController {
     const managerId = user.id;
 
     return this.studentService.create(createStudentDTO, managerId);
+  }
+
+  @Delete('/delete/:studentId')
+  remove(@Param('studentId') studentId: string) {
+    return this.studentService.remove(studentId);
   }
 
   @Get('/students/:schoolId')
