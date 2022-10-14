@@ -79,6 +79,37 @@ export class WaitlistService {
     };
   }
 
+  async deleteById(waitlistId: string) {
+    try {
+      const waitlist = await this.prisma.waitList.findUnique({
+        where: {
+          id: waitlistId,
+        },
+      });
+
+      if (!waitlist) {
+        throw new HttpException(
+          `Erro. Registro não encontrado.`,
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      await this.prisma.waitList.delete({
+        where: {
+          id: waitlist.id,
+        },
+      });
+
+      return {
+        status: HttpStatus.OK,
+        message: 'Registro removido da lista de espera.',
+      };
+    } catch (error) {
+      if (error) throw error;
+      throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   async remove(email: string) {
     const deleteUserWaitlist = await this.prisma.waitList.delete({
       where: {

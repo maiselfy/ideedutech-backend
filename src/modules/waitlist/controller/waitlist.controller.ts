@@ -41,6 +41,11 @@ export class WaitlistController {
     });
   }
 
+  @Delete('/delete/:waitlistId')
+  deleteById(@Param('waitlistId') waitlistId: string) {
+    return this.waitlistService.deleteById(waitlistId);
+  }
+
   @ApiBearerAuth()
   @Get('school/:schoolId/:role')
   getWaitlistByRole(
