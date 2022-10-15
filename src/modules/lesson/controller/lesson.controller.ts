@@ -56,14 +56,9 @@ export class LessonController {
     return this.lackOfClassService.createManyLessons(createManyLessonDTO);
   }
 
-  @Public()
-  @Delete('/remove/:lessonId/:studentId/:date')
-  removeLackOfClass(
-    @Param('lessonId') lessonId: string,
-    @Param('studentId') studentId: string,
-    @Param('date') date: string,
-  ) {
-    return this.lackOfClassService.remove({ lessonId, studentId, date });
+  @Delete('/lackOfClass/delete/:lackOfClassId')
+  removeLackOfClass(@Param('lackOfClassId') lackOfClassId: string) {
+    return this.lackOfClassService.deleteById(lackOfClassId);
   }
 
   // @Get()

@@ -161,7 +161,7 @@ model HomeWork {
   updatedAt          DateTime             @updatedAt
   weight             Float?               @default(1)
   startDate          DateTime?
-  discipline         Discipline           @relation(fields: [disciplineId], references: [id])
+  discipline         Discipline           @relation(fields: [disciplineId], references: [id], onDelete: Cascade)
   evaluativeDelivery EvaluativeDelivery[]
   ReportCard         ReportCard[]
 }
@@ -191,7 +191,7 @@ model Gradebook {
   approved     Boolean?
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
-  discipline   Discipline @relation(fields: [disciplineId], references: [id])
+  discipline   Discipline @relation(fields: [disciplineId], references: [id], onDelete: Cascade)
   student      Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
 }
 
@@ -204,7 +204,7 @@ model Schedule {
   finishHour   String
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
-  discipline   Discipline @relation(fields: [disciplineId], references: [id])
+  discipline   Discipline @relation(fields: [disciplineId], references: [id], onDelete: Cascade)
   period       Period     @relation(fields: [periodId], references: [id], onDelete: Cascade)
   lesson       Lesson[]
 }
@@ -238,7 +238,7 @@ model ReportCard {
 model ReportAverage {
   id           String     @id @default(uuid())
   rate         Float
-  discipline   Discipline @relation(fields: [disciplineId], references: [id])
+  discipline   Discipline @relation(fields: [disciplineId], references: [id], onDelete: Cascade)
   disciplineId String
   student      Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
   studentId    String
@@ -252,7 +252,7 @@ model Content {
   subContent    String
   periodId      String?
   disciplineId  String
-  discipline    Discipline      @relation(fields: [disciplineId], references: [id])
+  discipline    Discipline      @relation(fields: [disciplineId], references: [id], onDelete: Cascade)
   Period        Period?         @relation(fields: [periodId], references: [id], onDelete: Cascade)
   registerClass RegisterClass[]
 }
@@ -291,7 +291,7 @@ model Lesson {
   classDate     String?
   notes         String?
   scheduleId    String?
-  discipline    Discipline      @relation(fields: [disciplineId], references: [id])
+  discipline    Discipline      @relation(fields: [disciplineId], references: [id], onDelete: Cascade)
   schedule      Schedule?       @relation(fields: [scheduleId], references: [id], onDelete: SetNull)
   LackOfClass   LackOfClass[]
   RegisterClass RegisterClass[]
@@ -305,7 +305,7 @@ model DisciplineSchedules {
   finishHour   String
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
-  discipline   Discipline @relation(fields: [disciplineId], references: [id])
+  discipline   Discipline @relation(fields: [disciplineId], references: [id], onDelete: Cascade)
 }
 
 model Address {

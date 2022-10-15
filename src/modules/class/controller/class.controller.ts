@@ -58,10 +58,8 @@ export class ClassController {
   }
 
   @ApiBearerAuth()
-  @Delete(':id')
-  remove(@Param('id') classId: string) {
-    return this.classService.remove(classId).catch((e) => {
-      throw new NotFoundException(e.message);
-    });
+  @Delete('/delete/:classId')
+  remove(@Param('classId') classId: string) {
+    return this.classService.remove(classId);
   }
 }

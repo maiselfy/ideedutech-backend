@@ -381,4 +381,35 @@ export class LackOfClassService {
       message: 'Registro removido da frequência.',
     };
   }
+
+  async deleteById(lackOfClassId: string) {
+    try {
+      const lackOfClass = await this.prisma.lackOfClass.findUnique({
+        where: {
+          id: lackOfClassId,
+        },
+      });
+
+      if (!lackOfClass) {
+        throw new HttpException(
+          'Erro. Falta não registrada',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      await this.prisma.lackOfClass.delete({
+        where: {
+          id: lackOfClass.id,
+        },
+      });
+
+      return {
+        status: HttpStatus.OK,
+        message: 'Registro removido da frequência.',
+      };
+    } catch (error) {
+      if (error) throw error;
+      throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 }

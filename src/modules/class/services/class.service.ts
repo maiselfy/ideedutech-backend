@@ -30,19 +30,34 @@ export class ClassService {
   }
 
   async remove(classId: string) {
-    const deleteClass = await this.prisma.class.delete({
-      where: {
-        id: classId,
-      },
-    });
+    try {
+      const classExists = await this.prisma.class.findUnique({
+        where: {
+          id: classId,
+        },
+      });
 
-    if (!deleteClass) {
-      throw Error('Class not found');
+      if (!classExists) {
+        throw new HttpException(
+          'Erro. Turma não encontrada.',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      await this.prisma.class.delete({
+        where: {
+          id: classExists.id,
+        },
+      });
+
+      return {
+        data: HttpStatus.OK,
+        message: 'Turma deletada com sucesso.',
+      };
+    } catch (error) {
+      if (error) throw error;
+      throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
-    return {
-      message: 'Class removed',
-    };
   }
 
   async findClassesBySchool(
