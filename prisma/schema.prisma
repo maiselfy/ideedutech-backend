@@ -126,7 +126,7 @@ model Discipline {
   updatedAt           DateTime              @updatedAt
   classId             String
   topic               String
-  class               Class                 @relation(fields: [classId], references: [id])
+  class               Class                 @relation(fields: [classId], references: [id], onDelete: Cascade)
   teacher             Teacher?              @relation(fields: [teacherId], references: [id])
   Content             Content[]
   DisciplineSchedules DisciplineSchedules[]
