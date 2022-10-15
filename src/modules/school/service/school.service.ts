@@ -171,6 +171,7 @@ export class SchoolService {
           cnpj: updateSchool.cnpj,
           phone: updateSchool.phone,
           email: updateSchool.email,
+          inep: updateSchool.inep,
         },
       });
 
