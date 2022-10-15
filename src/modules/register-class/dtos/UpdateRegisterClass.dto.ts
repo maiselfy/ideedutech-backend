@@ -19,6 +19,7 @@ export default class UpdateRegisterClassDTO {
   @IsOptional()
   contentId?: string;
 
+  @ApiProperty({})
   @IsString()
   @IsOptional()
   lessonId?: string;
