@@ -107,6 +107,14 @@ export class LackOfClassService {
   ) {
     const data = createManyLackLesson.createLackOfClassDTO;
 
+    await this.prisma.lackOfClass.deleteMany({
+      where: {
+        lesson: {
+          id: lessonId,
+        },
+      },
+    });
+
     const validStudents = Promise.all(
       data.studentId.map(async (studentId) => {
         const studentInClass = await this.prisma.student.findFirst({
@@ -147,7 +155,6 @@ export class LackOfClassService {
 
     const lacksOfClass = Promise.all(
       (await validStudents).map(async (student) => {
-        console.log('student::', student);
         const existsLack = await this.prisma.lackOfClass.findFirst({
           where: {
             lessonId: id,
