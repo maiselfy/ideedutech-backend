@@ -9,19 +9,19 @@ export const mailerConfig: MailerOptions = {
     options: {
       extName: '.hbs',
       layoutsDir: path.resolve(__dirname, '..', '..', 'templates'),
+      strict: true
     },
   },
-  transport: `smtps://${process.env.USER_MAILER}:${process.env.PASS_MAILER}@smtp.gmail.com/pool=true`,
-  /*  transport: {
+    transport: {
     host: 'smtp.gmail.com',
     port: 465,
     secure: true,
     auth: {
-      user: 'fabriciopinheiro713@gmail.com',
-      pass: 'idealize2022F',
+      user: 'naoresponda@ideedutec.com.br',
+      pass: '123456789',
     },
     tls: {
       rejectUnauthorized: false,
     },
-  }, */
+  }, 
 };
