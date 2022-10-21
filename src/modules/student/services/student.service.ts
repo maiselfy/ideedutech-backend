@@ -831,27 +831,49 @@ export class StudentService {
         });
       }
 
-      const averagesByFormattedDiscipline = listOfMediaGradeByDiscipline.map(
-        (discipline) => {
-          return {
-            disciplineId: discipline.disciplineId,
-            discipline: discipline.discipline,
-            notes: discipline.notes.map((note) => {
-              return {
-                average: note.rate,
-                periodId: note.period.id,
-                period: note.period.name,
-              };
-            }),
-          };
-        },
-      );
+      let averagesByFormattedDiscipline = [];
+
+      for (const discipline of listOfMediaGradeByDiscipline) {
+        averagesByFormattedDiscipline.push({
+          disciplineId: discipline.disciplineId,
+          discipline: discipline.discipline,
+          finalAverage: await this.calculateAverageGradesByPeriod(
+            discipline.notes,
+          ),
+          notes: discipline.notes.map((note) => {
+            return {
+              average: note.rate,
+              periodId: note.period.id,
+              period: note.period.name,
+            };
+          }),
+        });
+      }
 
       return averagesByFormattedDiscipline;
     } catch (error) {
       if (error) throw error;
       throw new HttpException('Failed!!!', HttpStatus.BAD_REQUEST);
     }
+  }
+
+  async calculateAverageGradesByPeriod(notes) {
+    let noNote = '-';
+    let average = 0;
+    let result = 0;
+
+    if (notes.length === 0) {
+      return noNote;
+    }
+
+    for (let rate of notes) {
+      average += rate.rate;
+    }
+
+    result = average / notes.length;
+    let temp = parseFloat(result.toFixed(1));
+
+    return temp;
   }
 
   async findTheAveragesByDiscipline(disciplineId, studentId) {
@@ -918,10 +940,15 @@ export class StudentService {
         },
       });
 
-      const resultMap = averageStudents.map((student) => {
-        return {
+      let averagesByDiscipline = [];
+
+      for (const student of averageStudents) {
+        averagesByDiscipline.push({
           studentId: student.id,
           student: student.user.name,
+          avarageFinal: await this.calculateAverageGradesByPeriod(
+            student.reportAverage,
+          ),
           notes: student.reportAverage.map((average) => {
             return {
               average: average.rate,
@@ -929,10 +956,10 @@ export class StudentService {
               period: average.period.name,
             };
           }),
-        };
-      });
+        });
+      }
 
-      return resultMap;
+      return averagesByDiscipline;
     } catch (error) {
       if (error) throw error;
       throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
