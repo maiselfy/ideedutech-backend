@@ -5,6 +5,7 @@ import { StudentService } from 'src/modules/student/services/student.service';
 import pagination from 'src/utils/pagination';
 import { Discipline, PrismaService } from '../../prisma';
 import { CreateDisciplineDTO } from '../dtos/createDiscipline.dto';
+import { UpdateDisciplineDTO } from '../dtos/updateDiscipline.dto';
 
 enum Months {
   'Janeiro' = 1,
@@ -309,34 +310,64 @@ export class DisciplineService {
     return classes;
   }
 
-  async updateTeacherOfDiscipline(disciplineId: string, updateDisciplineDto) {
+  async updateDiscipline(
+    disciplineId: string,
+    updateDisciplineDTO: UpdateDisciplineDTO,
+  ) {
     try {
-      const { newTeacherId } = updateDisciplineDto;
+      const data = updateDisciplineDTO;
 
-      if (!newTeacherId) {
-        await this.prisma.discipline.update({
-          where: {
-            id: disciplineId,
-          },
-          data: {
-            teacherId: null,
-          },
-        });
-      } else {
-        await this.prisma.discipline.update({
-          where: {
-            id: disciplineId,
-          },
-          data: {
-            teacherId: newTeacherId,
-          },
-        });
+      const disciplineExists = await this.prisma.discipline.findUnique({
+        where: {
+          id: disciplineId,
+        },
+      });
+
+      if (!disciplineExists) {
+        throw new HttpException(
+          `Erro. Disciplina não encontrada`,
+          HttpStatus.NOT_FOUND,
+        );
       }
 
-      return {
-        status: HttpStatus.OK,
-        message: 'Disciplina atualizada com sucesso.',
-      };
+      const oldTeacherId = disciplineExists.teacherId;
+
+      if (data.teacherId && data.teacherId !== oldTeacherId) {
+        await this.prisma.schedule.deleteMany({
+          where: {
+            discipline: {
+              teacherId: oldTeacherId,
+            },
+          },
+        });
+
+        const updatedDiscipline = await this.prisma.discipline.update({
+          where: {
+            id: disciplineExists.id,
+          },
+          data,
+        });
+
+        return {
+          data: updatedDiscipline,
+          status: HttpStatus.OK,
+          message:
+            'Disciplina atualizada com sucesso. Um novo professor foi alocado.',
+        };
+      } else {
+        const updatedDiscipline = await this.prisma.discipline.update({
+          where: {
+            id: disciplineExists.id,
+          },
+          data,
+        });
+
+        return {
+          data: updatedDiscipline,
+          status: HttpStatus.OK,
+          message: 'Disciplina atualizada com sucesso.',
+        };
+      }
     } catch (error) {
       if (error) throw error;
       throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
@@ -379,5 +410,19 @@ export class DisciplineService {
         HttpStatus.NOT_FOUND,
       );
     }
+
+    const formattedData = {
+      ...disciplineExists,
+      teacher: {
+        id: disciplineExists.teacher.id,
+        name: disciplineExists.teacher.user.name,
+      },
+    };
+
+    return {
+      data: formattedData,
+      status: HttpStatus.OK,
+      message: 'Disciplina retornada com sucesso.',
+    };
   }
 }
