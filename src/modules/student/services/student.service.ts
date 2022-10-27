@@ -796,6 +796,8 @@ export class StudentService {
     try {
       const studentId = await this.findStudentIdByUserId(userId);
 
+      const currentYear = new Date().getUTCFullYear();
+
       if (!studentId) {
         throw new HttpException(
           'Estudante não encontrado.',
@@ -807,6 +809,14 @@ export class StudentService {
         distinct: ['disciplineId'],
         where: {
           studentId: studentId.id,
+          period: {
+            startOfPeriod: {
+              gte: new Date(currentYear, 0, 1),
+            },
+            endOfPeriod: {
+              lte: new Date(currentYear, 11, 31),
+            },
+          },
         },
         select: {
           discipline: {
@@ -877,11 +887,21 @@ export class StudentService {
   }
 
   async findTheAveragesByDiscipline(disciplineId, studentId) {
+    const currentYear = new Date().getUTCFullYear();
+
     try {
       const averageByDiscipline = await this.prisma.reportAverage.findMany({
         where: {
           studentId: studentId,
           disciplineId: disciplineId,
+          period: {
+            startOfPeriod: {
+              gte: new Date(currentYear, 0, 1),
+            },
+            endOfPeriod: {
+              lte: new Date(currentYear, 11, 31),
+            },
+          },
         },
         select: {
           rate: true,
@@ -903,6 +923,8 @@ export class StudentService {
 
   async findAllAverageForStudentsByDisciplineId(disciplineId: string) {
     try {
+      const currentYear = new Date().getUTCFullYear();
+
       const classId = await this.prisma.discipline.findFirst({
         where: {
           id: disciplineId,
@@ -926,6 +948,14 @@ export class StudentService {
           reportAverage: {
             where: {
               disciplineId: disciplineId,
+              period: {
+                startOfPeriod: {
+                  gte: new Date(currentYear, 0, 1),
+                },
+                endOfPeriod: {
+                  lte: new Date(currentYear, 11, 31),
+                },
+              },
             },
             select: {
               rate: true,
