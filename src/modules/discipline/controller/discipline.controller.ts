@@ -14,6 +14,7 @@ import { CreateDisciplineDTO } from '../dtos/createDiscipline.dto';
 import { PaginationDTO } from 'src/models/PaginationDTO';
 import { User } from 'src/modules/user/decorators/user.decorator';
 import { Public } from 'src/modules/auth/decorators/public.decorator';
+import { UpdateDisciplineDTO } from '../dtos/updateDiscipline.dto';
 
 @ApiTags('Discipline')
 @Controller('discipline')
@@ -87,20 +88,20 @@ export class DisciplineController {
     return this.disciplineService.findAllDisciplinesOfStudent(user.id);
   }
 
-  /* @ApiBearerAuth()
-  @Delete(':userId')
-  removeTeacherOfDiscipline(@Param('userId') userId: string) {
-    return this.disciplineService.removeTeacherOfDiscipline(userId);
-  } */
+  @ApiBearerAuth()
+  @Get('detail/:disciplineId')
+  getDiscipline(@Param('disciplineId') disciplineId: string) {
+    return this.disciplineService.getDiscipline(disciplineId);
+  }
 
-  @Patch('update/teacher/:disciplineId')
+  @Patch('update/:disciplineId')
   updateTeacherOfDiscipline(
     @Param('disciplineId') disciplineId: string,
-    @Body() updateDisciplineDto,
+    @Body() updateDisciplineDTO: UpdateDisciplineDTO,
   ) {
-    return this.disciplineService.updateTeacherOfDiscipline(
+    return this.disciplineService.updateDiscipline(
       disciplineId,
-      updateDisciplineDto,
+      updateDisciplineDTO,
     );
   }
 }
