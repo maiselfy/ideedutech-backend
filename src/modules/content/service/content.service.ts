@@ -85,16 +85,26 @@ export class ContentService {
             name: true,
           },
         },
+        Period: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
     });
 
     const formattedData = contents.map((content) => {
       const newData = {
         ...content,
-        disciplineName: content.discipline.name,
+        discipline: content.discipline.name,
+        period: {
+          id: content.Period?.id,
+          name: content.Period?.name,
+        },
       };
 
-      delete newData.discipline;
+      delete newData.Period;
 
       return newData;
     });
