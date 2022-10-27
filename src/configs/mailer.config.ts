@@ -9,10 +9,10 @@ export const mailerConfig: MailerOptions = {
     options: {
       extName: '.hbs',
       layoutsDir: path.resolve(__dirname, '..', '..', 'templates'),
-      strict: true
+      strict: true,
     },
   },
-    transport: {
+  transport: {
     host: 'smtp.gmail.com',
     port: 465,
     secure: true,
@@ -23,5 +23,5 @@ export const mailerConfig: MailerOptions = {
     tls: {
       rejectUnauthorized: false,
     },
-  }, 
+  },
 };
