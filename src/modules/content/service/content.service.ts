@@ -99,8 +99,8 @@ export class ContentService {
         ...content,
         discipline: content.discipline.name,
         period: {
-          id: content.Period.id,
-          name: content.Period.name,
+          id: content.Period?.id,
+          name: content.Period?.name,
         },
       };
 
