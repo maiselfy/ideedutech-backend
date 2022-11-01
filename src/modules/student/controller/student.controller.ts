@@ -9,6 +9,8 @@ import {
   UseGuards,
   Patch,
   Delete,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { StudentService } from './../services/student.service';
 import { PaginationDTO } from 'src/models/PaginationDTO';
@@ -17,6 +19,7 @@ import { User } from 'src/modules/user/decorators/user.decorator';
 import { CheckPolicies } from 'src/security/decorators/policy.decorator';
 import { PoliciesGuard } from 'src/security/guards/policy.guard';
 import { CreatePolicyHandler } from 'src/security/policies/create.policy';
+import { FileInterceptor } from '@nestjs/platform-express';
 @ApiTags('Student')
 @Controller('student')
 export class StudentController {
@@ -27,6 +30,20 @@ export class StudentController {
     const managerId = user.id;
 
     return this.studentService.create(createStudentDTO, managerId);
+  }
+
+  @Post('upload')
+  @UseInterceptors(FileInterceptor('file'))
+  async createMany(
+    @Body('schoolId') schoolId: string,
+    @Body('classId') classId: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return await this.studentService.createManyStudents(
+      file,
+      schoolId,
+      classId,
+    );
   }
 
   @Delete('/delete/:studentId')
