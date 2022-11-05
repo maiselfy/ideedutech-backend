@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma';
+import { FindSchoolByRegionDTO } from '../dtos/findSchoolByRegion.dto';
 
 @Injectable()
 export class SchoolService {
@@ -88,8 +89,18 @@ export class SchoolService {
     };
   }
 
-  async findAllByAdmin() {
+  async findAllByAdmin(findSchoolByRegionDTO: FindSchoolByRegionDTO) {
+    const { city, uf } = findSchoolByRegionDTO;
+
     const schools = await this.prisma.school.findMany({
+      where: {
+        address: {
+          some: {
+            city: city ? city : undefined,
+            uf: uf ? uf.toUpperCase() : undefined,
+          },
+        },
+      },
       include: {
         address: {
           select: {
