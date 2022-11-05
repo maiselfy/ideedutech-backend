@@ -125,10 +125,13 @@ export class SchoolService {
     };
   }
 
-  async findSchoolById(id: string, userId: string) {
+  async findSchoolById(id: string) {
     const response = await this.prisma.school.findFirst({
-      where: { id, managers: { some: { userId } } },
+      where: {
+        id,
+      },
     });
+
     if (!response) {
       throw new HttpException(
         'School not found in yours schools',
