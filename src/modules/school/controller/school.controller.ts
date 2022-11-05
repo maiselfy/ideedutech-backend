@@ -1,10 +1,11 @@
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CreateSchoolDTO } from './../dtos/createSchool.dto';
-import { Controller, Get, Post, Body, Param, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Query } from '@nestjs/common';
 import { Public } from 'src/modules/auth/decorators/public.decorator';
 import { SchoolService } from '../service/school.service';
 import { UpdateSchoolDTO } from './../dtos/updateSchool.dto';
 import { User } from 'src/modules/user/decorators/user.decorator';
+import { FindSchoolByRegionDTO } from '../dtos/findSchoolByRegion.dto';
 @ApiTags('School')
 @Controller('school')
 export class SchoolController {
@@ -24,13 +25,14 @@ export class SchoolController {
 
   @ApiBearerAuth()
   @Get('admin')
-  findAllByAdmin() {
-    return this.schoolService.findAllByAdmin();
+  findAllByAdmin(@Query() findSchoolByRegionDTO: FindSchoolByRegionDTO) {
+    return this.schoolService.findAllByAdmin(findSchoolByRegionDTO);
   }
 
   @ApiBearerAuth()
-  @Get('/:id')
+  @Get(':id')
   findSchoolById(@Param('id') id: string) {
+    console.log('entro no errado');
     return this.schoolService.findSchoolById(id);
   }
 
