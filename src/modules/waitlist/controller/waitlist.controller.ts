@@ -8,6 +8,8 @@ import {
   Delete,
   NotFoundException,
   Query,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { Public } from 'src/modules/auth/decorators/public.decorator';
 import CreateWaitlistDTO from '../dtos/createWaitlist.dto';
@@ -15,6 +17,7 @@ import { WaitlistService } from '../service/waitlist.service';
 import { User } from 'src/modules/user/decorators/user.decorator';
 import { PaginationDTO } from 'src/models/PaginationDTO';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Waitlist')
 @Controller('waitlist')
@@ -25,6 +28,15 @@ export class WaitlistController {
   @Post()
   create(@Body() createWaitlistDTO: CreateWaitlistDTO) {
     return this.waitlistService.create(createWaitlistDTO);
+  }
+
+  @Post('upload')
+  @UseInterceptors(FileInterceptor('file'))
+  async createMany(
+    @Body('schoolId') schoolId: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return await this.waitlistService.createMany(file, schoolId);
   }
 
   @Public()
