@@ -30,8 +30,8 @@ export class SchoolController {
 
   @ApiBearerAuth()
   @Get('/:id')
-  findSchoolById(@User() user, @Param('id') id: string) {
-    return this.schoolService.findSchoolById(id, user.id);
+  findSchoolById(@Param('id') id: string) {
+    return this.schoolService.findSchoolById(id);
   }
 
   @ApiBearerAuth()
