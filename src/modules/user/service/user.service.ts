@@ -12,6 +12,7 @@ export class UserService {
     private studentService: StudentService,
     private mailerService: MailerService,
   ) {}
+
   async create(createUserDto) {
     const userExistsOnWaitlist = await this.prisma.waitList.findUnique({
       where: { value: createUserDto.email },

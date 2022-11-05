@@ -1,4 +1,4 @@
-import { Role } from '@prisma/client';
+import { Role, School, WaitList } from '@prisma/client';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PaginationDTO } from 'src/models/PaginationDTO';
 import { ManagerService } from 'src/modules/manager/service/manager.service';
@@ -6,6 +6,9 @@ import { PrismaService } from 'src/modules/prisma';
 import pagination from 'src/utils/pagination';
 import CreateWaitlistDTO from '../dtos/createWaitlist.dto';
 import { MailerService } from '@nestjs-modules/mailer';
+
+import * as XLSX from 'xlsx';
+
 @Injectable()
 export class WaitlistService {
   constructor(
@@ -57,6 +60,67 @@ export class WaitlistService {
       data: createdWaitlist,
       status: HttpStatus.CREATED,
       message: 'Registro adicionado a lista de espera.',
+    };
+  }
+
+  async createMany(file: Express.Multer.File, schoolId: string) {
+    const workbook = XLSX.read(file.buffer);
+    const data = [];
+    const createdRegisters: Partial<WaitList>[] = [];
+    const notCreatedRegisters: Partial<WaitList>[] = [];
+    const existsRegisters: Partial<WaitList>[] = [];
+
+    for (const name of workbook.SheetNames) {
+      data.push(...XLSX.utils.sheet_to_json(workbook.Sheets[name]));
+    }
+
+    const schoolExists = await this.prisma
+      .$queryRaw<School>`select * from public."School" s where s.id = ${schoolId}`;
+
+    if (!schoolExists[0]) {
+      throw new HttpException(
+        `Informações inválidas. Escola não encontrada.`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const newRegister: Partial<WaitList> = {};
+
+    for (const register of data) {
+      newRegister.schoolId = schoolId;
+      newRegister.role = 'teacher';
+      newRegister.value = register;
+
+      const registerExists = await this.prisma
+        .$queryRaw`select * from public."WaitList" wl where wl.value = ${register.value}`;
+
+      if (!registerExists[0]) {
+        const createdRegisterOnWaitlist = await this.prisma.waitList.create({
+          data: {
+            role: 'teacher',
+            school: {
+              connect: { id: schoolId },
+            },
+            value: register.value,
+            approved: false,
+          },
+        });
+
+        if (!createdRegisterOnWaitlist) {
+          notCreatedRegisters.push(newRegister);
+        }
+
+        createdRegisters.push(registerExists);
+      } else {
+        existsRegisters.push(registerExists);
+      }
+    }
+
+    return {
+      total: data.length,
+      createdRegisters: createdRegisters.length,
+      existsRegisters,
+      notCreatedRegisters,
     };
   }
 

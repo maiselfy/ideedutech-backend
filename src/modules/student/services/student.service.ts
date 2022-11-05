@@ -1,20 +1,50 @@
-import { TypeUser } from '@prisma/client';
+import { Class, Gender, Role, School, TypeUser, User } from '@prisma/client';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ManagerService } from 'src/modules/manager/service/manager.service';
 import { PrismaService } from 'src/modules/prisma';
 import pagination from 'src/utils/pagination';
 import { PaginationDTO } from 'src/models/PaginationDTO';
 import ListEntitiesForSchoolDTO from '../dtos/listEntitiesForSchool.dto';
-
-import * as bcrypt from 'bcrypt';
 import { ClassService } from 'src/modules/class/services/class.service';
 import { SchoolService } from 'src/modules/school/service/school.service';
 import { PeriodService } from 'src/modules/period/service/period.service';
+
+import * as XLSX from 'xlsx';
+import * as bcrypt from 'bcrypt';
 
 interface ReportCard {
   id: string;
   discipline: string;
   mean: string;
+}
+
+enum GenderTransform {
+  'Masculino' = 'male',
+  'Feminino' = 'female',
+  'Prefiro Não Informar' = 'notInform',
+  'Outros' = 'others',
+}
+
+interface StudentCreateMany {
+  schoolId: string;
+  classId: string;
+  name: string;
+  email: string;
+  phone: string;
+  enrollment: string;
+  status: boolean;
+  entryForm: string;
+  password: string;
+  birthDate: Date;
+  gender: Gender;
+  type: Role;
+  labelAddress: string;
+  city: string;
+  number: string;
+  area: string;
+  uf: string;
+  zipCode: string;
+  street: string;
 }
 
 @Injectable()
@@ -127,6 +157,120 @@ export class StudentService {
       data: response,
       status: HttpStatus.CREATED,
       message: 'Estudante cadastrado com sucesso.',
+    };
+  }
+
+  async createManyStudents(
+    file: Express.Multer.File,
+    schoolId: string,
+    classId: string,
+  ) {
+    const workbook = XLSX.read(file.buffer);
+    const data = [];
+    const createdStudents: Partial<StudentCreateMany>[] = [];
+    const notCreatedStudents: Partial<StudentCreateMany>[] = [];
+    const existsStudents: Partial<User>[] = [];
+
+    for (const name of workbook.SheetNames) {
+      data.push(...XLSX.utils.sheet_to_json(workbook.Sheets[name]));
+    }
+
+    const schoolExists = await this.prisma
+      .$queryRaw<School>`select * from public."School" s where s.id = ${schoolId}`;
+
+    const classExists = await this.prisma
+      .$queryRaw<Class>`select * from public."Class" c where c.id = ${classId}`;
+
+    if (!schoolExists[0] || !classExists[0]) {
+      throw new HttpException(
+        `Informações inválidas. Turma ou escola selecionadas não foram encontradas.`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const newStudent: Partial<StudentCreateMany> = {};
+
+    for (const student of data) {
+      const userExists = await this.prisma
+        .$queryRaw`select u.id, u."name", u.email, c."name" as className, sc."name" as school from public."User" u inner join "Student" s on s."userId" = u.id inner join "Class" c on s."classId" = c.id inner join "School" sc on s."schoolId" = sc.id where u.email = ${student.email}`;
+
+      const hashSalt = bcrypt.genSaltSync(Number(process.env.HASH_SALT));
+      newStudent.schoolId = schoolId;
+      newStudent.classId = classId;
+      newStudent.status = true;
+      newStudent.enrollment = `${student?.enrollment}`;
+      newStudent.entryForm = 'Normal';
+      newStudent.name = `${student?.name}`;
+      newStudent.email = `${student?.email}`;
+      newStudent.phone = `${student?.phone}`;
+      newStudent.password = bcrypt.hashSync(String(student.password), hashSalt);
+      newStudent.type = 'student';
+      newStudent.gender = GenderTransform[student?.gender];
+      newStudent.birthDate = new Date(student?.birthDate);
+      newStudent.labelAddress = `${student?.labelAddress}`;
+      newStudent.city = `${student?.city}`;
+      newStudent.number = `${student?.number}`;
+      newStudent.area = `${student?.area}`;
+      newStudent.uf = `${student?.uf}`;
+      newStudent.zipCode = `${student?.zipCode}`;
+      newStudent.street = `${student?.street}`;
+
+      if (!userExists[0]) {
+        const createdStudent = await this.prisma.student.create({
+          data: {
+            enrollment: newStudent.enrollment,
+            entryForm: newStudent.entryForm,
+            status: newStudent.status,
+            class: {
+              connect: {
+                id: newStudent.classId,
+              },
+            },
+            school: {
+              connect: {
+                id: newStudent.schoolId,
+              },
+            },
+            user: {
+              create: {
+                name: newStudent.name,
+                email: newStudent.email,
+                birthDate: newStudent.birthDate,
+                gender: newStudent.gender,
+                password: newStudent.password,
+                phone: newStudent.phone,
+                type: newStudent.type,
+                address: {
+                  create: {
+                    labelAddress: newStudent.labelAddress,
+                    city: newStudent.city,
+                    number: newStudent.number,
+                    area: newStudent.area,
+                    uf: newStudent.uf,
+                    zipCode: newStudent.zipCode,
+                    street: newStudent.street,
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        if (!createdStudent) {
+          notCreatedStudents.push(newStudent);
+        }
+
+        createdStudents.push(newStudent);
+      } else {
+        existsStudents.push(userExists);
+      }
+    }
+
+    return {
+      total: data.length,
+      createdStudents: createdStudents.length,
+      existsStudents,
+      notCreatedStudents,
     };
   }
 
