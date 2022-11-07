@@ -18,6 +18,7 @@ import CreateUserDTO from '../dtos/createUser.dto';
 import UpdateUserDTO from '../dtos/updateUser.dto';
 import { Express } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Sponsor } from '../decorators/sponsor.decorator';
 
 @ApiTags('User')
 @Controller('user')
@@ -26,7 +27,16 @@ export class UserController {
 
   @Get('/me')
   getMe(@UserDecorator() user) {
+    console.log('entro aqui');
+
     return user;
+  }
+
+  @Get('/me/sponsor')
+  getMeSponsor(@Sponsor() sponsor) {
+    console.log(sponsor);
+
+    return sponsor;
   }
 
   @Public()

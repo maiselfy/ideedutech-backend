@@ -18,11 +18,14 @@ import { GenerateRefreshToken } from '../providers/generateRefreshToken.provider
 import { GenerateToken } from '../providers/generateToken.provider';
 import { MailerService } from '@nestjs-modules/mailer';
 import { StudentService } from 'src/modules/student/services/student.service';
+import { PrismaService } from 'src/modules/prisma';
+import { SponsorToken } from '../models/SponsorToken';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
+    private prisma: PrismaService,
     private userService: UserService,
     private studentService: StudentService,
     private generateRefreshToken: GenerateRefreshToken,
@@ -49,6 +52,72 @@ export class AuthService {
     return {
       accessToken,
       refreshToken,
+    };
+  }
+
+  async loginForSponser(
+    login: string,
+    password: string,
+  ): Promise<SponsorToken> {
+    const sponsor = await this.validateSponsor(login, password);
+
+    console.log('sponsor::: ', sponsor);
+
+    if (!sponsor) {
+      throw new HttpException(
+        `Dados de email ou senha estão incorretos.`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const accessToken = await this.generateToken.generateTokenForSponsor(
+      sponsor.userId,
+    );
+
+    console.log('accessToken::: ', accessToken);
+
+    const refreshToken =
+      await this.generateRefreshToken.generateRefreshTokenForSponsor(
+        sponsor.userId,
+      );
+
+    console.log('refreshToken::: ', refreshToken);
+
+    return {
+      accessToken,
+      refreshToken,
+      type: sponsor.type,
+    };
+  }
+
+  private async validateSponsor(login: string, password: string) {
+    const sponsor = await this.prisma.sponsor.findUnique({
+      where: {
+        email: login,
+      },
+    });
+
+    if (!sponsor) {
+      throw new UnauthorizedError(
+        'Não existe um responsável com esse email em nossa base de dados.',
+      );
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, sponsor.password);
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedError(
+        'Senha incorreta, por favor, tente novamente.',
+      );
+    }
+
+    const userId = sponsor.id;
+    const type = sponsor.type;
+
+    return {
+      userId,
+      type,
+      password: undefined,
     };
   }
 

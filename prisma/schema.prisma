@@ -21,11 +21,13 @@ model WaitList {
 
 model RefreshToken {
   id        String   @id @default(uuid())
-  userId    String
+  userId    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   expiresIn Int
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Sponsor   Sponsor? @relation(fields: [sponsorId], references: [id])
+  sponsorId String?
 }
 
 model User {
@@ -47,6 +49,17 @@ model User {
   refreshTokens RefreshToken[]
   student       Student?
   teacher       Teacher?
+}
+
+model Sponsor {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  password      String
+  refreshTokens RefreshToken[]
+  studentId     String
+  type          TypeUser
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 }
 
 model Student {
@@ -346,6 +359,7 @@ enum TypeUser {
   manager  @map("Gestor")
   teacher  @map("Professor")
   student  @map("Estudante")
+  sponsor  @map("Responsável")
   others   @map("Outros")
 }
 

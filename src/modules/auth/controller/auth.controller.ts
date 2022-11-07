@@ -28,6 +28,13 @@ export class AuthController {
   }
 
   @Public()
+  @Post('/login/sponsor')
+  @HttpCode(HttpStatus.OK)
+  loginForSponser(@Body() { login, password }: LoginRequestDTO) {
+    return this.authService.loginForSponser(login, password);
+  }
+
+  @Public()
   @Post('/send-recover-email')
   async sendRecoverPasswordEmail(
     @Body() sendRecoverPasswordDTO: SendRecoverPasswordDTO,
