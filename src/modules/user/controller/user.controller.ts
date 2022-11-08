@@ -18,6 +18,7 @@ import CreateUserDTO from '../dtos/createUser.dto';
 import UpdateUserDTO from '../dtos/updateUser.dto';
 import { Express } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Sponsor } from '../decorators/sponsor.decorator';
 
 @ApiTags('User')
 @Controller('user')

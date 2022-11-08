@@ -119,9 +119,10 @@ export class StudentService {
     const studentType: TypeUser = 'student';
 
     const hashSalt = Number(process.env.HASH_SALT);
+    const password = await bcrypt.hash(data.password, hashSalt);
     const newData = {
       ...user,
-      password: await bcrypt.hash(data.password, hashSalt),
+      password,
       birthDate: new Date(data.birthDate),
       type: studentType,
     };
@@ -171,9 +172,19 @@ export class StudentService {
       },
     });
 
+    const createdSponsor = await this.prisma.sponsor.create({
+      data: {
+        type: 'sponsor',
+        email: newData.email,
+        password: password,
+        studentId: createdStudent.id,
+      },
+    });
+
     const response = {
       ...createdUser,
       ...createdStudent,
+      ...createdSponsor,
       password: undefined,
     };
 
