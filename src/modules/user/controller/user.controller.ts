@@ -27,16 +27,7 @@ export class UserController {
 
   @Get('/me')
   getMe(@UserDecorator() user) {
-    console.log('entro aqui');
-
     return user;
-  }
-
-  @Get('/me/sponsor')
-  getMeSponsor(@Sponsor() sponsor) {
-    console.log(sponsor);
-
-    return sponsor;
   }
 
   @Public()

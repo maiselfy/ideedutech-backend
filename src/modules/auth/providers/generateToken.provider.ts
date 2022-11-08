@@ -62,7 +62,9 @@ export class GenerateToken {
         id: true,
         user: {
           select: {
+            id: true,
             name: true,
+            avatar: true,
           },
         },
       },
@@ -75,11 +77,12 @@ export class GenerateToken {
       );
     }
 
-    const payload: SponsorPayload = {
-      nameOfStudent: student.user.name,
+    const payload: UserPayload = {
+      name: student.user.name,
       email: sponsor.email,
-      sub: sponsor.id,
+      sub: student.user.id,
       type: sponsor.type,
+      avatar: student.user.avatar,
     };
 
     const createdToken = this.jwtService.sign(payload);

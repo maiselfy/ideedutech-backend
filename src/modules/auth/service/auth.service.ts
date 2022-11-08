@@ -55,13 +55,8 @@ export class AuthService {
     };
   }
 
-  async loginForSponser(
-    login: string,
-    password: string,
-  ): Promise<SponsorToken> {
+  async loginForSponser(login: string, password: string): Promise<UserToken> {
     const sponsor = await this.validateSponsor(login, password);
-
-    console.log('sponsor::: ', sponsor);
 
     if (!sponsor) {
       throw new HttpException(
@@ -74,19 +69,14 @@ export class AuthService {
       sponsor.userId,
     );
 
-    console.log('accessToken::: ', accessToken);
-
     const refreshToken =
       await this.generateRefreshToken.generateRefreshTokenForSponsor(
         sponsor.userId,
       );
 
-    console.log('refreshToken::: ', refreshToken);
-
     return {
       accessToken,
       refreshToken,
-      type: sponsor.type,
     };
   }
 
