@@ -23,4 +23,16 @@ export class GenerateRefreshToken {
 
     return createdRefreshToken;
   }
+
+  async generateRefreshTokenForSponsor(userId: string) {
+    const expiresIn = dayjs().add(5, 'day').unix();
+    const createdRefreshToken = await this.prisma.refreshToken.create({
+      data: {
+        userId: userId,
+        expiresIn,
+      },
+    });
+
+    return createdRefreshToken;
+  }
 }
