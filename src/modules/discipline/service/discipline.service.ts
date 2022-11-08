@@ -252,9 +252,10 @@ export class DisciplineService {
     for (const student of studentsOfDiscipline) {
       const absencesPerMonth = await this.prisma.$queryRaw<
         AbsenscesPerMonth[]
-      >`    SELECT date_trunc('month', to_date(loc."lessonDate", 'YYYY-MM-DD')) as month, count(loc."studentId") as count
-        FROM public."LackOfClass" loc where loc."studentId" = ${student.id}
-        GROUP BY 1`;
+      >`SELECT date_trunc('month', to_date(loc."lessonDate", 'YYYY-MM-DD')) as month, count(loc."studentId") as count
+      FROM public."LackOfClass" loc inner join "Lesson" l on loc."lessonId" = l.id
+      where loc."studentId" = ${student.id} and l."disciplineId" = ${discipline.id}
+      GROUP BY 1`;
 
       let totalAbsences = 0;
 
@@ -263,15 +264,22 @@ export class DisciplineService {
         name: student.user.name,
         avatar: student.user.avatar,
         absences: absencesPerMonth.map((absence) => {
-          const month = parseInt(absence.month.split('-')[1]);
-          const formattedMonth = Months[month];
+          if (absence.month) {
+            const month = parseInt(absence.month.split('-')[1]);
+            const formattedMonth = Months[month];
 
-          const newData = {
-            month: formattedMonth,
-            count: absence.count ? absence.count : 0,
-          };
+            const newData = {
+              month: formattedMonth,
+              count: absence.count ? absence.count : 0,
+            };
 
-          return newData;
+            return newData;
+          } else {
+            return {
+              month: undefined,
+              count: 0,
+            };
+          }
         }),
         totalAbsences:
           absencesPerMonth.length > 0
