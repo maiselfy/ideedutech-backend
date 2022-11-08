@@ -51,6 +51,12 @@ export class StudentController {
     return this.studentService.remove(studentId);
   }
 
+  @ApiBearerAuth()
+  @Get('absences-by-discipline')
+  findAbsencesOfStudent(@User() user) {
+    return this.studentService.findAllAbsencesOfStudent(user.id);
+  }
+
   @Get('/students/:schoolId')
   findStudentsBySchool(
     @User() user,

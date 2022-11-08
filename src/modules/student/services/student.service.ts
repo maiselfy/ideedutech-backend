@@ -25,6 +25,30 @@ enum GenderTransform {
   'Outros' = 'others',
 }
 
+interface AbsenscesPerMonth {
+  month: string;
+  count: number;
+}
+interface AbsencesOfStudent {
+  months: AbsenscesPerMonth[];
+  totalAbsences: number;
+}
+
+enum Months {
+  'Janeiro' = 1,
+  'Fevereiro' = 2,
+  'Março' = 3,
+  'Abril' = 4,
+  'Maio' = 5,
+  'Junho' = 6,
+  'Julho' = 7,
+  'Agosto' = 8,
+  'Setembro' = 9,
+  'Outubro' = 10,
+  'Novembro' = 11,
+  'Dezembro' = 12,
+}
+
 interface StudentCreateMany {
   schoolId: string;
   classId: string;
@@ -529,6 +553,13 @@ export class StudentService {
       },
       select: {
         id: true,
+        classId: true,
+        user: {
+          select: {
+            name: true,
+            avatar: true,
+          },
+        },
       },
     });
 
@@ -1159,5 +1190,59 @@ export class StudentService {
     }
 
     return school;
+  }
+
+  async findAllAbsencesOfStudent(userId: string) {
+    try {
+      const studentId = await this.findStudentIdByUserId(userId);
+
+      const disciplines = await this.prisma.discipline.findMany({
+        where: {
+          classId: studentId.classId,
+        },
+        select: {
+          id: true,
+          name: true,
+          lessons: {
+            select: {
+              id: true,
+              name: true,
+              LackOfClass: true,
+            },
+          },
+        },
+      });
+
+      const listOfAbsences = [];
+
+      for (const discipline of disciplines) {
+        const absencesPerMonth = await this.prisma.$queryRaw<
+          AbsenscesPerMonth[]
+        >`    SELECT date_trunc('month', to_date(loc."lessonDate", 'YYYY-MM-DD')) as month, count(loc."studentId") as count
+        FROM public."LackOfClass" loc inner join "Lesson" l on loc."lessonId" = l.id where loc."studentId" = ${studentId.id} and l."disciplineId" = ${discipline.id}
+        GROUP BY 1`;
+
+        listOfAbsences.push({
+          disciplineId: discipline.id,
+          disciplineName: discipline.name,
+          absencesPerMonth: absencesPerMonth.map((absence) => {
+            const month = parseInt(absence.month.split('-')[1]);
+            const formattedMonth = Months[month];
+
+            const newData = {
+              month: formattedMonth,
+              count: absence.count ? absence.count : 0,
+            };
+
+            return newData;
+          }),
+        });
+      }
+
+      return listOfAbsences;
+    } catch (error) {
+      if (error) throw error;
+      throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }
