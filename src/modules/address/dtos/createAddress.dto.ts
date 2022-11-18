@@ -1,12 +1,12 @@
-import { IsEmpty, IsNotEmpty, IsString } from 'class-validator';
+import { IsEmpty, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 export default class CreateAddressDTO {
   @ApiProperty({
     example: 'Minha casa',
   })
   @IsString()
-  @IsNotEmpty()
-  labelAddress: string;
+  @IsOptional()
+  labelAddress?: string;
 
   @ApiProperty({
     example: 'Rua Maria Francelina Pinheiro Landim',
