@@ -13,47 +13,42 @@ import {
 
 export default class CreateUserDTO {
   @ApiProperty({
-    example: 'Eliardo Vieira'
+    example: 'Eliardo Vieira',
   })
   @IsString()
   @IsNotEmpty()
   name: string;
 
   @ApiProperty({
-    example: 'eliardovieira@gmail.com'
+    example: 'eliardovieira@gmail.com',
   })
   @IsNotEmpty()
   @IsEmail()
   email: string;
 
   @ApiProperty({
-    example: 'Admin1234'
+    example: 'Admin1234',
   })
   @IsString()
   @MinLength(6)
-  @MaxLength(20)
-  @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
-    message:
-      'Sua senha deve ter pelo menos 6 caracteres (no mínimo 1 letra maiúscula, letras minúsculas, números e caracteres especiais).',
-  })
   password: string;
 
   @ApiProperty({
-    example: '2001-02-22'
+    example: '2001-02-22',
   })
   @IsString()
   @IsNotEmpty()
   birthDate: Date;
 
   @ApiProperty({
-    example: '(00) 0 0000-0000'
+    example: '(00) 0 0000-0000',
   })
   @IsString()
   @IsOptional()
   phone: string;
 
   @ApiProperty({
-    example: 'male'
+    example: 'male',
   })
   @IsString()
   @IsOptional()
