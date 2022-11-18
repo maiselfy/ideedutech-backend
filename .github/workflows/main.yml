@@ -94,7 +94,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
               cd ~/app/ideedutech-backend
-              pm2 start dist/main.js --name api --time
+              pm2 start -f dist/main.js --name api --time
               
       - name: Update env with pm2 
         uses: appleboy/ssh-action@master
