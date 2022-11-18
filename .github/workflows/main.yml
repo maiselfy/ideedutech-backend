@@ -85,16 +85,6 @@ jobs:
             cd ~/app/ideedutech-backend 
             ./node_modules/.bin/prisma migrate deploy  
             
-      - name: Update env with pm2 
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          port: ${{ secrets.SSH_PORT }}
-          key: ${{ secrets.SSH_KEY }}
-          script: |
-              pm2 restart main --update-env
-            
       - name: Restart pm2 
         uses: appleboy/ssh-action@master
         with:
@@ -104,6 +94,16 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
               pm2 restart main 
+              
+      - name: Update env with pm2 
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          port: ${{ secrets.SSH_PORT }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+              pm2 restart main --update-env
   
       # Executar yarn na DO 
       # Executar as migrations na DO
