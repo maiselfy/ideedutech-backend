@@ -14,7 +14,7 @@ export class UserService {
   ) {}
 
   async create(createUserDto) {
-    const userExistsOnWaitlist = await this.prisma.waitList.findUnique({
+    const userExistsOnWaitlist = await this.prisma.waitList.findFirst({
       where: { value: createUserDto.email },
     });
 

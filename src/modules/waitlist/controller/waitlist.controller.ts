@@ -45,13 +45,13 @@ export class WaitlistController {
     return this.waitlistService.findAll();
   }
 
-  @Public()
-  @Delete(':id')
-  remove(@Param('id') email: string) {
-    return this.waitlistService.remove(email).catch((e) => {
-      throw new NotFoundException(e.message);
-    });
-  }
+  // @Public()
+  // @Delete(':id')
+  // remove(@Param('id') email: string) {
+  //   return this.waitlistService.remove(email).catch((e) => {
+  //     throw new NotFoundException(e.message);
+  //   });
+  // }
 
   @Delete('/delete/:waitlistId')
   deleteById(@Param('waitlistId') waitlistId: string) {
