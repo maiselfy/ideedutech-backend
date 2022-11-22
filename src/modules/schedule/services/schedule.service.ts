@@ -12,9 +12,9 @@ import { CreateScheduleDTO } from '../dtos/createSchedule.dto';
 
 enum Days {
   'monday' = 1,
-  'thursday' = 2,
+  'tuesday' = 2,
   'wednesday' = 3,
-  'tuesday' = 4,
+  'thursday' = 4,
   'friday' = 5,
   'saturday' = 6,
   'sunday' = 0,
