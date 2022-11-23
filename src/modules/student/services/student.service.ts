@@ -11,6 +11,7 @@ import { PeriodService } from 'src/modules/period/service/period.service';
 
 import * as XLSX from 'xlsx';
 import * as bcrypt from 'bcrypt';
+import UpdateStudentDTO from '../dtos/updateStudent.dto';
 
 interface ReportCard {
   id: string;
@@ -192,6 +193,41 @@ export class StudentService {
       data: response,
       status: HttpStatus.CREATED,
       message: 'Estudante cadastrado com sucesso.',
+    };
+  }
+
+  async update(studentId: string, updateStudentDTO: UpdateStudentDTO) {
+    const studentExists = await this.prisma.student.findUnique({
+      where: {
+        id: studentId,
+      },
+    });
+
+    if (!studentExists) {
+      throw new HttpException(
+        'Erro. Estudante não encontrado.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const updatedStudent = await this.prisma.user.update({
+      where: {
+        id: studentExists.userId,
+      },
+      data: updateStudentDTO,
+    });
+
+    if (!updatedStudent) {
+      throw new HttpException(
+        'Erro ao atualizar informações do estudante.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    return {
+      data: updatedStudent,
+      status: HttpStatus.OK,
+      message: 'Dados do estudante atualizado com sucesso.',
     };
   }
 
