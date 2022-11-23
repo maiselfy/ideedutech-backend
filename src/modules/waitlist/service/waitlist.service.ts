@@ -174,21 +174,21 @@ export class WaitlistService {
     }
   }
 
-  async remove(email: string) {
-    const deleteUserWaitlist = await this.prisma.waitList.delete({
-      where: {
-        value: email,
-      },
-    });
+  // async remove(email: string) {
+  //   const deleteUserWaitlist = await this.prisma.waitList.delete({
+  //     where: {
 
-    if (!deleteUserWaitlist) {
-      throw Error(`User ${email} not found in waitlist`);
-    }
+  //     },
+  //   });
 
-    return {
-      message: `User ${deleteUserWaitlist.value} removed from waitlist`,
-    };
-  }
+  //   if (!deleteUserWaitlist) {
+  //     throw Error(`User ${email} not found in waitlist`);
+  //   }
+
+  //   return {
+  //     message: `User ${deleteUserWaitlist.value} removed from waitlist`,
+  //   };
+  // }
 
   async findByRole(
     managerId: string,

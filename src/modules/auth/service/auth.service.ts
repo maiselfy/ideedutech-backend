@@ -35,6 +35,7 @@ export class AuthService {
 
   async login(login: string, password: string): Promise<UserToken> {
     const user = await this.validateUser(login, password);
+    console.log('chamou a req de login, entrei no service');
 
     if (!user) {
       throw new HttpException(

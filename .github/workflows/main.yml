@@ -93,7 +93,8 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-              pm2 restart main 
+              cd ~/app/ideedutech-backend
+              pm2 restart dist/main.js
   
       # Executar yarn na DO 
       # Executar as migrations na DO

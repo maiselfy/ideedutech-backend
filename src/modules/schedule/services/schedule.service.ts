@@ -12,9 +12,9 @@ import { CreateScheduleDTO } from '../dtos/createSchedule.dto';
 
 enum Days {
   'monday' = 1,
-  'thursday' = 2,
+  'tuesday' = 2,
   'wednesday' = 3,
-  'tuesday' = 4,
+  'thursday' = 4,
   'friday' = 5,
   'saturday' = 6,
   'sunday' = 0,
@@ -80,12 +80,12 @@ export class ScheduleService {
                 AND: [
                   {
                     initialHour: {
-                      gt: data.initialHour,
+                      gte: data.initialHour,
                     },
                   },
                   {
                     finishHour: {
-                      lt: data.finishHour,
+                      lte: data.finishHour,
                     },
                   },
                 ],
@@ -100,7 +100,7 @@ export class ScheduleService {
                   },
                   {
                     finishHour: {
-                      gt: data.finishHour,
+                      gte: data.finishHour,
                     },
                   },
                 ],
@@ -115,7 +115,7 @@ export class ScheduleService {
                   },
                   {
                     initialHour: {
-                      gt: data.initialHour,
+                      gte: data.initialHour,
                     },
                   },
                 ],
@@ -129,7 +129,7 @@ export class ScheduleService {
                   },
                   {
                     finishHour: {
-                      lt: data.finishHour,
+                      lte: data.finishHour,
                     },
                   },
                 ],
@@ -146,12 +146,12 @@ export class ScheduleService {
                 AND: [
                   {
                     initialHour: {
-                      gt: data.initialHour,
+                      gte: data.initialHour,
                     },
                   },
                   {
                     finishHour: {
-                      lt: data.finishHour,
+                      lte: data.finishHour,
                     },
                   },
                 ],
@@ -166,7 +166,7 @@ export class ScheduleService {
                   },
                   {
                     finishHour: {
-                      gt: data.finishHour,
+                      gte: data.finishHour,
                     },
                   },
                 ],
@@ -181,7 +181,7 @@ export class ScheduleService {
                   },
                   {
                     initialHour: {
-                      gt: data.initialHour,
+                      gte: data.initialHour,
                     },
                   },
                 ],
@@ -195,7 +195,7 @@ export class ScheduleService {
                   },
                   {
                     finishHour: {
-                      lt: data.finishHour,
+                      lte: data.finishHour,
                     },
                   },
                 ],
@@ -218,12 +218,12 @@ export class ScheduleService {
                 AND: [
                   {
                     initialHour: {
-                      gt: data.initialHour,
+                      gte: data.initialHour,
                     },
                   },
                   {
                     finishHour: {
-                      lt: data.finishHour,
+                      lte: data.finishHour,
                     },
                   },
                 ],
@@ -238,7 +238,7 @@ export class ScheduleService {
                   },
                   {
                     finishHour: {
-                      gt: data.finishHour,
+                      gte: data.finishHour,
                     },
                   },
                 ],
@@ -253,7 +253,7 @@ export class ScheduleService {
                   },
                   {
                     initialHour: {
-                      gt: data.initialHour,
+                      gte: data.initialHour,
                     },
                   },
                 ],
@@ -267,7 +267,7 @@ export class ScheduleService {
                   },
                   {
                     finishHour: {
-                      lt: data.finishHour,
+                      lte: data.finishHour,
                     },
                   },
                 ],
@@ -718,7 +718,10 @@ export class ScheduleService {
           initialHour: true,
           finishHour: true,
         },
+        distinct: ['day', 'initialHour', 'finishHour'],
       });
+
+      console.log(unavailableSchedules);
 
       schedulesOfWeek.some((freeSchedule, index) => {
         const swapElement = unavailableSchedules.find(
@@ -737,6 +740,10 @@ export class ScheduleService {
             discipline: null,
           };
         }
+      });
+
+      schedulesOfWeek.sort((a, b) => {
+        return a.day < b.day && a.finishHour < b.finishHour ? -1 : 1;
       });
 
       const formattedData = schedulesOfWeek.reduce((acc, element) => {
