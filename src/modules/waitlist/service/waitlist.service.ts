@@ -33,6 +33,12 @@ export class WaitlistService {
       );
     }
 
+    const schoolInfo = await this.prisma.school.findUnique({
+      where: {
+        id: data.schoolId
+      }
+    });
+
     const createdWaitlist = await this.prisma.waitList.create({
       data: {
         ...data,
@@ -52,6 +58,9 @@ export class WaitlistService {
       from: 'noreply@application.com',
       subject: 'Adicionado a lista da espera da Instituição',
       template: 'email-confirmation-waitlist',
+      context: {
+        school: schoolInfo.name
+      }
     };
 
     await this.mailerService.sendMail(mail);
