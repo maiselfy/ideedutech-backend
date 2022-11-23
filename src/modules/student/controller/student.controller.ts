@@ -11,6 +11,7 @@ import {
   Delete,
   UseInterceptors,
   UploadedFile,
+  Put,
 } from '@nestjs/common';
 import { StudentService } from './../services/student.service';
 import { PaginationDTO } from 'src/models/PaginationDTO';
@@ -20,6 +21,7 @@ import { CheckPolicies } from 'src/security/decorators/policy.decorator';
 import { PoliciesGuard } from 'src/security/guards/policy.guard';
 import { CreatePolicyHandler } from 'src/security/policies/create.policy';
 import { FileInterceptor } from '@nestjs/platform-express';
+import UpdateStudentDTO from '../dtos/updateStudent.dto';
 @ApiTags('Student')
 @Controller('student')
 export class StudentController {
@@ -30,6 +32,14 @@ export class StudentController {
     const managerId = user.id;
 
     return this.studentService.create(createStudentDTO, managerId);
+  }
+
+  @Put('/update/:studentId')
+  async update(
+    @Param('studentId') studentId: string,
+    @Body() updateStudentDTO: UpdateStudentDTO,
+  ) {
+    return this.studentService.update(studentId, updateStudentDTO);
   }
 
   @Post('upload')
