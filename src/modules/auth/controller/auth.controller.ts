@@ -24,6 +24,8 @@ export class AuthController {
   @Post('/login')
   @HttpCode(HttpStatus.OK)
   login(@Body() { login, password }: LoginRequestDTO) {
+    console.log('entro aqui');
+
     return this.authService.login(login, password);
   }
 
