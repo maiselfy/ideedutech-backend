@@ -182,7 +182,7 @@ export class UserService {
   }
 
   findByEmail(email: string) {
-    const user = this.prisma.user.findUnique({
+    const user = this.prisma.user.findFirst({
       where: {
         email,
       },
@@ -201,10 +201,10 @@ export class UserService {
     return user;
   }
 
-  async updateRecoverToken(email: string, recoverToken: string) {
+  async updateRecoverToken(userId: string, recoverToken: string) {
     await this.prisma.user.update({
       where: {
-        email: email,
+        id: userId,
       },
       data: {
         recoverToken: recoverToken,

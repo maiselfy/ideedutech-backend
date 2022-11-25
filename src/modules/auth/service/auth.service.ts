@@ -188,7 +188,7 @@ export class AuthService {
 
     let recoverToken: string = this.generateRandomString();
 
-    await this.userService.updateRecoverToken(email, recoverToken);
+    await this.userService.updateRecoverToken(user.id, recoverToken);
 
     const mail = {
       to: user.email,
