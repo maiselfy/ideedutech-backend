@@ -17,10 +17,9 @@ export class UserService {
     const userExistsOnWaitlist = await this.prisma.waitList.findFirst({
       where: {
         value: createUserDto.email,
-        approved: true,
       },
     });
-    
+
     if (!userExistsOnWaitlist) {
       throw new HttpException(
         `Acesso negado. Informações inválidas`,

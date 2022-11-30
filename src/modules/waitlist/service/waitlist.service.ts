@@ -41,7 +41,7 @@ export class WaitlistService {
     const createdWaitlist = await this.prisma.waitList.create({
       data: {
         ...data,
-        approved: true,
+        approved: false,
       },
     });
 
