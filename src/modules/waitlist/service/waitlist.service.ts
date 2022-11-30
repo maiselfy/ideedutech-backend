@@ -19,10 +19,9 @@ export class WaitlistService {
   async create(createWaitlistDTO: CreateWaitlistDTO) {
     const data = createWaitlistDTO;
 
-    const existsRegisterOnWaitlist = await this.prisma.waitList.findFirst({
+    const existsRegisterOnWaitlist = await this.prisma.waitList.findUnique({
       where: {
         value: data.value,
-        schoolId: data.schoolId,
       },
     });
 
@@ -35,8 +34,8 @@ export class WaitlistService {
 
     const schoolInfo = await this.prisma.school.findUnique({
       where: {
-        id: data.schoolId
-      }
+        id: data.schoolId,
+      },
     });
 
     const createdWaitlist = await this.prisma.waitList.create({
@@ -59,8 +58,8 @@ export class WaitlistService {
       subject: 'Adicionado a lista da espera da Instituição',
       template: 'email-confirmation-waitlist',
       context: {
-        school: schoolInfo.name
-      }
+        school: schoolInfo.name,
+      },
     };
 
     await this.mailerService.sendMail(mail);

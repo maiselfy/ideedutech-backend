@@ -10,7 +10,7 @@ datasource db {
 
 model WaitList {
   id        String   @id @default(uuid())
-  value     String
+  value     String   @unique
   approved  Boolean
   schoolId  String
   role      Role     @default(manager)
@@ -33,7 +33,7 @@ model RefreshToken {
 model User {
   id            String         @id @default(uuid())
   name          String
-  email         String
+  email         String         @unique
   password      String
   birthDate     DateTime
   phone         String
@@ -339,69 +339,69 @@ model Address {
 }
 
 enum Gender {
-  male       @map("Masculino")
-  female     @map("Feminino")
-  notBinary  @map("Não Binário")
-  others     @map("Outros")
-  notInform  @map("Prefiro Não Informar")
+  male      @map("Masculino")
+  female    @map("Feminino")
+  notBinary @map("Não Binário")
+  others    @map("Outros")
+  notInform @map("Prefiro Não Informar")
 }
 
 enum Role {
-  admin    @map("Administrador")
-  manager  @map("Gestor")
-  teacher  @map("Professor")
-  others   @map("Outros")
-  student  @map("Estudante")
+  admin   @map("Administrador")
+  manager @map("Gestor")
+  teacher @map("Professor")
+  others  @map("Outros")
+  student @map("Estudante")
 }
 
 enum TypeUser {
-  admin    @map("Administrador")
-  manager  @map("Gestor")
-  teacher  @map("Professor")
-  student  @map("Estudante")
-  others   @map("Outros")
-  sponsor  @map("Responsável")
+  admin   @map("Administrador")
+  manager @map("Gestor")
+  teacher @map("Professor")
+  student @map("Estudante")
+  others  @map("Outros")
+  sponsor @map("Responsável")
 }
 
 enum TypeRegisterClass {
-  planEducation  @map("Plano de Ensino")
-  loose          @map("Avulso")
+  planEducation @map("Plano de Ensino")
+  loose         @map("Avulso")
 }
 
 enum Day {
-  monday     @map("Segunda-Feira")
-  tuesday    @map("Terça-Feira")
-  wednesday  @map("Quarta-Feira")
-  thursday   @map("Quinta-Feira")
-  friday     @map("Sexta-Feira")
-  saturday   @map("Sábado")
-  sunday     @map("Domingo")
+  monday    @map("Segunda-Feira")
+  tuesday   @map("Terça-Feira")
+  wednesday @map("Quarta-Feira")
+  thursday  @map("Quinta-Feira")
+  friday    @map("Sexta-Feira")
+  saturday  @map("Sábado")
+  sunday    @map("Domingo")
 }
 
 enum TypeHomeWork {
-  activity  @map("Atividade")
-  exame     @map("Prova")
-  work      @map("Trabalho")
-  others    @map("Outros")
-  test      @map("Avaliação")
+  activity @map("Atividade")
+  exame    @map("Prova")
+  work     @map("Trabalho")
+  others   @map("Outros")
+  test     @map("Avaliação")
 }
 
 enum EvaluationStage {
-  sent       @map("Enviada")
-  overdue    @map("Atrasada")
-  pending    @map("Pendente")
-  evaluated  @map("Avaliada")
-  canceled   @map("Cancelada")
-  others     @map("Outros")
+  sent      @map("Enviada")
+  overdue   @map("Atrasada")
+  pending   @map("Pendente")
+  evaluated @map("Avaliada")
+  canceled  @map("Cancelada")
+  others    @map("Outros")
 }
 
 enum OwnerAction {
-  teacher  @map("Professor")
-  student  @map("Estudante")
+  teacher @map("Professor")
+  student @map("Estudante")
 }
 
 enum SchoolTerm {
-  twoMonths  @map("Bimestre")
-  quarter    @map("Trimestre")
-  semester   @map("Semestre")
+  twoMonths @map("Bimestre")
+  quarter   @map("Trimestre")
+  semester  @map("Semestre")
 }
