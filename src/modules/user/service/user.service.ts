@@ -17,6 +17,7 @@ export class UserService {
     const userExistsOnWaitlist = await this.prisma.waitList.findFirst({
       where: {
         value: createUserDto.email,
+        approved: false
       },
     });
 
