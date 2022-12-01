@@ -1341,6 +1341,10 @@ export class ScheduleService {
         return newData;
       });
 
+      formattedData.sort((a, b) => {
+        return a.day < b.day && a.finishHour < b.finishHour ? -1 : 1;
+      });
+
       return {
         data: formattedData,
         status: HttpStatus.OK,
