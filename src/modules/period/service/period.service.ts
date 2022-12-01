@@ -48,7 +48,7 @@ export class PeriodService {
           : 1;
       });
 
-      return { ordenedFormattedData };
+      return { data: ordenedFormattedData };
     } catch (error) {}
   }
 
