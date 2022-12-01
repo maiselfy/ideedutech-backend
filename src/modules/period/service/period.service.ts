@@ -40,7 +40,18 @@ export class PeriodService {
           ],
         },
       });
-      return { response };
+
+      const ordenedFormattedData = response.sort((a, b) => {
+        console.log(a.startOfPeriod <= b.day);
+        console.log(a.finishHour <= b.finishHour);
+
+        return a.startOfPeriod <= b.startOfPeriod &&
+          a.endOfPeriod <= b.endOfPeriod
+          ? -1
+          : 1;
+      });
+
+      return { ordenedFormattedData };
     } catch (error) {}
   }
 
