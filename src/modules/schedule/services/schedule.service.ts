@@ -1341,12 +1341,15 @@ export class ScheduleService {
         return newData;
       });
 
-      formattedData.sort((a, b) => {
-        return a.day < b.day && a.finishHour < b.finishHour ? -1 : 1;
+      const ordenedFormattedData = formattedData.sort((a, b) => {
+        console.log(a.day <= b.day);
+        console.log(a.finishHour <= b.finishHour);
+
+        return a.day <= b.day && a.finishHour <= b.finishHour ? -1 : 1;
       });
 
       return {
-        data: formattedData,
+        data: ordenedFormattedData,
         status: HttpStatus.OK,
         message: 'Horários do professor retornados com sucesso',
       };
