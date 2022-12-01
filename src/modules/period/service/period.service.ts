@@ -42,9 +42,6 @@ export class PeriodService {
       });
 
       const ordenedFormattedData = response.sort((a, b) => {
-        console.log(a.startOfPeriod <= b.day);
-        console.log(a.finishHour <= b.finishHour);
-
         return a.startOfPeriod <= b.startOfPeriod &&
           a.endOfPeriod <= b.endOfPeriod
           ? -1
