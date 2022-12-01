@@ -14,6 +14,8 @@ export class UserService {
   ) {}
 
   async create(createUserDto) {
+    console.log("Entrou no service de criação");
+    console.log("findFirst na waitlist");
     const userExistsOnWaitlist = await this.prisma.waitList.findFirst({
       where: {
         value: createUserDto.email,
@@ -21,6 +23,7 @@ export class UserService {
       },
     });
 
+    console.log("verifica se usuário não está na waitlist");
     if (!userExistsOnWaitlist) {
       throw new HttpException(
         `Acesso negado. Informações inválidas`,
@@ -28,6 +31,7 @@ export class UserService {
       );
     }
 
+    console.log("Cria new data com senha criptografada!");
     const hashSalt = Number(process.env.HASH_SALT);
     const newData = {
       ...createUserDto,
@@ -36,6 +40,7 @@ export class UserService {
       type: userExistsOnWaitlist.role,
     };
 
+    console.log("Criação de usuário!");
     const createdUser = await this.prisma.user.create({
       data: {
         ...newData,
@@ -48,6 +53,7 @@ export class UserService {
       },
     });
 
+    console.log("Envio de emails!");
     const mail = {
       to: createdUser.email,
       from: 'noreply@application.com',
@@ -60,6 +66,8 @@ export class UserService {
 
     await this.mailerService.sendMail(mail);
 
+
+    console.log("Verificações de qual role o user pertence!");
     if (userExistsOnWaitlist.role === 'admin') {
       const createdAdmin = await this.prisma.admin.create({
         data: {
