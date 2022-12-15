@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/modules/prisma';
+import { Address, PrismaService, School } from 'src/modules/prisma';
 import { FindSchoolByRegionDTO } from '../dtos/findSchoolByRegion.dto';
 
 @Injectable()
@@ -133,6 +133,22 @@ export class SchoolService {
       data: schools,
       status: HttpStatus.OK,
       message: 'Escolas retornadas com sucesso.',
+    };
+  }
+
+  async findCitiesBySchools() {
+    const cities = await this.prisma.$queryRaw<
+      Address[]
+    >`SELECT DISTINCT a.city FROM public."Address" a where a."schoolId" is not null`;
+
+    const formattedData = cities.map((address) => {
+      return address.city;
+    });
+
+    return {
+      data: formattedData,
+      message: 'Munícipios retornados com sucesso.',
+      status: HttpStatus.OK,
     };
   }
 

@@ -30,6 +30,12 @@ export class SchoolController {
   }
 
   @ApiBearerAuth()
+  @Get('admin/cities')
+  findCitiesBySchools() {
+    return this.schoolService.findCitiesBySchools();
+  }
+
+  @ApiBearerAuth()
   @Get(':id')
   findSchoolById(@Param('id') id: string) {
     console.log('entro no errado');
