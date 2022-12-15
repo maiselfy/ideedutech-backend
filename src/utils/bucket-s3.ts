@@ -35,7 +35,7 @@ export class S3Service {
       ContentType: mimetype,
       /* ContentDisposition: 'inline',
       CreateBucketConfiguration: {
-        LocationConstraint: 'ap-south-1',
+        LocationConstraint: 'us-east-1',
       }, */
     };
 
