@@ -128,6 +128,16 @@ export class StudentService {
       type: studentType,
     };
 
+    const userExists = await this.prisma
+      .$queryRaw`SELECT * FROM public."User" u WHERE u."email" = ${newData.email}`;
+
+    if (userExists) {
+      throw new HttpException(
+        `Informações inválidas! E-mail já está em uso.`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
     const createdUser = await this.prisma.user.create({
       data: {
         ...newData,
@@ -139,13 +149,6 @@ export class StudentService {
         address: true,
       },
     });
-
-    if (!createdUser) {
-      throw new HttpException(
-        `Informações inválidas! Não foi possível criar o estudante. Confira o e-mail e as demais informações antes de tentar novamente.`,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
 
     const classExists = await this.prisma.class.findUnique({
       where: {
@@ -170,6 +173,16 @@ export class StudentService {
       userId: createdUser.id,
     };
 
+    const studentExists = await this.prisma
+      .$queryRaw`SELECT * FROM public."Student" s WHERE s."enrollment" = ${dataStudent.enrollment}`;
+
+    if (studentExists) {
+      throw new HttpException(
+        `Informações inválidas! A matrícula já está em uso.`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
     const createdStudent = await this.prisma.student.create({
       data: {
         ...dataStudent,
@@ -179,13 +192,6 @@ export class StudentService {
         class: true,
       },
     });
-
-    if (!createdStudent) {
-      throw new HttpException(
-        `Informações inválidas! Não foi possível criar o estudante. Confira a matrícula e as demais informações antes de tentar novamente.`,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
 
     const createdSponsor = await this.prisma.sponsor.create({
       data: {
