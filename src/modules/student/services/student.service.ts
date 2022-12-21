@@ -140,6 +140,13 @@ export class StudentService {
       },
     });
 
+    if (!createdUser) {
+      throw new HttpException(
+        `Informações inválidas! Não foi possível criar o estudante. Confira o e-mail e as demais informações antes de tentar novamente.`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     const classExists = await this.prisma.class.findUnique({
       where: {
         id: data.classId,
@@ -172,6 +179,13 @@ export class StudentService {
         class: true,
       },
     });
+
+    if (!createdStudent) {
+      throw new HttpException(
+        `Informações inválidas! Não foi possível criar o estudante. Confira a matrícula e as demais informações antes de tentar novamente.`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
 
     const createdSponsor = await this.prisma.sponsor.create({
       data: {
