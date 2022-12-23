@@ -131,6 +131,8 @@ export class StudentService {
     const userExists = await this.prisma
       .$queryRaw`SELECT * FROM public."User" u WHERE u."email" = ${newData.email}`;
 
+    console.log('user exists ? ', userExists);
+
     if (userExists) {
       throw new HttpException(
         `Informações inválidas! E-mail já está em uso.`,
