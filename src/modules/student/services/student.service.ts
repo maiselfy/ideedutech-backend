@@ -133,7 +133,7 @@ export class StudentService {
 
     console.log('user exists ? ', userExists);
 
-    if (userExists) {
+    if (userExists[0]) {
       throw new HttpException(
         `Informações inválidas! E-mail já está em uso.`,
         HttpStatus.CONFLICT,
@@ -178,7 +178,9 @@ export class StudentService {
     const studentExists = await this.prisma
       .$queryRaw`SELECT * FROM public."Student" s WHERE s."enrollment" = ${dataStudent.enrollment}`;
 
-    if (studentExists) {
+    console.log(studentExists);
+
+    if (studentExists[0]) {
       throw new HttpException(
         `Informações inválidas! A matrícula já está em uso.`,
         HttpStatus.CONFLICT,
