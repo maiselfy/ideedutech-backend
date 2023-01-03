@@ -1,11 +1,23 @@
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CreateSchoolDTO } from './../dtos/createSchool.dto';
-import { Controller, Get, Post, Body, Param, Put, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Put,
+  Query,
+  UseInterceptors,
+  UploadedFile,
+  Patch,
+} from '@nestjs/common';
 import { Public } from 'src/modules/auth/decorators/public.decorator';
 import { SchoolService } from '../service/school.service';
 import { UpdateSchoolDTO } from './../dtos/updateSchool.dto';
 import { User } from 'src/modules/user/decorators/user.decorator';
 import { FindSchoolByRegionDTO } from '../dtos/findSchoolByRegion.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 @ApiTags('School')
 @Controller('school')
 export class SchoolController {
@@ -46,5 +58,14 @@ export class SchoolController {
   @Put(':id')
   update(@Param('id') id: string, @Body() updateInfoSchool: UpdateSchoolDTO) {
     return this.schoolService.update(id, updateInfoSchool);
+  }
+
+  @Patch('upload/:schoolId')
+  @UseInterceptors(FileInterceptor('avatar'))
+  uploadFile(
+    @Param('schoolId') schoolId: string,
+    @UploadedFile() avatar: Express.Multer.File,
+  ) {
+    return this.schoolService.updateAvatar(schoolId, avatar);
   }
 }

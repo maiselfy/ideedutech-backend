@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Address, PrismaService, School } from 'src/modules/prisma';
+import { S3Service } from 'src/utils/bucket-s3';
 import { FindSchoolByRegionDTO } from '../dtos/findSchoolByRegion.dto';
 
 @Injectable()
@@ -191,9 +192,6 @@ export class SchoolService {
         ? updateData.email
         : updateSchool.email;
       updateSchool.inep = updateData.inep ? updateData.inep : updateSchool.inep;
-      updateSchool.avatar = updateData.avatar
-        ? updateData.avatar
-        : updateSchool.avatar;
 
       await this.prisma.school.update({
         where: {
@@ -205,7 +203,6 @@ export class SchoolService {
           phone: updateSchool.phone,
           email: updateSchool.email,
           inep: updateSchool.inep,
-          avatar: updateSchool.avatar,
         },
       });
 
@@ -260,6 +257,39 @@ export class SchoolService {
       };
     } catch (error) {
       return new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async updateAvatar(schoolId, avatar) {
+    const s3Service = new S3Service();
+
+    const avatarSaved = await s3Service.uploadFile(avatar);
+    if (!avatarSaved) {
+      throw new Error('Failure saving avatar in bucket');
+    }
+    const { Location: url } = avatarSaved;
+
+    try {
+      const responseUpdateAvatar = await this.prisma.school.update({
+        where: {
+          id: schoolId,
+        },
+        data: {
+          avatar: url,
+        },
+      });
+
+      if (!responseUpdateAvatar) {
+        throw new Error('Avatar update failure');
+      }
+      return {
+        data: responseUpdateAvatar.avatar,
+        status: HttpStatus.OK,
+        message: 'Avatar atualizado com sucesso.',
+      };
+    } catch (e) {
+      console.log(e);
+      throw new Error('Avatar update failure');
     }
   }
 
