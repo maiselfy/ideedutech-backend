@@ -643,4 +643,34 @@ export class HomeWorkService {
       message: `Homework retornada com sucesso.`,
     };
   }
+
+  async deleteHomework(homeWorkId: string) {
+    try {
+      const homeWorkExists = await this.prisma.homeWork.findUnique({
+        where: {
+          id: homeWorkId,
+        },
+      });
+
+      if (!homeWorkExists) {
+        throw new HttpException(
+          'Erro. Atividade ou avaliação não encontrada.',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      await this.prisma.homeWork.delete({
+        where: {
+          id: homeWorkExists.id,
+        },
+      });
+
+      return {
+        status: HttpStatus.OK,
+        message: 'Atividade excluída com sucesso',
+      };
+    } catch (error) {
+      return new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
 }
