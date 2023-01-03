@@ -40,6 +40,13 @@ export class UpdateSchoolDTO {
   @IsString()
   inep?: string;
 
+  @ApiProperty({
+    example: 'example.png',
+  })
+  @IsOptional()
+  @IsString()
+  avatar?: string;
+
   @IsString()
   @IsOptional()
   addressId: string;

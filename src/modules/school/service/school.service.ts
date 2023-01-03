@@ -191,6 +191,9 @@ export class SchoolService {
         ? updateData.email
         : updateSchool.email;
       updateSchool.inep = updateData.inep ? updateData.inep : updateSchool.inep;
+      updateSchool.avatar = updateData.avatar
+        ? updateData.avatar
+        : updateSchool.avatar;
 
       await this.prisma.school.update({
         where: {
@@ -202,6 +205,7 @@ export class SchoolService {
           phone: updateSchool.phone,
           email: updateSchool.email,
           inep: updateSchool.inep,
+          avatar: updateSchool.avatar,
         },
       });
 
