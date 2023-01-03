@@ -162,6 +162,7 @@ export class ClassService {
                 dueDate: true,
                 isOpen: true,
                 evaluativeDelivery: true,
+                attachement: true,
               },
             },
           },

@@ -593,6 +593,7 @@ export class StudentService {
               dueDate: activities.dueDate,
               isOpen: activities.isOpen,
               submission: activities.evaluativeDelivery,
+              attachement: activities.attachement,
               status: this.checkSubmissionStatus(activities.evaluativeDelivery),
             };
           }),
