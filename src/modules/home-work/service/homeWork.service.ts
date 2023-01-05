@@ -675,13 +675,6 @@ export class HomeWorkService {
         },
       });
 
-      if (!updateHomeWork) {
-        throw new HttpException(
-          'Erro. Homework não encontrada.',
-          HttpStatus.NOT_FOUND,
-        );
-      }
-
       updateHomeWork.name = updateData.name
         ? updateData.name
         : updateHomeWork.name;
@@ -728,7 +721,35 @@ export class HomeWorkService {
         message: 'HomeWork atualizada com sucesso.',
       };
     } catch (error) {
-      return new HttpException(error, HttpStatus.BAD_REQUEST);
+      return new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async deleteHomework(homeWorkId: string) {
+    try {
+      const homeWorkExists = await this.prisma.homeWork.findUnique({
+        where: {
+          id: homeWorkId,
+        },
+      });
+
+      if (!homeWorkExists) {
+        throw new HttpException(
+          'Erro. Atividade ou avaliação não encontrada.',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      await this.prisma.homeWork.delete({
+        where: {
+          id: homeWorkExists.id,
+        }
+      });
+
+      return 
+    }
+    catch (error) {
+      return new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 }

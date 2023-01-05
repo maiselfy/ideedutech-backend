@@ -1,5 +1,14 @@
 import { ApiTags } from '@nestjs/swagger';
-import { Controller, Get, Post, Body, Param, Query, Put } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Query,
+  Put,
+  Delete,
+} from '@nestjs/common';
 import { HomeWorkService } from '../service/homeWork.service';
 import { SearchHomeWorksByTeacherDTO } from '../dtos/searchHomeWorksByTeacher.dto';
 import { User } from 'src/modules/user/decorators/user.decorator';
@@ -71,5 +80,10 @@ export class HomeWorkController {
       teacherId,
       searchHomeWorksByTeacher,
     );
+  }
+
+  @Delete('delete/:homeWorkId')
+  deleteHomeWork(@Param('homeWorkId') homeWorkId: string) {
+    return this.homeWorkService.deleteHomework(homeWorkId);
   }
 }

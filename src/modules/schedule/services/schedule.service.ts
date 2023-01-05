@@ -1457,8 +1457,12 @@ export class ScheduleService {
         return newData;
       });
 
+      const ordenedFormattedData = formattedData.sort((a, b) => {
+        return a.day <= b.day && a.finishHour <= b.finishHour ? -1 : 1;
+      });
+
       return {
-        data: formattedData,
+        data: ordenedFormattedData,
         status: HttpStatus.OK,
         message: 'Horários do aluno retornados com sucesso',
       };

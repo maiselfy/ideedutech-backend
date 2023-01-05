@@ -60,7 +60,6 @@ export class UserService {
 
     await this.mailerService.sendMail(mail);
 
-    console.log('Verificações de qual role o user pertence!');
     if (userExistsOnWaitlist.role === 'admin') {
       const createdAdmin = await this.prisma.admin.create({
         data: {
