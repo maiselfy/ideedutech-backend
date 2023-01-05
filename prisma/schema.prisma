@@ -174,7 +174,7 @@ model HomeWork {
   updatedAt          DateTime             @updatedAt
   weight             Float?               @default(1)
   startDate          DateTime?
-  discipline         Discipline           @relation(fields: [disciplineId], references: [id], onDelete: Cascade)
+  discipline         Discipline           @relation(fields: [disciplineId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   evaluativeDelivery EvaluativeDelivery[]
   ReportCard         ReportCard[]
 }

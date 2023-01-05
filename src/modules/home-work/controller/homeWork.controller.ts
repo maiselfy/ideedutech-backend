@@ -1,5 +1,5 @@
 import { ApiTags } from '@nestjs/swagger';
-import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query, Put } from '@nestjs/common';
 import { HomeWorkService } from '../service/homeWork.service';
 import { SearchHomeWorksByTeacherDTO } from '../dtos/searchHomeWorksByTeacher.dto';
 import { User } from 'src/modules/user/decorators/user.decorator';
@@ -30,6 +30,11 @@ export class HomeWorkController {
   @Get('/:homeWorkId')
   findHomeWorkById(@Param('homeWorkId') homeWorkId: string) {
     return this.homeWorkService.getDetailsOfHomework(homeWorkId);
+  }
+
+  @Put('/:id')
+  update(@Param('id') id: string, @Body() updateInfoHomeWork) {
+    return this.homeWorkService.update(id, updateInfoHomeWork);
   }
 
   @Get('/teacher/homeworks')

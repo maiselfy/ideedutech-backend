@@ -4,6 +4,7 @@ import {
   HttpStatus,
   Injectable,
 } from '@nestjs/common';
+import id from 'date-fns/locale/id/index';
 import { PaginationDTO } from 'src/models/PaginationDTO';
 import { HomeWork, PrismaService, TypeHomeWork } from 'src/modules/prisma';
 import { StudentService } from 'src/modules/student/services/student.service';
@@ -344,18 +345,38 @@ export class HomeWorkService {
         peddingsubmissions: number;
       }
 
-      const aux = await this.prisma.$queryRaw<
-        IHomeWorksByTeacher[]
-      >`SELECT hw.id, hw.name, hw."isOpen", hw."type", hw."dueDate", hw.description, ds."name" as disciplineName, cs.name as className, (select count(*) 
+      let typeOfHomework = '';
+      const homeworkTypeInEnum = TypeHomeWork.activity;
+
+      if (homeworkTypeInEnum == 'activity') {
+        typeOfHomework = 'Atividade';
+      }
+
+      let aux = [];
+      if (type == typeOfHomework) {
+        const typeExame = 'Prova';
+        const typeTest = 'Avaliação';
+        aux = await this.prisma.$queryRaw<
+          IHomeWorksByTeacher[]
+        >`SELECT hw.id, hw.name, hw."isOpen", hw."type", hw."dueDate", hw.description, ds."name" as disciplineName, cs.name as className, (select count(*) 
       from "Student" s where "classId" = cs.id) as qtdStudents, (select count(distinct ed."studentId") from public."EvaluativeDelivery" ed 
-      where ed."homeWorkId" = hw.id and ed."owner" = 'Professor' and hw."type" = ${type} and ed.stage in ('Enviada', 'Avaliada')) as qtdSubmissions
+      where ed."homeWorkId" = hw.id and ed."owner" = 'Professor' and not hw."type" = ${typeExame} and not hw."type" = ${typeTest} and ed.stage in ('Enviada', 'Avaliada')) as qtdSubmissions
       FROM "HomeWork" hw, "Discipline" ds, "Class" cs
-      WHERE hw."disciplineId" = ds.id AND ds."classId" = cs.id and hw."type" = ${type} and ds."teacherId" = ${teacher.id} 
+      WHERE hw."disciplineId" = ds.id AND ds."classId" = cs.id and not hw."type" = ${typeExame} and not hw."type" = ${typeTest} and ds."teacherId" = ${teacher.id} 
       LIMIT ${qtdReturn} OFFSET(${pageReturn} - 1) * ${qtdReturn}`;
+      } else {
+        const typeTest = 'Avaliação';
+        aux = await this.prisma.$queryRaw<
+          IHomeWorksByTeacher[]
+        >`SELECT hw.id, hw.name, hw."isOpen", hw."type", hw."dueDate", hw.description, ds."name" as disciplineName, cs.name as className, (select count(*) 
+      from "Student" s where "classId" = cs.id) as qtdStudents, (select count(distinct ed."studentId") from public."EvaluativeDelivery" ed 
+      where ed."homeWorkId" = hw.id and ed."owner" = 'Professor' and hw."type" = ${type} or hw."type" = ${typeTest} and ed.stage in ('Enviada', 'Avaliada')) as qtdSubmissions
+      FROM "HomeWork" hw, "Discipline" ds, "Class" cs
+      WHERE hw."disciplineId" = ds.id AND ds."classId" = cs.id and hw."type" = ${type} or hw."type" = ${typeTest} and ds."teacherId" = ${teacher.id} 
+      LIMIT ${qtdReturn} OFFSET(${pageReturn} - 1) * ${qtdReturn}`;
+      }
 
-      console.log(aux);
-
-      const query = await this.prisma.$queryRaw<
+      /* const query = await this.prisma.$queryRaw<
         IHomeWorksByTeacher[]
       >`Select hw.id, hw.name, hw."isOpen", hw."type", hw."dueDate", hw.description, d."name", c."name", (select count(*) 
       from "Student" s where s."classId" = c.id) as qtdStudents, (select count(distinct ed."studentId") from public."EvaluativeDelivery" ed 
@@ -366,7 +387,7 @@ export class HomeWorkService {
       inner join "Class" c 
       on c.id  = d."classId" where c.id = ${classId} and d."teacherId" = ${teacher.id} and hw."type" = ${type} LIMIT ${qtdReturn} OFFSET(${pageReturn} - 1) * ${qtdReturn}`;
 
-      console.log(query);
+      console.log('Query: ', query); */
 
       const formattedData = aux.map((homeWork) => {
         const data = {
@@ -642,5 +663,72 @@ export class HomeWorkService {
       status: HttpStatus.OK,
       message: `Homework retornada com sucesso.`,
     };
+  }
+
+  async update(id, updateInfoHomeWork) {
+    try {
+      const updateData = updateInfoHomeWork;
+
+      const updateHomeWork = await this.prisma.homeWork.findUnique({
+        where: {
+          id: id,
+        },
+      });
+
+      if (!updateHomeWork) {
+        throw new HttpException(
+          'Erro. Homework não encontrada.',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      updateHomeWork.name = updateData.name
+        ? updateData.name
+        : updateHomeWork.name;
+      updateHomeWork.description = updateData.description
+        ? updateData.description
+        : updateHomeWork.description;
+      updateHomeWork.disciplineId = updateData.disciplineId
+        ? updateData.disciplineId
+        : updateHomeWork.disciplineId;
+      updateHomeWork.startDate = updateData.startDate
+        ? updateData.startDate
+        : updateHomeWork.startDate;
+      updateHomeWork.dueDate = updateData.dueDate
+        ? updateData.dueDate
+        : updateHomeWork.dueDate;
+      updateHomeWork.isOpen = updateData.isOpen
+        ? updateData.isOpen
+        : updateHomeWork.isOpen;
+      updateHomeWork.type = updateData.type
+        ? updateData.type
+        : updateHomeWork.type;
+
+      if (updateData.isOpen == false) {
+        updateHomeWork.isOpen = false;
+      }
+
+      await this.prisma.homeWork.update({
+        where: {
+          id: id,
+        },
+        data: {
+          name: updateHomeWork.name,
+          description: updateHomeWork.description,
+          disciplineId: updateHomeWork.disciplineId,
+          startDate: updateHomeWork.startDate,
+          dueDate: updateHomeWork.dueDate,
+          isOpen: updateHomeWork.isOpen,
+          type: updateHomeWork.type,
+        },
+      });
+
+      return {
+        status: HttpStatus.OK,
+        message: 'HomeWork atualizada com sucesso.',
+      };
+    } catch (error) {
+      return new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
   }
 }
