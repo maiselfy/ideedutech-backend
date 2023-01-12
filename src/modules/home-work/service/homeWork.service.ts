@@ -13,6 +13,13 @@ import CreateHomeWorkDTO from '../dtos/createHomeWork.dto';
 import CreateTestDTO from '../dtos/createTest.dto';
 import { SearchHomeWorksByTeacherDTO } from '../dtos/searchHomeWorksByTeacher.dto';
 
+enum TypeHomeWorkTransform {
+  'activity' = 'Atividade',
+  'exame' = 'Prova',
+  'work' = 'Trabalho',
+  'others' = 'Outros',
+  'test' = 'Avaliação',
+}
 @Injectable()
 export class HomeWorkService {
   constructor(
@@ -353,26 +360,26 @@ export class HomeWorkService {
       }
 
       let aux = [];
+      const typeExame = 'exame';
+      const typeTest = 'test';
+
       if (type == typeOfHomework) {
-        const typeExame = 'Prova';
-        const typeTest = 'Avaliação';
         aux = await this.prisma.$queryRaw<
           IHomeWorksByTeacher[]
         >`SELECT hw.id, hw.name, hw."isOpen", hw."type", hw."dueDate", hw.description, ds."name" as disciplineName, cs.name as className, (select count(*) 
       from "Student" s where "classId" = cs.id) as qtdStudents, (select count(distinct ed."studentId") from public."EvaluativeDelivery" ed 
-      where ed."homeWorkId" = hw.id and ed."owner" = 'Professor' and not hw."type" = ${typeExame} and not hw."type" = ${typeTest} and ed.stage in ('Enviada', 'Avaliada')) as qtdSubmissions
+      where ed."homeWorkId" = hw.id and ed."owner" = 'Professor' and not hw."type" = ${TypeHomeWorkTransform[typeExame]} and not hw."type" = ${TypeHomeWorkTransform[typeTest]} and ed.stage in ('Enviada', 'Avaliada')) as qtdSubmissions
       FROM "HomeWork" hw, "Discipline" ds, "Class" cs
-      WHERE hw."disciplineId" = ds.id AND ds."classId" = cs.id and not hw."type" = ${typeExame} and not hw."type" = ${typeTest} and ds."teacherId" = ${teacher.id} 
+      WHERE hw."disciplineId" = ds.id AND ds."classId" = cs.id and not hw."type" = ${TypeHomeWorkTransform[typeExame]} and not hw."type" = ${TypeHomeWorkTransform[typeTest]} and ds."teacherId" = ${teacher.id} 
       LIMIT ${qtdReturn} OFFSET(${pageReturn} - 1) * ${qtdReturn}`;
       } else {
-        const typeTest = 'Avaliação';
         aux = await this.prisma.$queryRaw<
           IHomeWorksByTeacher[]
         >`SELECT hw.id, hw.name, hw."isOpen", hw."type", hw."dueDate", hw.description, ds."name" as disciplineName, cs.name as className, (select count(*) 
       from "Student" s where "classId" = cs.id) as qtdStudents, (select count(distinct ed."studentId") from public."EvaluativeDelivery" ed 
-      where ed."homeWorkId" = hw.id and ed."owner" = 'Professor' and hw."type" = ${type} or hw."type" = ${typeTest} and ed.stage in ('Enviada', 'Avaliada')) as qtdSubmissions
+      where ed."homeWorkId" = hw.id and ed."owner" = 'Professor' and hw."type" = ${type} or hw."type" = ${TypeHomeWorkTransform[typeTest]} and ed.stage in ('Enviada', 'Avaliada')) as qtdSubmissions
       FROM "HomeWork" hw, "Discipline" ds, "Class" cs
-      WHERE hw."disciplineId" = ds.id AND ds."classId" = cs.id and hw."type" = ${type} or hw."type" = ${typeTest} and ds."teacherId" = ${teacher.id} 
+      WHERE hw."disciplineId" = ds.id AND ds."classId" = cs.id and hw."type" = ${type} or hw."type" = ${TypeHomeWorkTransform[typeTest]} and ds."teacherId" = ${teacher.id} 
       LIMIT ${qtdReturn} OFFSET(${pageReturn} - 1) * ${qtdReturn}`;
       }
 
