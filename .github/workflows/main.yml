@@ -54,18 +54,7 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           key: ${{ secrets.SSH_KEY }}
           source: "., !node_modules"
-          target: "~/app/ideedutech-backend"
-          
-      - name: Install dependecies on Digital Ocean 
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          script: |
-            cd ~/app/ideedutech-backend
-            yarn 
+          target: "~/app/ideedutech-backend" 
             
       - name: Run migrations on Digital Ocean 
         uses: appleboy/ssh-action@master
@@ -76,6 +65,7 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             cd ~/app/ideedutech-backend 
+            yarn 
             ./node_modules/.bin/prisma migrate deploy  
             
       - name: Restart pm2 
