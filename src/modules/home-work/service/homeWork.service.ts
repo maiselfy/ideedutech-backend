@@ -363,23 +363,27 @@ export class HomeWorkService {
       const typeExame = 'exame';
       const typeTest = 'test';
 
+      console.log(typeof TypeHomeWorkTransform[typeExame]);
+      console.log(typeof TypeHomeWorkTransform[typeTest]);
+      console.log(typeof type);
+
       if (type == typeOfHomework) {
         aux = await this.prisma.$queryRaw<
           IHomeWorksByTeacher[]
         >`SELECT hw.id, hw.name, hw."isOpen", hw."type", hw."dueDate", hw.description, ds."name" as disciplineName, cs.name as className, (select count(*) 
       from "Student" s where "classId" = cs.id) as qtdStudents, (select count(distinct ed."studentId") from public."EvaluativeDelivery" ed 
-      where ed."homeWorkId" = hw.id and ed."owner" = 'Professor' and not hw."type" = ${TypeHomeWorkTransform[typeExame]} and not hw."type" = ${TypeHomeWorkTransform[typeTest]} and ed.stage in ('Enviada', 'Avaliada')) as qtdSubmissions
+      where ed."homeWorkId" = hw.id and ed."owner" = 'Professor' and not hw."type"::text = ${TypeHomeWorkTransform[typeExame]} and not hw."type"::text = ${TypeHomeWorkTransform[typeTest]} and ed.stage in ('Enviada', 'Avaliada')) as qtdSubmissions
       FROM "HomeWork" hw, "Discipline" ds, "Class" cs
-      WHERE hw."disciplineId" = ds.id AND ds."classId" = cs.id and not hw."type" = ${TypeHomeWorkTransform[typeExame]} and not hw."type" = ${TypeHomeWorkTransform[typeTest]} and ds."teacherId" = ${teacher.id} 
+      WHERE hw."disciplineId" = ds.id AND ds."classId" = cs.id and not hw."type"::text = ${TypeHomeWorkTransform[typeExame]} and not hw."type"::text = ${TypeHomeWorkTransform[typeTest]} and ds."teacherId" = ${teacher.id} 
       LIMIT ${qtdReturn} OFFSET(${pageReturn} - 1) * ${qtdReturn}`;
       } else {
         aux = await this.prisma.$queryRaw<
           IHomeWorksByTeacher[]
         >`SELECT hw.id, hw.name, hw."isOpen", hw."type", hw."dueDate", hw.description, ds."name" as disciplineName, cs.name as className, (select count(*) 
       from "Student" s where "classId" = cs.id) as qtdStudents, (select count(distinct ed."studentId") from public."EvaluativeDelivery" ed 
-      where ed."homeWorkId" = hw.id and ed."owner" = 'Professor' and hw."type" = ${type} or hw."type" = ${TypeHomeWorkTransform[typeTest]} and ed.stage in ('Enviada', 'Avaliada')) as qtdSubmissions
+      where ed."homeWorkId" = hw.id and ed."owner" = 'Professor' and hw."type"::text = ${type} or hw."type"::text = ${TypeHomeWorkTransform[typeTest]} and ed.stage in ('Enviada', 'Avaliada')) as qtdSubmissions
       FROM "HomeWork" hw, "Discipline" ds, "Class" cs
-      WHERE hw."disciplineId" = ds.id AND ds."classId" = cs.id and hw."type" = ${type} or hw."type" = ${TypeHomeWorkTransform[typeTest]} and ds."teacherId" = ${teacher.id} 
+      WHERE hw."disciplineId" = ds.id AND ds."classId" = cs.id and hw."type"::text = ${type} or hw."type"::text = ${TypeHomeWorkTransform[typeTest]} and ds."teacherId" = ${teacher.id} 
       LIMIT ${qtdReturn} OFFSET(${pageReturn} - 1) * ${qtdReturn}`;
       }
 
