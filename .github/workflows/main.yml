@@ -94,7 +94,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
               cd ~/home/dev/app/ideedutech-backend
-              pm2 start dist/main.js --name api
+              pm2 restart dist/main.js --name api
   
       # Executar yarn na DO 
       # Executar as migrations na DO
