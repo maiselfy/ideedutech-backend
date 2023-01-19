@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import dayjs from 'dayjs';
 import { GenerateRefreshToken } from 'src/modules/auth/providers/generateRefreshToken.provider';
 import { GenerateToken } from 'src/modules/auth/providers/generateToken.provider';
-import { PrismaService } from 'src/modules/prisma';
+import { PrismaService } from 'src/database/prisma.service';
 import CreateRefreshTokenDTO from '../dtos/createRefreshToken.dto';
 
 @Injectable()

@@ -4,9 +4,10 @@ import {
   HttpStatus,
   Injectable,
 } from '@nestjs/common';
+import { TypeHomeWork } from '@prisma/client';
 import id from 'date-fns/locale/id/index';
+import { PrismaService } from 'src/database/prisma.service';
 import { PaginationDTO } from 'src/models/PaginationDTO';
-import { HomeWork, PrismaService, TypeHomeWork } from 'src/modules/prisma';
 import { StudentService } from 'src/modules/student/services/student.service';
 import pagination from 'src/utils/pagination';
 import CreateHomeWorkDTO from '../dtos/createHomeWork.dto';

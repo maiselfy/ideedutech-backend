@@ -1,4 +1,4 @@
-import { PrismaService } from 'src/modules/prisma';
+import { PrismaService } from 'src/database/prisma.service';
 import { RegisterClassService } from './service/registerClassService.service';
 import { RegisterClassController } from './controller/registerClass.controller';
 import { Module } from '@nestjs/common';

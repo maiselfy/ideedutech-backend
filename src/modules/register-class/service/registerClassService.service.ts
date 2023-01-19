@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { PrismaService } from '../../prisma';
+import { PrismaService } from 'src/database/prisma.service';
 import CreateRegisterClassDTO from '../dtos/createRegisterClass.dto';
 import UpdateRegisterClassDTO from '../dtos/UpdateRegisterClass.dto';
 

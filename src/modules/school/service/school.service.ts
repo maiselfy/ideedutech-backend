@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Address, PrismaService, School } from 'src/modules/prisma';
+import { Address } from '@prisma/client';
+import { PrismaService } from 'src/database/prisma.service';
 import { S3Service } from 'src/utils/bucket-s3';
 import { FindSchoolByRegionDTO } from '../dtos/findSchoolByRegion.dto';
 

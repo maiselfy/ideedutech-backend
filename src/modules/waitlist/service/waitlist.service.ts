@@ -2,7 +2,7 @@ import { Role, School, WaitList } from '@prisma/client';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PaginationDTO } from 'src/models/PaginationDTO';
 import { ManagerService } from 'src/modules/manager/service/manager.service';
-import { PrismaService } from 'src/modules/prisma';
+import { PrismaService } from 'src/database/prisma.service';
 import pagination from 'src/utils/pagination';
 import CreateWaitlistDTO from '../dtos/createWaitlist.dto';
 import { MailerService } from '@nestjs-modules/mailer';

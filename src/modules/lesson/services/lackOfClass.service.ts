@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { format, parseISO } from 'date-fns';
-import { PrismaService } from 'src/modules/prisma';
+import { PrismaService } from 'src/database/prisma.service';
 import { CreateManyLackLessonDTO } from '../dtos/createManyLackLesson.dto';
 import { CreateManyLessonDTO } from '../dtos/createManyLesson.dto';
 import { RemoveLackOfClassDTO } from '../dtos/removeLackOfClass.dto';

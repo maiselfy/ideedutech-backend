@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/modules/prisma';
+import { PrismaService } from 'src/database/prisma.service';
 import { UserService } from 'src/modules/user/service/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { UserPayload } from '../models/UserPayload';

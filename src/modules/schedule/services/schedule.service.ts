@@ -7,7 +7,7 @@ import {
   format,
   startOfWeek,
 } from 'date-fns';
-import { Day, PrismaService } from 'src/modules/prisma';
+import { PrismaService } from 'src/database/prisma.service';
 import { CreateScheduleDTO } from '../dtos/createSchedule.dto';
 
 enum Days {

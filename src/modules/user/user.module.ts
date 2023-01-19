@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { UserService } from './service/user.service';
 import { UserController } from './controller/user.controller';
-import { PrismaService } from '../prisma';
 import { StudentService } from '../student/services/student.service';
 import { ManagerService } from '../manager/service/manager.service';
 import { RefreshTokenService } from '../refresh-token/services/refreshToken.service';
@@ -11,6 +10,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ClassService } from '../class/services/class.service';
 import { SchoolService } from '../school/service/school.service';
 import { PeriodService } from '../period/service/period.service';
+import { PrismaService } from 'src/database/prisma.service';
 
 @Module({
   imports: [JwtModule.register({})],

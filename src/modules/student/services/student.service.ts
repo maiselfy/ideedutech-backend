@@ -1,7 +1,7 @@
 import { Class, Gender, Role, School, TypeUser, User } from '@prisma/client';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ManagerService } from 'src/modules/manager/service/manager.service';
-import { PrismaService } from 'src/modules/prisma';
+import { PrismaService } from 'src/database/prisma.service';
 import pagination from 'src/utils/pagination';
 import { PaginationDTO } from 'src/models/PaginationDTO';
 import ListEntitiesForSchoolDTO from '../dtos/listEntitiesForSchool.dto';

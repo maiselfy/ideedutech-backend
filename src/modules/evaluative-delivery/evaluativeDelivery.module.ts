@@ -1,4 +1,4 @@
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '../../database/prisma.service';
 import { Module } from '@nestjs/common';
 import { EvaluativeDeliveryService } from './services/evaluativeDelivery.service';
 import { EvaluativeDeliveryController } from './controller/evaluativeDelivery.controller';

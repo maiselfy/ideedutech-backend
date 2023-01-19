@@ -1,4 +1,4 @@
-import { PrismaService } from 'src/modules/prisma';
+import { PrismaService } from 'src/database/prisma.service';
 import { Injectable, HttpStatus, HttpException } from '@nestjs/common';
 import CreateContentDTO from '../dtos/createContent.dto';
 

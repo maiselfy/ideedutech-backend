@@ -1,9 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { PrismaService } from 'src/database/prisma.service';
 import { PaginationDTO } from 'src/models/PaginationDTO';
 import { ManagerService } from 'src/modules/manager/service/manager.service';
 import { StudentService } from 'src/modules/student/services/student.service';
 import pagination from 'src/utils/pagination';
-import { Discipline, PrismaService } from '../../prisma';
 import { CreateDisciplineDTO } from '../dtos/createDiscipline.dto';
 import { UpdateDisciplineDTO } from '../dtos/updateDiscipline.dto';
 

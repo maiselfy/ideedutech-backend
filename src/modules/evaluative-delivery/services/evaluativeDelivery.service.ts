@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/modules/prisma';
+import { PrismaService } from 'src/database/prisma.service';
 import { StudentService } from 'src/modules/student/services/student.service';
 import CreateEvaluativeDeliveryDTO from '../dtos/evaluativeDelivery.dto';
 import SubmissionOfStudentDTO from '../dtos/submissionOfStudent.dto';

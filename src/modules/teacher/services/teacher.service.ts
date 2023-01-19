@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PaginationDTO } from 'src/models/PaginationDTO';
 import { ManagerService } from 'src/modules/manager/service/manager.service';
-import { PrismaService } from 'src/modules/prisma';
+import { PrismaService } from 'src/database/prisma.service';
 import ListEntitiesForSchoolDTO from 'src/modules/student/dtos/listEntitiesForSchool.dto';
 import pagination from 'src/utils/pagination';
 
@@ -12,13 +12,12 @@ export class TeacherService {
     private managerService: ManagerService,
   ) {}
 
-  async createAverageForStudent(data){
+  async createAverageForStudent(data) {
     try {
-
       const averageByStudent = await this.prisma.reportAverage.create({
         data: {
-          ...data
-        }
+          ...data,
+        },
       });
 
       return {
@@ -26,8 +25,7 @@ export class TeacherService {
         status: HttpStatus.OK,
         message: 'Média adicionada com sucesso.',
       };
-
-    } catch(error) {
+    } catch (error) {
       if (error) throw error;
       throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -329,19 +327,18 @@ export class TeacherService {
     };
   }
 
-  async updateAverageForStudent(data){
+  async updateAverageForStudent(data) {
     const { rate, studentId, disciplineId, periodId } = data;
     try {
-
       const reportAverage = await this.prisma.reportAverage.findFirst({
-          where: {
-            studentId: studentId,
-            disciplineId: disciplineId,
-            periodId: periodId
-          },
-          select: {
-            id: true
-          }
+        where: {
+          studentId: studentId,
+          disciplineId: disciplineId,
+          periodId: periodId,
+        },
+        select: {
+          id: true,
+        },
       });
 
       if (!reportAverage) {
@@ -350,19 +347,18 @@ export class TeacherService {
 
       await this.prisma.reportAverage.update({
         where: {
-          id: reportAverage.id
+          id: reportAverage.id,
         },
         data: {
-          rate: rate
-        }
+          rate: rate,
+        },
       });
 
       return {
         status: HttpStatus.OK,
         message: 'Média atualizada com sucesso.',
       };
-
-    } catch(error) {
+    } catch (error) {
       if (error) throw error;
       throw new HttpException('Server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }

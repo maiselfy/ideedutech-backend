@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { RefreshTokenService } from './services/refreshToken.service';
 import { RefreshTokenController } from './controller/refreshToken.controller';
-import { PrismaService } from '../prisma';
+import { PrismaService } from 'src/database/prisma.service';
 import { GenerateRefreshToken } from '../auth/providers/generateRefreshToken.provider';
 import { GenerateToken } from '../auth/providers/generateToken.provider';
 import { JwtModule } from '@nestjs/jwt';

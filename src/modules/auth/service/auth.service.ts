@@ -18,7 +18,7 @@ import { GenerateRefreshToken } from '../providers/generateRefreshToken.provider
 import { GenerateToken } from '../providers/generateToken.provider';
 import { MailerService } from '@nestjs-modules/mailer';
 import { StudentService } from 'src/modules/student/services/student.service';
-import { PrismaService } from 'src/modules/prisma';
+import { PrismaService } from 'src/database/prisma.service';
 import { SponsorToken } from '../models/SponsorToken';
 
 @Injectable()

@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 
 import { HomeWorkController } from './controller/homeWork.controller';
-import { PrismaService } from '../prisma';
+import { PrismaService } from 'src/database/prisma.service';
 import { HomeWorkService } from './service/homeWork.service';
 import { StudentService } from '../student/services/student.service';
 import { ManagerService } from '../manager/service/manager.service';

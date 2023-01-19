@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import Pagination from 'src/utils/pagination';
 import { ManagerService } from '../../manager/service/manager.service';
-import { PrismaService } from '../../prisma/prisma.service';
+import { PrismaService } from 'src/database/prisma.service';
 import ListEntitiesForSchoolDTO from '../../student/dtos/listEntitiesForSchool.dto';
 import { PaginationDTO } from 'src/models/PaginationDTO';
 import { CreateClassDTO } from '../dtos/create-class.dto';

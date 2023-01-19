@@ -1,5 +1,5 @@
 import { HomeWorkService } from '../home-work/service/homeWork.service';
-import { PrismaService } from 'src/modules/prisma';
+import { PrismaService } from 'src/database/prisma.service';
 import { StudentService } from './services/student.service';
 import { StudentController } from './controller/student.controller';
 import { Module } from '@nestjs/common';

@@ -1,4 +1,4 @@
-import { PrismaService } from 'src/modules/prisma';
+import { PrismaService } from 'src/database/prisma.service';
 
 export const findSchoolByUser = async (userId: string) => {
   const prisma = new PrismaService();

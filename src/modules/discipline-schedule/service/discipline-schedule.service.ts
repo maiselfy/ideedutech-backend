@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { format, parse } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
-import { PrismaService } from '../../prisma';
 import { Day } from '@prisma/client';
 import { CreateDisciplineScheduleDTO } from '../dtos/create-discipline-schedule.dto';
 import { UpdateDisciplineScheduleDto } from '../dtos/update-discipline-schedule.dto';
 import { transformDocument } from '@prisma/client/runtime';
+import { PrismaService } from 'src/database/prisma.service';
 
 @Injectable()
 export class DisciplineScheduleService {
