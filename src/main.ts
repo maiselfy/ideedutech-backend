@@ -1,6 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { PrismaService } from './database/prisma.service';
 import { UnauthorizedInterceptor } from './interceptors/unauthorized.interceptor';
 import { setupSwagger } from './swagger';
 require('newrelic');
@@ -31,6 +32,9 @@ async function bootstrap() {
   );
 
   app.useGlobalInterceptors(new UnauthorizedInterceptor());
+
+  const prismaService = app.get(PrismaService);
+  await prismaService.enableShutdownHooks(app);
 
   await app.listen(process.env.PORT || 3333);
 }
