@@ -20,6 +20,7 @@ enum TypeHomeWorkTransformToEnglish {
   'work' = 'Trabalho',
   'others' = 'Outros',
   'test' = 'Avaliação',
+  'presentation' = 'Apresentação',
 }
 
 enum TypeHomeWorkTransformToPortuguese {
@@ -28,6 +29,7 @@ enum TypeHomeWorkTransformToPortuguese {
   'Trabalho' = 'work',
   'Outros' = 'others',
   'Avaliação' = 'test',
+  'Apresentação' = 'presentation',
 }
 @Injectable()
 export class HomeWorkService {
@@ -365,15 +367,16 @@ export class HomeWorkService {
       if (
         TypeHomeWorkTransformToPortuguese[type] == 'activity' ||
         TypeHomeWorkTransformToPortuguese[type] == 'work' ||
-        TypeHomeWorkTransformToPortuguese[type] == 'others'
+        TypeHomeWorkTransformToPortuguese[type] == 'others' ||
+        TypeHomeWorkTransformToPortuguese[type] == 'presentation'
       ) {
         aux = await this.prisma.$queryRaw<
           IHomeWorksByTeacher[]
         >`SELECT hw.id, hw.name, hw."isOpen", hw."type"::text, hw."dueDate", hw.description, ds."name" as disciplineName, cs.name as className, (select count(*)
         from "Student" s where "classId" = cs.id) as qtdStudents, (select count(distinct ed."studentId") from public."EvaluativeDelivery" ed
-        where ed."homeWorkId" = hw.id and ed."owner" = 'Professor' and hw."type" = ${TypeHomeWorkTransformToEnglish['activity']} or  hw."type" = ${TypeHomeWorkTransformToEnglish['work']} or hw."type" = ${TypeHomeWorkTransformToEnglish['others']} and ed.stage in ('Enviada', 'Avaliada')) as qtdSubmissions
+        where ed."homeWorkId" = hw.id and ed."owner" = 'Professor' and hw."type" = ${TypeHomeWorkTransformToEnglish['activity']} or  hw."type" = ${TypeHomeWorkTransformToEnglish['work']} or hw."type" = ${TypeHomeWorkTransformToEnglish['others']} or hw."type" = ${TypeHomeWorkTransformToEnglish['presentation']} and ed.stage in ('Enviada', 'Avaliada')) as qtdSubmissions
         FROM "HomeWork" hw, "Discipline" ds, "Class" cs
-        WHERE hw."disciplineId" = ds.id AND ds."classId" = cs.id and hw."type" = ${TypeHomeWorkTransformToEnglish['activity']} or  hw."type" = ${TypeHomeWorkTransformToEnglish['work']} or hw."type" = ${TypeHomeWorkTransformToEnglish['others']}
+        WHERE hw."disciplineId" = ds.id AND ds."classId" = cs.id and hw."type" = ${TypeHomeWorkTransformToEnglish['activity']} or  hw."type" = ${TypeHomeWorkTransformToEnglish['work']} or hw."type" = ${TypeHomeWorkTransformToEnglish['others']} or hw."type" = ${TypeHomeWorkTransformToEnglish['presentation']}
         and ds."teacherId" = ${teacher.id}
         LIMIT ${qtdReturn} OFFSET(${pageReturn} - 1) * ${qtdReturn}`;
       } else if (
@@ -557,6 +560,7 @@ export class HomeWorkService {
         id: homeWorkId,
       },
       select: {
+        id: true,
         discipline: {
           select: {
             class: {
@@ -643,6 +647,7 @@ export class HomeWorkService {
     );
 
     const formattedData = {
+      id: homeWork.id,
       name: homeWork.name,
       description: homeWork.description,
       type: homeWork.type,

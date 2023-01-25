@@ -384,6 +384,7 @@ enum TypeHomeWork {
   work     @map("Trabalho")
   others   @map("Outros")
   test     @map("Avaliação")
+  presentation @map("Apresentação")
 }
 
 enum EvaluationStage {
