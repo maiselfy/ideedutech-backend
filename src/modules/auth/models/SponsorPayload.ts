@@ -5,4 +5,5 @@ export interface SponsorPayload {
   email: string;
   sub: string;
   type: TypeUser;
+  avatar: string;
 }

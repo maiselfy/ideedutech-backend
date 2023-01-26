@@ -5,6 +5,16 @@ import { StudentService } from 'src/modules/student/services/student.service';
 import { MailerService } from '@nestjs-modules/mailer';
 import { threadId } from 'worker_threads';
 import { S3Service } from '../../../utils/bucket-s3';
+import { UserFromJWT } from 'src/modules/auth/models/UserFromJWT';
+import { UserPayload } from 'src/modules/auth/models/UserPayload';
+
+enum TypeUserTransformToEnglish {
+  'admin' = 'Administrador',
+  'manager' = 'Gestor',
+  'teacher' = 'Professor',
+  'student' = 'Estudante',
+  'sponsor' = 'Responsável',
+}
 @Injectable()
 export class UserService {
   constructor(
@@ -182,6 +192,48 @@ export class UserService {
         id,
       },
     });
+  }
+
+  async findByIdForGetLoggedUser(id: string) {
+    const loggedUser = await this.prisma
+      .$queryRaw<UserPayload>`SELECT u.id, u."name", u."email", u."type"::text, u.avatar FROM public."User" u WHERE u.id = ${id}`;
+
+    if (loggedUser[0]?.type != TypeUserTransformToEnglish['admin']) {
+      const schoolOfUser = await this.prisma.school.findFirst({
+        where: {
+          OR: [
+            {
+              managers: {
+                some: {
+                  userId: id,
+                },
+              },
+            },
+            {
+              students: {
+                some: {
+                  userId: id,
+                },
+              },
+            },
+            {
+              teachers: {
+                some: {
+                  userId: id,
+                },
+              },
+            },
+          ],
+        },
+      });
+
+      return {
+        ...loggedUser[0],
+        school: schoolOfUser?.name,
+      };
+    }
+
+    return loggedUser[0];
   }
 
   findByEmail(email: string) {

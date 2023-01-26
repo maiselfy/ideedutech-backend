@@ -27,7 +27,8 @@ export class UserController {
 
   @Get('/me')
   getMe(@UserDecorator() user) {
-    return user;
+    const userSync = this.userService.findByIdForGetLoggedUser(user.id);
+    return userSync;
   }
 
   @Public()
