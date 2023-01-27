@@ -31,6 +31,11 @@ export class UserController {
     return userSync;
   }
 
+  @Get('report-card/student')
+  getUserDataForReportCard(@UserDecorator() user) {
+    return this.userService.getUserDataForReportCard(user.id);
+  }
+
   @Public()
   @Post()
   create(@Body() createUserDTO: CreateUserDTO) {

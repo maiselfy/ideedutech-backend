@@ -236,6 +236,47 @@ export class UserService {
     return loggedUser[0];
   }
 
+  async getUserDataForReportCard(id: string) {
+    const infosOfStudent = await this.prisma.user.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        name: true,
+        birthDate: true,
+        type: true,
+        student: {
+          select: {
+            class: true,
+            enrollment: true,
+            school: {
+              select: {
+                address: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (infosOfStudent.type === 'student') {
+      const formattedDataOfStudent = {
+        ...infosOfStudent,
+        year: new Date().getFullYear(),
+        school: infosOfStudent.student.school.name,
+        cityOfSchool: infosOfStudent.student.school?.address[0].city,
+        enrollment: infosOfStudent.student.enrollment,
+        class: infosOfStudent.student.class.name,
+      };
+
+      delete formattedDataOfStudent.student;
+      delete formattedDataOfStudent.school;
+
+      return formattedDataOfStudent;
+    }
+  }
+
   findByEmail(email: string) {
     const user = this.prisma.user.findFirst({
       where: {
