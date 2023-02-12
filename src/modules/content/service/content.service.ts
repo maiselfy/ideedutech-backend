@@ -21,8 +21,6 @@ export class ContentService {
     };
   }
 
-  async findAll() {}
-
   async findAllContentsPeriodByDisciplineId(
     disciplineId: string,
     periodId: string,
@@ -219,5 +217,39 @@ export class ContentService {
       status: HttpStatus.OK,
       message: 'Conteúdo deletado com sucesso.',
     };
+  }
+
+  async updateContent(id, updateInfoContent) {
+    try {
+      const updateContent = await this.prisma.content.findUnique({
+        where: {
+          id: id,
+        },
+      });
+
+      updateContent.name = updateInfoContent.name
+        ? updateInfoContent.name
+        : updateContent.name;
+      updateContent.subContent = updateInfoContent.subContent
+        ? updateInfoContent.subContent
+        : updateContent.subContent;
+
+      await this.prisma.content.update({
+        where: {
+          id: id,
+        },
+        data: {
+          name: updateContent.name,
+          subContent: updateContent.subContent,
+        },
+      });
+
+      return {
+        status: HttpStatus.OK,
+        message: 'Conteúdo atualizado com sucesso.',
+      };
+    } catch (error) {
+      return new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
   }
 }

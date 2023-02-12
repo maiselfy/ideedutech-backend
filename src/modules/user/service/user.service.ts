@@ -419,7 +419,7 @@ export class UserService {
 
       return {
         status: HttpStatus.OK,
-        message: 'Escola atualizada com sucesso.',
+        message: 'Usuário atualizado com sucesso.',
       };
     } catch (error) {
       return new HttpException(error, HttpStatus.BAD_REQUEST);

@@ -1,11 +1,10 @@
 import { Address, Gender } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmpty, IsNotEmpty, IsOptional, IsString }
-from 'class-validator';
+import { IsEmpty, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export default class UpdateUserDTO {
   @ApiProperty({
-    example: 'Eliardo Vieira'
+    example: 'Eliardo Vieira',
   })
   @IsString()
   @IsOptional()
@@ -13,7 +12,7 @@ export default class UpdateUserDTO {
   name: string;
 
   @ApiProperty({
-    example: '2001-02-22'
+    example: '2001-02-22',
   })
   @IsString()
   @IsOptional()
@@ -21,14 +20,14 @@ export default class UpdateUserDTO {
   birthDate: Date;
 
   @ApiProperty({
-    example: '(00) 0 0000-0000'
+    example: '(00) 0 0000-0000',
   })
   @IsString()
   @IsOptional()
   phone: string;
 
   @ApiProperty({
-    example: 'male'
+    example: 'male',
   })
   @IsString()
   @IsOptional()

@@ -52,7 +52,7 @@ export class DisciplineService {
       data: {
         name,
         topic,
-        teacher: { connect: { id: teacherId } },
+        teacher: teacherId ? { connect: { id: teacherId } } : undefined,
         class: { connect: { id: classId } },
         //schedules: { createMany: { data: schedules || [] } },
       },
@@ -421,16 +421,45 @@ export class DisciplineService {
 
     const formattedData = {
       ...disciplineExists,
-      teacher: {
-        id: disciplineExists.teacher.id,
-        name: disciplineExists.teacher.user.name,
-      },
     };
 
     return {
       data: formattedData,
       status: HttpStatus.OK,
       message: 'Disciplina retornada com sucesso.',
+    };
+  }
+
+  async deleteDiscipline(disciplineId: string) {
+    const discipline = await this.prisma.discipline.findUnique({
+      where: {
+        id: disciplineId,
+      },
+    });
+
+    if (!discipline) {
+      throw new HttpException(
+        'Erro. Disciplina não encontrada.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const deletedDiscipline = await this.prisma.discipline.delete({
+      where: {
+        id: disciplineId,
+      },
+    });
+
+    if (!deletedDiscipline) {
+      throw new HttpException(
+        'Erro. Não foi possível deletar a disciplina.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    return {
+      status: HttpStatus.OK,
+      message: 'Disciplina deletada com sucesso.',
     };
   }
 }

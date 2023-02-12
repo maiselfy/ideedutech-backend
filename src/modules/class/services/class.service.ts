@@ -328,4 +328,34 @@ export class ClassService {
       message: 'Turma retornada com sucesso.',
     };
   }
+
+  async updateClass(id, updateInfoClass) {
+    try {
+      const updateClass = await this.prisma.class.findUnique({
+        where: {
+          id: id,
+        },
+      });
+
+      updateClass.name = updateInfoClass.name
+        ? updateInfoClass.name
+        : updateClass.name;
+
+      await this.prisma.class.update({
+        where: {
+          id: id,
+        },
+        data: {
+          name: updateClass.name,
+        },
+      });
+
+      return {
+        status: HttpStatus.OK,
+        message: 'Turma atualizada com sucesso.',
+      };
+    } catch (error) {
+      return new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
+  }
 }

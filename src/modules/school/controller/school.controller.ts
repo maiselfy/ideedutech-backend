@@ -11,6 +11,7 @@ import {
   UseInterceptors,
   UploadedFile,
   Patch,
+  Delete,
 } from '@nestjs/common';
 import { Public } from 'src/modules/auth/decorators/public.decorator';
 import { SchoolService } from '../service/school.service';
@@ -67,5 +68,11 @@ export class SchoolController {
     @UploadedFile() avatar: Express.Multer.File,
   ) {
     return this.schoolService.updateAvatar(schoolId, avatar);
+  }
+
+  @ApiBearerAuth()
+  @Delete('delete/:schoolId')
+  deleteSchool(@Param('schoolId') schoolId: string) {
+    return this.schoolService.deleteSchool(schoolId);
   }
 }

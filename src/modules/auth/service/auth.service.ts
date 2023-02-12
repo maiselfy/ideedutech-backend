@@ -35,7 +35,6 @@ export class AuthService {
 
   async login(login: string, password: string): Promise<UserToken> {
     const user = await this.validateUser(login, password);
-    console.log('chamou a req de login, entrei no service');
 
     if (!user) {
       throw new HttpException(
@@ -167,10 +166,10 @@ export class AuthService {
   }
 
   generateRandomString() {
-    var randomString = '';
-    var strings =
+    let randomString = '';
+    const strings =
       'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    for (var i = 0; i < 6; i++) {
+    for (let i = 0; i < 6; i++) {
       randomString += strings.charAt(
         Math.floor(Math.random() * strings.length),
       );
@@ -186,7 +185,7 @@ export class AuthService {
       throw new NotFoundException('Não há usuário cadastrado com esse email.');
     }
 
-    let recoverToken: string = this.generateRandomString();
+    const recoverToken: string = this.generateRandomString();
 
     await this.userService.updateRecoverToken(user.id, recoverToken);
 

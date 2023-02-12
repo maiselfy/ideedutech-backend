@@ -58,7 +58,6 @@ export class UserController {
     return this.userService.updateAvatar(userId, avatar);
   }
 
-  @Public()
   @Delete(':userId')
   remove(@Param('userId') userId: string) {
     return this.userService.remove(userId);

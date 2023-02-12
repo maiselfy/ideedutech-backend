@@ -104,4 +104,10 @@ export class DisciplineController {
       updateDisciplineDTO,
     );
   }
+
+  @ApiBearerAuth()
+  @Delete('delete/:disciplineId')
+  deleteDiscipline(@Param('disciplineId') disciplineId: string) {
+    return this.disciplineService.deleteDiscipline(disciplineId);
+  }
 }

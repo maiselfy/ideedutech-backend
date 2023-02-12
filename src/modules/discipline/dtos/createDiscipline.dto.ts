@@ -21,6 +21,7 @@ export class CreateDisciplineDTO {
     example: '01943f80-9474-455a-98be-28a1a0215352',
   })
   @IsString()
+  @IsOptional()
   teacherId?: string;
 
   @ApiProperty({

@@ -1,6 +1,14 @@
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ContentService } from './../service/content.service';
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  Put,
+} from '@nestjs/common';
 import CreateContentDTO from '../dtos/createContent.dto';
 import { Public } from 'src/modules/auth/decorators/public.decorator';
 
@@ -44,5 +52,11 @@ export class ContentController {
   @Delete('delete/:contentId')
   deleteContent(@Param('contentId') contentId: string) {
     return this.contentService.deleteContent(contentId);
+  }
+
+  @ApiBearerAuth()
+  @Put('update/:contentId')
+  update(@Param('contentId') contentId: string, @Body() updateInfoContent) {
+    return this.contentService.updateContent(contentId, updateInfoContent);
   }
 }

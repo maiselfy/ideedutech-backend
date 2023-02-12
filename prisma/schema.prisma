@@ -15,7 +15,7 @@ model WaitList {
   role      Role     @default(manager)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  school    School   @relation(fields: [schoolId], references: [id])
+  school    School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
 }
 
 model RefreshToken {
@@ -156,7 +156,7 @@ model Class {
   schooldId   String
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
-  school      School       @relation(fields: [schooldId], references: [id])
+  school      School       @relation(fields: [schooldId], references: [id], onDelete: Cascade)
   disciplines Discipline[]
   students    Student[]
 }
@@ -334,7 +334,7 @@ model Address {
   street       String
   schoolId     String?
   userId       String?
-  school       School?  @relation(fields: [schoolId], references: [id])
+  school       School?  @relation(fields: [schoolId], references: [id], onDelete: Cascade)
   user         User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
@@ -379,11 +379,11 @@ enum Day {
 }
 
 enum TypeHomeWork {
-  activity @map("Atividade")
-  exame    @map("Prova")
-  work     @map("Trabalho")
-  others   @map("Outros")
-  test     @map("Avaliação")
+  activity     @map("Atividade")
+  exame        @map("Prova")
+  work         @map("Trabalho")
+  others       @map("Outros")
+  test         @map("Avaliação")
   presentation @map("Apresentação")
 }
 

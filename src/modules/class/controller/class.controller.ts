@@ -10,6 +10,7 @@ import {
   Post,
   Param,
   Query,
+  Put,
 } from '@nestjs/common';
 import { PaginationDTO } from 'src/models/PaginationDTO';
 import { User } from 'src/modules/user/decorators/user.decorator';
@@ -61,5 +62,11 @@ export class ClassController {
   @Delete('/delete/:classId')
   remove(@Param('classId') classId: string) {
     return this.classService.remove(classId);
+  }
+
+  @ApiBearerAuth()
+  @Put('update/:classId')
+  update(@Param('classId') classId: string, @Body() updateInfoClass) {
+    return this.classService.updateClass(classId, updateInfoClass);
   }
 }

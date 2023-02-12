@@ -334,4 +334,37 @@ export class SchoolService {
 
     return period;
   }
+
+  async deleteSchool(schoolId: string) {
+    const school = await this.prisma.school.findUnique({
+      where: {
+        id: schoolId,
+      },
+    });
+
+    if (!school) {
+      throw new HttpException(
+        'Erro. Escola não encontrada.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const deletedSchool = await this.prisma.school.delete({
+      where: {
+        id: schoolId,
+      },
+    });
+
+    if (!deletedSchool) {
+      throw new HttpException(
+        'Erro. Não foi possível deletar a escola.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    return {
+      status: HttpStatus.OK,
+      message: 'Escola deletada com sucesso.',
+    };
+  }
 }
