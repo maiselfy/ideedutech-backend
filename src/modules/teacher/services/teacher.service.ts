@@ -88,6 +88,16 @@ export class TeacherService {
 
     const [page, qtd, skippedItems] = pagination(paginationDTO);
 
+    const teachersCount = await this.prisma.teacher.count({
+      where: {
+        schools: {
+          some: {
+            id: schoolId,
+          },
+        },
+      },
+    });
+
     const teachers = await this.prisma.teacher.findMany({
       select: { user: true, id: true },
       where: {
@@ -123,12 +133,12 @@ export class TeacherService {
       return acc;
     }, []);
 
-    const totalCount = formattedTeachers.length;
+    const totalCount = teachersCount;
     const totalPages = Math.round(totalCount / qtd);
 
     return {
       data: formattedTeachers,
-      totalCount: formattedTeachers.length,
+      totalCount,
       page: paginationDTO.page ? page : 1,
       limit: 5,
       totalPages: totalPages > 0 ? totalPages : 1,
@@ -177,6 +187,16 @@ export class TeacherService {
 
     const [page, qtd, skippedItems] = pagination(paginationDTO);
 
+    const classesCount = await this.prisma.class.count({
+      where: {
+        disciplines: {
+          some: {
+            teacherId: teacher.id,
+          },
+        },
+      },
+    });
+
     const classes = await this.prisma.class.findMany({
       where: {
         disciplines: {
@@ -216,12 +236,12 @@ export class TeacherService {
       return formattedClass;
     });
 
-    const totalCount = formattedClasses.length;
+    const totalCount = classesCount;
     const totalPages = Math.round(totalCount / qtd);
 
     return {
       data: formattedClasses,
-      totalCount: formattedClasses.length,
+      totalCount: classesCount,
       page: paginationDTO.page ? page : 1,
       limit: 5,
       totalPages: totalPages > 0 ? totalPages : 1,
@@ -248,6 +268,12 @@ export class TeacherService {
     }
 
     const [page, qtd, skippedItems] = pagination(paginationDTO);
+
+    const disciplinesCount = await this.prisma.discipline.count({
+      where: {
+        teacherId: teacher.id,
+      },
+    });
 
     const disciplines = await this.prisma.discipline.findMany({
       where: {
@@ -297,12 +323,12 @@ export class TeacherService {
       return formattedData;
     });
 
-    const totalCount = formattedDisciplines.length;
+    const totalCount = disciplinesCount;
     const totalPages = Math.round(totalCount / qtd);
 
     return {
       data: formattedDisciplines,
-      totalCount: formattedDisciplines.length,
+      totalCount,
       page: paginationDTO.page ? page : 1,
       limit: 5,
       totalPages: totalPages > 0 ? totalPages : 1,

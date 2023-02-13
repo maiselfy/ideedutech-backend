@@ -445,6 +445,14 @@ export class StudentService {
 
     const [page, qtd, skippedItems] = pagination(paginationDTO);
 
+    const studentsCount = await this.prisma.student.count({
+      where: {
+        school: {
+          id: schoolId,
+        },
+      },
+    });
+
     const students = await this.prisma.student.findMany({
       where: {
         school: {
@@ -466,12 +474,12 @@ export class StudentService {
       );
     }
 
-    const totalCount = students.length;
+    const totalCount = studentsCount;
     const totalPages = Math.round(totalCount / qtd);
 
     return {
       data: students,
-      totalCount: totalCount,
+      totalCount,
       page: page,
       limit: qtd,
       totalPages: totalPages > 0 ? totalPages : 1,

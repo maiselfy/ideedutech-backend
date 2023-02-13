@@ -178,6 +178,17 @@ export class DisciplineService {
       throw new HttpException('Esta turma não existe.', HttpStatus.NOT_FOUND);
     }
 
+    const countDisciplines = await this.prisma.discipline.count({
+      where: {
+        class: {
+          id: classId,
+          school: {
+            id: classSchool.schooldId,
+          },
+        },
+      },
+    });
+
     const disciplines = await this.prisma.discipline.findMany({
       where: {
         class: {
@@ -198,7 +209,7 @@ export class DisciplineService {
       );
     }
 
-    const totalCount = disciplines.length;
+    const totalCount = countDisciplines;
     const totalPages = Math.round(totalCount / qtd);
 
     return {

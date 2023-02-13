@@ -71,6 +71,14 @@ export class ClassService {
 
     const [page, qtd, skippedItems] = Pagination(paginationDTO);
 
+    const classesCount = await this.prisma.class.count({
+      where: {
+        school: {
+          id: schoolId,
+        },
+      },
+    });
+
     const classes = await this.prisma.class.findMany({
       include: { _count: { select: { students: true } } },
       where: {
@@ -89,7 +97,7 @@ export class ClassService {
       );
     }
 
-    const totalCount = classes.length;
+    const totalCount = classesCount;
     const totalPages = Math.round(totalCount / qtd);
 
     return {
@@ -189,6 +197,20 @@ export class ClassService {
       );
     }
 
+    const countClassesOfTeacher = await this.prisma.class.count({
+      where: {
+        disciplines: {
+          every: {
+            teacher: {
+              user: {
+                id: teacherId,
+              },
+            },
+          },
+        },
+      },
+    });
+
     const classesOfTeacher = await this.prisma.class.findMany({
       where: {
         disciplines: {
@@ -245,7 +267,7 @@ export class ClassService {
       return newData;
     });
 
-    const totalCount = formattedClasses.length;
+    const totalCount = countClassesOfTeacher;
     const totalPages = Math.round(totalCount / qtd);
 
     return {

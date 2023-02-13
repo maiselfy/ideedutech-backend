@@ -364,6 +364,7 @@ export class HomeWorkService {
       }
 
       let aux = [];
+      let count = [];
       if (
         TypeHomeWorkTransformToPortuguese[type] == 'activity' ||
         TypeHomeWorkTransformToPortuguese[type] == 'work' ||
@@ -379,6 +380,15 @@ export class HomeWorkService {
         WHERE hw."disciplineId" = ds.id AND ds."classId" = cs.id and hw."type" = ${TypeHomeWorkTransformToEnglish['activity']} or  hw."type" = ${TypeHomeWorkTransformToEnglish['work']} or hw."type" = ${TypeHomeWorkTransformToEnglish['others']} or hw."type" = ${TypeHomeWorkTransformToEnglish['presentation']}
         and ds."teacherId" = ${teacher.id}
         LIMIT ${qtdReturn} OFFSET(${pageReturn} - 1) * ${qtdReturn}`;
+
+        count = await this.prisma.$queryRaw<
+          IHomeWorksByTeacher[]
+        >`SELECT hw.id, hw.name, hw."isOpen", hw."type"::text, hw."dueDate", hw.description, ds."name" as disciplineName, cs.name as className, (select count(*)
+      from "Student" s where "classId" = cs.id) as qtdStudents, (select count(distinct ed."studentId") from public."EvaluativeDelivery" ed
+      where ed."homeWorkId" = hw.id and ed."owner" = 'Professor' and hw."type" = ${TypeHomeWorkTransformToEnglish['activity']} or  hw."type" = ${TypeHomeWorkTransformToEnglish['work']} or hw."type" = ${TypeHomeWorkTransformToEnglish['others']} or hw."type" = ${TypeHomeWorkTransformToEnglish['presentation']} and ed.stage in ('Enviada', 'Avaliada')) as qtdSubmissions
+      FROM "HomeWork" hw, "Discipline" ds, "Class" cs
+      WHERE hw."disciplineId" = ds.id AND ds."classId" = cs.id and hw."type" = ${TypeHomeWorkTransformToEnglish['activity']} or  hw."type" = ${TypeHomeWorkTransformToEnglish['work']} or hw."type" = ${TypeHomeWorkTransformToEnglish['others']} or hw."type" = ${TypeHomeWorkTransformToEnglish['presentation']}
+      and ds."teacherId" = ${teacher.id}`;
       } else if (
         TypeHomeWorkTransformToPortuguese[type] == 'test' ||
         TypeHomeWorkTransformToPortuguese[type] == 'exame'
@@ -392,6 +402,15 @@ export class HomeWorkService {
         WHERE hw."disciplineId" = ds.id AND ds."classId" = cs.id and hw."type" = ${TypeHomeWorkTransformToEnglish['exame']} or  hw."type" = ${TypeHomeWorkTransformToEnglish['test']}
         and ds."teacherId" = ${teacher.id}
         LIMIT ${qtdReturn} OFFSET(${pageReturn} - 1) * ${qtdReturn}`;
+
+        count = await this.prisma.$queryRaw<
+          IHomeWorksByTeacher[]
+        >`SELECT hw.id, hw.name, hw."isOpen", hw."type"::text, hw."dueDate", hw.description, ds."name" as disciplineName, cs.name as className, (select count(*)
+        from "Student" s where "classId" = cs.id) as qtdStudents, (select count(distinct ed."studentId") from public."EvaluativeDelivery" ed
+        where ed."homeWorkId" = hw.id and ed."owner" = 'Professor' and hw."type" = ${TypeHomeWorkTransformToEnglish['exame']} or  hw."type" = ${TypeHomeWorkTransformToEnglish['test']} and ed.stage in ('Enviada', 'Avaliada')) as qtdSubmissions
+        FROM "HomeWork" hw, "Discipline" ds, "Class" cs
+        WHERE hw."disciplineId" = ds.id AND ds."classId" = cs.id and hw."type" = ${TypeHomeWorkTransformToEnglish['exame']} or  hw."type" = ${TypeHomeWorkTransformToEnglish['test']}
+        and ds."teacherId" = ${teacher.id}`;
       }
 
       /* const query = await this.prisma.$queryRaw<
@@ -425,7 +444,7 @@ export class HomeWorkService {
         return data;
       });
 
-      const totalCount = formattedData.length;
+      const totalCount = count.length;
       const totalPages = Math.round(totalCount / qtdReturn);
 
       return {
@@ -504,6 +523,17 @@ export class HomeWorkService {
         peddingsubmissions: number;
       }
 
+      const count = await this.prisma.$queryRaw<
+        IHomeWorksByTeacher[]
+      >`Select hw.id, hw.name, hw."isOpen", hw."type", hw."dueDate", hw.description, d."name", c."name", (select count(*) 
+    from "Student" s where s."classId" = c.id) as qtdStudents, (select count(distinct ed."studentId") from public."EvaluativeDelivery" ed 
+    where ed."homeWorkId" = hw.id and ed."owner" = 'Professor' and ed.stage in ('Enviada', 'Avaliada')) as qtdSubmissions
+    from "HomeWork" hw 
+    inner join "Discipline" d 
+    on hw."disciplineId" = d.id 
+    inner join "Class" c 
+    on c.id  = d."classId" where c.id = ${classId} and d."teacherId" = ${teacher.id} and hw."type" = ${type}`;
+
       const query = await this.prisma.$queryRaw<
         IHomeWorksByTeacher[]
       >`Select hw.id, hw.name, hw."isOpen", hw."type", hw."dueDate", hw.description, d."name", c."name", (select count(*) 
@@ -533,7 +563,7 @@ export class HomeWorkService {
         return data;
       });
 
-      const totalCount = formattedData.length;
+      const totalCount = count.length;
       const totalPages = Math.round(totalCount / qtdReturn);
 
       return {

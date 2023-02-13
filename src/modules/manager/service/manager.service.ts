@@ -45,6 +45,18 @@ export class ManagerService {
       take: qtd ? qtd : undefined,
     });
 
+    const countManagers = await this.prisma.manager.count({
+      where: {
+        schools: {
+          every: {
+            id: {
+              equals: schoolId,
+            },
+          },
+        },
+      },
+    });
+
     if (!managers) {
       throw new HttpException(
         'Não existem gestores cadastrados para esta escola.',
@@ -66,7 +78,7 @@ export class ManagerService {
       return acc;
     }, []);
 
-    const totalCount = formattedManagers.length;
+    const totalCount = countManagers;
     const totalPages = Math.round(totalCount / qtd);
 
     return {
