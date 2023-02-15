@@ -17,7 +17,12 @@ export class WaitlistService {
     private mailerService: MailerService,
   ) {}
   async create(createWaitlistDTO: CreateWaitlistDTO) {
-    const data = createWaitlistDTO;
+    const data = {
+      value: createWaitlistDTO.value.toLowerCase(),
+      approved: createWaitlistDTO.approved,
+      role: createWaitlistDTO.role,
+      schoolId: createWaitlistDTO.schoolId,
+    };
 
     const existsRegisterOnWaitlist = await this.prisma.waitList.findUnique({
       where: {

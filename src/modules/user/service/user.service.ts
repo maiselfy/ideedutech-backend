@@ -26,7 +26,7 @@ export class UserService {
   async create(createUserDto) {
     const userExistsOnWaitlist = await this.prisma.waitList.findFirst({
       where: {
-        value: createUserDto.email,
+        value: createUserDto.email.toLowerCase(),
         approved: false,
       },
     });
@@ -41,6 +41,7 @@ export class UserService {
     const hashSalt = Number(process.env.HASH_SALT);
     const newData = {
       ...createUserDto,
+      email: createUserDto.email.toLowerCase(),
       password: await bcrypt.hash(createUserDto.password, hashSalt),
       birthDate: new Date(createUserDto.birthDate),
       type: userExistsOnWaitlist.role,

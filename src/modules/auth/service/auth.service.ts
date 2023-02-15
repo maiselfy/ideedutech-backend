@@ -179,7 +179,7 @@ export class AuthService {
 
   async sendRecoverPasswordEmail(sendRecoverPasswordDTO) {
     const { email } = sendRecoverPasswordDTO;
-    const user = await this.userService.findByEmail(email);
+    const user = await this.userService.findByEmail(email.toLowerCase());
 
     if (!user) {
       throw new NotFoundException('Não há usuário cadastrado com esse email.');
@@ -218,9 +218,6 @@ export class AuthService {
           HttpStatus.BAD_REQUEST,
         );
       }
-
-      console.log('User: ', user);
-      console.log('Token: ', token);
 
       await this.changePassword(user.id, changePasswordDTO);
     } catch (error) {
