@@ -30,17 +30,25 @@ export class ScheduleController {
     return this.scheduleService.getSchedulesOfStudent(user.id, date);
   }
 
-  @Get('/lesson/availableSchedules/:classId/:teacherId')
+  @Get('/lesson/availableSchedules/:classId/:teacherId/:periodId')
   getAvailableSchedulesForLesson(
     @Param('classId') classId: string,
     @Param('teacherId') teacherId: string,
+    @Param('periodId') periodId: string,
   ) {
-    return this.scheduleService.getAvailableSchedules(classId, teacherId);
+    return this.scheduleService.getAvailableSchedules(
+      classId,
+      teacherId,
+      periodId,
+    );
   }
 
-  @Get('/:classId/')
-  getSchedulesOfClass(@Param('classId') classId: string) {
-    return this.scheduleService.getSchedulesOfClass(classId);
+  @Get('/:classId/:periodId')
+  getSchedulesOfClass(
+    @Param('classId') classId: string,
+    @Param('periodId') periodId: string,
+  ) {
+    return this.scheduleService.getSchedulesOfClass(classId, periodId);
   }
 
   @Get('/discipline/:disciplineId')

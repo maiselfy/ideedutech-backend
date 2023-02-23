@@ -303,7 +303,11 @@ export class ScheduleService {
     }
   }
 
-  async getAvailableSchedules(classId: string, teacherId: string) {
+  async getAvailableSchedules(
+    classId: string,
+    teacherId: string,
+    periodId: string,
+  ) {
     const teacher = await this.prisma.teacher.findUnique({
       where: {
         id: teacherId,
@@ -703,12 +707,14 @@ export class ScheduleService {
               discipline: {
                 teacherId: teacher.id,
               },
+              periodId,
             },
             // A turma possui alguma disciplina com aula ?
             {
               discipline: {
                 classId: classExists.id,
               },
+              periodId,
             },
           ],
         },
@@ -830,7 +836,7 @@ export class ScheduleService {
     }
   }
 
-  async getSchedulesOfClass(classId: string) {
+  async getSchedulesOfClass(classId: string, periodId: string) {
     const classExists = await this.prisma.class.findUnique({
       where: {
         id: classId,
@@ -1199,14 +1205,10 @@ export class ScheduleService {
 
     const unavailableSchedules = await this.prisma.schedule.findMany({
       where: {
-        OR: [
-          // A turma possui alguma disciplina com aula ?
-          {
-            discipline: {
-              classId: classExists.id,
-            },
-          },
-        ],
+        discipline: {
+          classId: classExists.id,
+        },
+        periodId,
       },
       select: {
         id: true,
