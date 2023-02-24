@@ -366,10 +366,10 @@ export class HomeWorkService {
       let aux = [];
       let count = [];
       if (
-        TypeHomeWorkTransformToPortuguese[type[0]] == 'activity' ||
-        TypeHomeWorkTransformToPortuguese[type[0]] == 'work' ||
-        TypeHomeWorkTransformToPortuguese[type[0]] == 'others' ||
-        TypeHomeWorkTransformToPortuguese[type[0]] == 'presentation'
+        TypeHomeWorkTransformToPortuguese[type] == 'activity' ||
+        TypeHomeWorkTransformToPortuguese[type] == 'work' ||
+        TypeHomeWorkTransformToPortuguese[type] == 'others' ||
+        TypeHomeWorkTransformToPortuguese[type] == 'presentation'
       ) {
         aux = await this.prisma.$queryRaw<
           IHomeWorksByTeacher[]
@@ -389,8 +389,8 @@ export class HomeWorkService {
         WHERE  hw."type" = 'Atividade' or  hw."type" = 'Trabalho' or  hw."type" = 'Outros' or  hw."type" = 'Apresentação'
         and ds."teacherId" = ${teacher.id}`;
       } else if (
-        TypeHomeWorkTransformToPortuguese[type[0]] == 'test' ||
-        TypeHomeWorkTransformToPortuguese[type[0]] == 'exame'
+        TypeHomeWorkTransformToPortuguese[type] == 'test' ||
+        TypeHomeWorkTransformToPortuguese[type] == 'exame'
       ) {
         aux = await this.prisma.$queryRaw<
           IHomeWorksByTeacher[]
