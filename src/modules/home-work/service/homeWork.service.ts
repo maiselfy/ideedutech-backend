@@ -366,65 +366,50 @@ export class HomeWorkService {
       let aux = [];
       let count = [];
       if (
-        TypeHomeWorkTransformToPortuguese[type] == 'activity' ||
-        TypeHomeWorkTransformToPortuguese[type] == 'work' ||
-        TypeHomeWorkTransformToPortuguese[type] == 'others' ||
-        TypeHomeWorkTransformToPortuguese[type] == 'presentation'
+        TypeHomeWorkTransformToPortuguese[type[0]] == 'activity' ||
+        TypeHomeWorkTransformToPortuguese[type[0]] == 'work' ||
+        TypeHomeWorkTransformToPortuguese[type[0]] == 'others' ||
+        TypeHomeWorkTransformToPortuguese[type[0]] == 'presentation'
       ) {
         aux = await this.prisma.$queryRaw<
           IHomeWorksByTeacher[]
-        >`SELECT hw.id, hw.name, hw."isOpen", hw."type"::text, hw."dueDate", hw.description, ds."name" as disciplineName, cs.name as className, (select count(*)
+        >`SELECT hw.id, hw."createdAt", hw.name, hw."isOpen", hw."type"::text, hw."dueDate", hw.description, ds."name" as disciplineName, cs.name as className, (select count(*)
         from "Student" s where "classId" = cs.id) as qtdStudents, (select count(distinct ed."studentId") from public."EvaluativeDelivery" ed
-        where ed."homeWorkId" = hw.id and ed."owner" = 'Professor' and hw."type" = ${TypeHomeWorkTransformToEnglish['activity']} or  hw."type" = ${TypeHomeWorkTransformToEnglish['work']} or hw."type" = ${TypeHomeWorkTransformToEnglish['others']} or hw."type" = ${TypeHomeWorkTransformToEnglish['presentation']} and ed.stage in ('Enviada', 'Avaliada')) as qtdSubmissions
-        FROM "HomeWork" hw, "Discipline" ds, "Class" cs
-        WHERE hw."disciplineId" = ds.id AND ds."classId" = cs.id and hw."type" = ${TypeHomeWorkTransformToEnglish['activity']} or  hw."type" = ${TypeHomeWorkTransformToEnglish['work']} or hw."type" = ${TypeHomeWorkTransformToEnglish['others']} or hw."type" = ${TypeHomeWorkTransformToEnglish['presentation']}
-        and ds."teacherId" = ${teacher.id}
-        LIMIT ${qtdReturn} OFFSET(${pageReturn} - 1) * ${qtdReturn}`;
+        where ed."homeWorkId" = hw.id and ed."owner" = 'Professor' and ed.stage in ('Enviada', 'Avaliada')) as qtdSubmissions
+        FROM "HomeWork" hw INNER JOIN "Discipline" ds on ds.id = hw."disciplineId" INNER JOIN "Class" cs on cs.id = ds."classId"
+        WHERE  hw."type" = 'Atividade' or  hw."type" = 'Trabalho' or  hw."type" = 'Outros' or  hw."type" = 'Apresentação'
+        and ds."teacherId" = ${teacher.id} LIMIT ${qtdReturn} OFFSET(${pageReturn} - 1) * ${qtdReturn}`;
 
         count = await this.prisma.$queryRaw<
           IHomeWorksByTeacher[]
-        >`SELECT hw.id, hw.name, hw."isOpen", hw."type"::text, hw."dueDate", hw.description, ds."name" as disciplineName, cs.name as className, (select count(*)
-      from "Student" s where "classId" = cs.id) as qtdStudents, (select count(distinct ed."studentId") from public."EvaluativeDelivery" ed
-      where ed."homeWorkId" = hw.id and ed."owner" = 'Professor' and hw."type" = ${TypeHomeWorkTransformToEnglish['activity']} or  hw."type" = ${TypeHomeWorkTransformToEnglish['work']} or hw."type" = ${TypeHomeWorkTransformToEnglish['others']} or hw."type" = ${TypeHomeWorkTransformToEnglish['presentation']} and ed.stage in ('Enviada', 'Avaliada')) as qtdSubmissions
-      FROM "HomeWork" hw, "Discipline" ds, "Class" cs
-      WHERE hw."disciplineId" = ds.id AND ds."classId" = cs.id and hw."type" = ${TypeHomeWorkTransformToEnglish['activity']} or  hw."type" = ${TypeHomeWorkTransformToEnglish['work']} or hw."type" = ${TypeHomeWorkTransformToEnglish['others']} or hw."type" = ${TypeHomeWorkTransformToEnglish['presentation']}
-      and ds."teacherId" = ${teacher.id}`;
+        >`SELECT hw.id, hw."createdAt", hw.name, hw."isOpen", hw."type"::text, hw."dueDate", hw.description, ds."name" as disciplineName, cs.name as className, (select count(*)
+        from "Student" s where "classId" = cs.id) as qtdStudents, (select count(distinct ed."studentId") from public."EvaluativeDelivery" ed
+        where ed."homeWorkId" = hw.id and ed."owner" = 'Professor' and ed.stage in ('Enviada', 'Avaliada')) as qtdSubmissions
+        FROM "HomeWork" hw INNER JOIN "Discipline" ds on ds.id = hw."disciplineId" INNER JOIN "Class" cs on cs.id = ds."classId"
+        WHERE  hw."type" = 'Atividade' or  hw."type" = 'Trabalho' or  hw."type" = 'Outros' or  hw."type" = 'Apresentação'
+        and ds."teacherId" = ${teacher.id}`;
       } else if (
-        TypeHomeWorkTransformToPortuguese[type] == 'test' ||
-        TypeHomeWorkTransformToPortuguese[type] == 'exame'
+        TypeHomeWorkTransformToPortuguese[type[0]] == 'test' ||
+        TypeHomeWorkTransformToPortuguese[type[0]] == 'exame'
       ) {
         aux = await this.prisma.$queryRaw<
           IHomeWorksByTeacher[]
-        >`SELECT hw.id, hw.name, hw."isOpen", hw."type"::text, hw."dueDate", hw.description, ds."name" as disciplineName, cs.name as className, (select count(*)
+        >`SELECT hw.id, hw."createdAt", hw.name, hw."isOpen", hw."type"::text, hw."dueDate", hw.description, ds."name" as disciplineName, cs.name as className, (select count(*)
         from "Student" s where "classId" = cs.id) as qtdStudents, (select count(distinct ed."studentId") from public."EvaluativeDelivery" ed
-        where ed."homeWorkId" = hw.id and ed."owner" = 'Professor' and hw."type" = ${TypeHomeWorkTransformToEnglish['exame']} or  hw."type" = ${TypeHomeWorkTransformToEnglish['test']} and ed.stage in ('Enviada', 'Avaliada')) as qtdSubmissions
-        FROM "HomeWork" hw, "Discipline" ds, "Class" cs
-        WHERE hw."disciplineId" = ds.id AND ds."classId" = cs.id and hw."type" = ${TypeHomeWorkTransformToEnglish['exame']} or  hw."type" = ${TypeHomeWorkTransformToEnglish['test']}
-        and ds."teacherId" = ${teacher.id}
-        LIMIT ${qtdReturn} OFFSET(${pageReturn} - 1) * ${qtdReturn}`;
+        where ed."homeWorkId" = hw.id and ed."owner" = 'Professor' and ed.stage in ('Enviada', 'Avaliada')) as qtdSubmissions
+        FROM "HomeWork" hw INNER JOIN "Discipline" ds on ds.id = hw."disciplineId" INNER JOIN "Class" cs on cs.id = ds."classId"
+        WHERE  hw."type" = 'Avaliação' or  hw."type" = 'Prova'
+        and ds."teacherId" = ${teacher.id} LIMIT ${qtdReturn} OFFSET(${pageReturn} - 1) * ${qtdReturn}`;
 
         count = await this.prisma.$queryRaw<
           IHomeWorksByTeacher[]
-        >`SELECT hw.id, hw.name, hw."isOpen", hw."type"::text, hw."dueDate", hw.description, ds."name" as disciplineName, cs.name as className, (select count(*)
+        >`SELECT hw.id, hw."createdAt", hw.name, hw."isOpen", hw."type"::text, hw."dueDate", hw.description, ds."name" as disciplineName, cs.name as className, (select count(*)
         from "Student" s where "classId" = cs.id) as qtdStudents, (select count(distinct ed."studentId") from public."EvaluativeDelivery" ed
-        where ed."homeWorkId" = hw.id and ed."owner" = 'Professor' and hw."type" = ${TypeHomeWorkTransformToEnglish['exame']} or  hw."type" = ${TypeHomeWorkTransformToEnglish['test']} and ed.stage in ('Enviada', 'Avaliada')) as qtdSubmissions
-        FROM "HomeWork" hw, "Discipline" ds, "Class" cs
-        WHERE hw."disciplineId" = ds.id AND ds."classId" = cs.id and hw."type" = ${TypeHomeWorkTransformToEnglish['exame']} or  hw."type" = ${TypeHomeWorkTransformToEnglish['test']}
+        where ed."homeWorkId" = hw.id and ed."owner" = 'Professor' and ed.stage in ('Enviada', 'Avaliada')) as qtdSubmissions
+        FROM "HomeWork" hw INNER JOIN "Discipline" ds on ds.id = hw."disciplineId" INNER JOIN "Class" cs on cs.id = ds."classId"
+        WHERE  hw."type" = 'Avaliação' or  hw."type" = 'Prova'
         and ds."teacherId" = ${teacher.id}`;
       }
-
-      /* const query = await this.prisma.$queryRaw<
-        IHomeWorksByTeacher[]
-      >`Select hw.id, hw.name, hw."isOpen", hw."type", hw."dueDate", hw.description, d."name", c."name", (select count(*) 
-      from "Student" s where s."classId" = c.id) as qtdStudents, (select count(distinct ed."studentId") from public."EvaluativeDelivery" ed 
-      where ed."homeWorkId" = hw.id and ed."owner" = 'Professor' and ed.stage in ('Enviada', 'Avaliada')) as qtdSubmissions
-      from "HomeWork" hw 
-      inner join "Discipline" d 
-      on hw."disciplineId" = d.id 
-      inner join "Class" c 
-      on c.id  = d."classId" where c.id = ${classId} and d."teacherId" = ${teacher.id} and hw."type" = ${type} LIMIT ${qtdReturn} OFFSET(${pageReturn} - 1) * ${qtdReturn}`;
-
-      console.log('Query: ', query); */
 
       const formattedData = aux.map((homeWork) => {
         const data = {

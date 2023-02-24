@@ -51,7 +51,6 @@ export class SchoolController {
   @ApiBearerAuth()
   @Get(':id')
   findSchoolById(@Param('id') id: string) {
-    console.log('entro no errado');
     return this.schoolService.findSchoolById(id);
   }
 
