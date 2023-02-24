@@ -22,7 +22,6 @@ export class SearchHomeWorksByTeacherDTO {
   classId: string;
 
   @ApiProperty()
-  @IsString()
   @IsOptional()
   type: TypeHomeWork;
 
